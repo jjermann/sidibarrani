@@ -1,0 +1,12 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="BoardView"
+        Width="800"
+        Height="600">
+        <StackPanel Orientation = "Vertical">
+            <TextBox                  Name = "test"
+                                      Text = "Test"
+                           BorderThickness = "0"
+                                  FontSize = "20" />
+        </StackPanel>
+</Window>
