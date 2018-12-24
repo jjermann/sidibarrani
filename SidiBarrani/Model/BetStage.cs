@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -5,55 +6,66 @@ namespace SidiBarrani.Model
 {
     public class BetStage
     {
-        public BetStage()
+        public BetStage(Rules rules, PlayerGroup playerGroup, Player initialPlayer)
         {
+            Rules = rules;
+            PlayerGroup = playerGroup;
+            CurrentPlayer = initialPlayer;
+            if (!PlayerGroup.GetPlayerList().Contains(initialPlayer)) {
+                throw new ArgumentException();
+            }
             BetActionList = new List<BetAction>();
         }
-        private IList<BetAction> BetActionList {get;set;}
+        private Rules Rules {get;set;}
+        private Player CurrentPlayer {get;set;}
+        private PlayerGroup PlayerGroup {get;}
+        private List<BetAction> BetActionList {get;}
 
-        private BetAction GetLastBetAction()
+        private BetAction GetLastBetBetAction()
         {
             return BetActionList.LastOrDefault(b => b.Type == BetActionType.Bet);
         }
+        private BetAction GetLastNonPassBetAction()
+        {
+            return BetActionList.LastOrDefault(b => b.Type != BetActionType.Pass);
+        }
+
         public BetResult GetBetResult()
         {
-            var lastBetAction = GetLastBetAction();
-            if (lastBetAction == null)
+            var lastBetBetAction = GetLastBetBetAction();
+            if (lastBetBetAction == null)
             {
                 return null;
             }
-            var lastActions = BetActionList.TakeLast(4).ToList();
-            var barraniBetAction = lastActions.SingleOrDefault(a => a.Type == BetActionType.Barrani);
+            var followedActions = GetFollowedBetActions(lastBetBetAction);
+            var barraniBetAction = followedActions.SingleOrDefault(a => a.Type == BetActionType.Barrani);
             if (barraniBetAction != null)
             {
+                //Case Barrani occured
                 return new BetResult
                 {
-                    BettingTeam = lastBetAction.Player.Team,
-                    Bet = lastBetAction.Bet,
+                    BettingTeam = lastBetBetAction.Player.Team,
+                    Bet = lastBetBetAction.Bet,
                     IsSidi = true,
                     IsBarrani = true
                 };
             }
-            var sidiBetAction = lastActions.SingleOrDefault(a => a.Type == BetActionType.Sidi);
+            var sidiBetAction = followedActions.SingleOrDefault(a => a.Type == BetActionType.Sidi);
             if (sidiBetAction != null)
             {
-                var sidiIndex = lastActions.IndexOf(sidiBetAction);
-                var followUpCount = lastActions.Count - (sidiIndex+1);
-                var followedActions = followUpCount > 0
-                    ? lastActions.GetRange(sidiIndex+1, followUpCount)
-                    : new List<BetAction>();
-                var otherTeamFollowedActions = followedActions.Where(a => a.Player.Team != sidiBetAction.Player.Team);
-                if (otherTeamFollowedActions.Any(a => a.Type != BetActionType.Pass))
+                //Case Sidi occured
+                var sidiFollowedActions = GetFollowedBetActions(sidiBetAction);
+                if (sidiFollowedActions.Any(a => a.Type != BetActionType.Pass || a.Player.Team == sidiBetAction.Player.Team))
                 {
                     throw new System.InvalidOperationException();
                 }
-                var passingOpponents = otherTeamFollowedActions.Select(a => a.Player).Distinct().ToList();
+                var passingOpponents = sidiFollowedActions.Select(a => a.Player).Distinct().ToList();
                 if (passingOpponents.Count == 2)
                 {
                     return new BetResult
                     {
-                        BettingTeam = lastBetAction.Player.Team,
-                        Bet = lastBetAction.Bet,
+                        BettingTeam = lastBetBetAction.Player.Team,
+                        Bet = lastBetBetAction.Bet,
                         IsSidi = true
                     };
                 }
@@ -63,19 +75,177 @@ namespace SidiBarrani.Model
                 }
             }
 
-            if (lastActions.Count < 4)
+            //Case no Sidi/Barrani occured (followedActions are all Pass)
+            var isGeneralBet = lastBetBetAction?.Bet != null && lastBetBetAction.Bet.BetAmount.IsGeneralBet;
+            var tooViewFollowedActions = (!isGeneralBet && followedActions.Count < 3)
+                || (isGeneralBet && followedActions.Count < 2);
+            if (tooViewFollowedActions)
             {
                 return null;
             }
-            if (lastActions.TakeLast(3).All(b => b.Type == BetActionType.Pass))
+            if (followedActions.All(b => b.Type == BetActionType.Pass))
             {
                 return new BetResult
                 {
-                    BettingTeam = lastBetAction.Player.Team,
-                    Bet = lastBetAction.Bet,
+                    BettingTeam = lastBetBetAction.Player.Team,
+                    Bet = lastBetBetAction.Bet,
                 };
             }
             return null;
+        }
+
+        private IList<BetAction> GetFollowedBetActions(BetAction betAction)
+        {
+            var betActionIndex = BetActionList.IndexOf(betAction);
+            var followUpCount = BetActionList.Count - (betActionIndex+1);
+            var followedActions = followUpCount > 0
+                ? BetActionList.GetRange(betActionIndex+1, followUpCount)
+                : new List<BetAction>();
+            return followedActions;
+        }
+
+        public IList<Bet> GetValidNewBets()
+        {
+            var currentBet = GetLastBetBetAction()?.Bet;
+            var allBets = Rules.GetValidBets();
+            var result = allBets
+                .Where(b => currentBet == null || b.CompareTo(currentBet) > 0)
+                .ToList();
+            return result;
+        }
+
+        public IList<BetAction> GetValidBetActions()
+        {
+            var lastBetAction = GetLastNonPassBetAction();
+            if (lastBetAction != null && lastBetAction.Type == BetActionType.Barrani)
+            {
+                //Case Barrani occured
+                return new List<BetAction>();
+            }
+            if (lastBetAction != null && lastBetAction.Type == BetActionType.Sidi)
+            {
+                //Case Sidi occured
+                var opposingTeam = PlayerGroup.GetOtherTeam(lastBetAction.Player.Team);
+                var alreadyPassed = GetFollowedBetActions(lastBetAction)
+                    .Select(a => a.Player)
+                    .ToList();
+                var betActionList = new List<BetAction>();
+                var nextOpposingPlayer = PlayerGroup
+                    .GetPlayerListFromInitialPlayer(CurrentPlayer)
+                    .First(p => p.Team == opposingTeam);
+                if (!alreadyPassed.Contains(opposingTeam.Player1))
+                {
+                    betActionList.Add(new BetAction
+                    {
+                        Player = opposingTeam.Player1,
+                        Type = BetActionType.Barrani
+                    });
+                    if (nextOpposingPlayer == opposingTeam.Player1)
+                    {
+                        betActionList.Add(new BetAction
+                        {
+                            Player = opposingTeam.Player1,
+                            Type = BetActionType.Pass
+                        });
+                    }
+                }
+                if (!alreadyPassed.Contains(opposingTeam.Player2))
+                {
+                    betActionList.Add(new BetAction
+                    {
+                        Player = opposingTeam.Player2,
+                        Type = BetActionType.Barrani
+                    });
+                    if (nextOpposingPlayer == opposingTeam.Player2)
+                    {
+                        betActionList.Add(new BetAction
+                        {
+                            Player = opposingTeam.Player2,
+                            Type = BetActionType.Pass
+                        });
+                    }
+                }
+                return betActionList;
+            }
+            //Case no Sidi/Barrani occured (lastBetAction is a Bet or null)
+            var validNewBets = GetValidNewBets();
+            var validBetActions = validNewBets
+                .Select(b => new BetAction
+                {
+                    Player = CurrentPlayer,
+                    Type = BetActionType.Bet,
+                    Bet = b
+                })
+                .ToList();
+
+            var generalBetAction = lastBetAction?.Bet != null && lastBetAction.Bet.BetAmount.IsGeneralBet
+                ? lastBetAction
+                : null;
+            if (generalBetAction == null || CurrentPlayer.Team != generalBetAction.Player.Team)
+            {
+                validBetActions.Add(new BetAction
+                {
+                    Player = CurrentPlayer,
+                    Type = BetActionType.Pass
+                });
+            }
+            if (lastBetAction != null)
+            {
+                var opposingTeam = PlayerGroup.GetOtherTeam(lastBetAction.Player.Team);
+                var passingOppositionPlayer = GetFollowedBetActions(lastBetAction)
+                    .Where(a => a.Player.Team == opposingTeam && a.Type == BetActionType.Pass)
+                    .Select(a => a.Player)
+                    .ToList();
+                if (!passingOppositionPlayer.Contains(opposingTeam.Player1))
+                {
+                    validBetActions.Add(new BetAction
+                    {
+                        Player = opposingTeam.Player1,
+                        Type = BetActionType.Sidi
+                    });
+                }
+                if (!passingOppositionPlayer.Contains(opposingTeam.Player2))
+                {
+                    validBetActions.Add(new BetAction
+                    {
+                        Player = opposingTeam.Player2,
+                        Type = BetActionType.Sidi
+                    });
+                }
+            }
+            return validBetActions;
+        }
+
+        public bool AddBetActionAndProgress(BetAction betAction = null)
+        {
+            if (betAction == null)
+            {
+                CurrentPlayer = PlayerGroup.GetNextPlayer(CurrentPlayer);
+                return true;
+            }
+            var validBetActions = GetValidBetActions();
+            if (!validBetActions.Contains(betAction)) 
+            {
+                return false;
+            }
+            BetActionList.Add(betAction);
+            if (betAction.Player == CurrentPlayer)
+            {
+                CurrentPlayer = PlayerGroup.GetNextPlayer(CurrentPlayer);
+            }
+            return true;
+        }
+
+        public override string ToString()
+        {
+            var str = string.Join(Environment.NewLine, BetActionList.Select(a => $"BetAction: {a}"));
+            var betResult = GetBetResult();
+            if (betResult != null)
+            {
+                str += Environment.NewLine;
+                str += $"BetResult: {betResult}" + Environment.NewLine;
+            }
+            return str;
         }
     }
 }

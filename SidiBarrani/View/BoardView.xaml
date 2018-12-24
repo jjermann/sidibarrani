@@ -5,7 +5,7 @@
         Height="600">
         <StackPanel Orientation = "Vertical">
             <TextBox                  Name = "test"
-                                      Text = "Test"
+                                      Text = "{Binding Test}"
                            BorderThickness = "0"
                                   FontSize = "20" />
         </StackPanel>

@@ -7,44 +7,23 @@ namespace SidiBarrani.Model
     public class Game
     {
         private Game() { }
-        public Game(Team team1, Team team2)
+        public Game(Rules rules, PlayerGroup playerGroup)
         {
-            Team1 = team1;
-            Team2 = team2;
+            Rules = rules;
+            PlayerGroup = playerGroup;
         }
-        Team Team1 {get;set;}
-        Team Team2 {get;set;}
-
-        public IList<Player> GetPlayerList(Player initialPlayer = null)
-        {
-            var playerList = new List<Player>
-            {   
-                Team1.Player1,
-                Team2.Player1,
-                Team1.Player2,
-                Team2.Player2
-            };
-            if (initialPlayer == null)
-            {
-                initialPlayer = Team1.Player1;
-            }
-            while (playerList.First() != initialPlayer)
-            {
-                var tmpFirstPlayer = playerList.First();
-                playerList.RemoveAt(0);
-                playerList.Add(tmpFirstPlayer);
-            }
-            return playerList;
-        }
+        Rules Rules {get;}
+        PlayerGroup PlayerGroup {get;}
 
         public GameResult PlayGame()
         {
-            var currentPlayer = GetPlayerList().OrderBy(p => Guid.NewGuid()).First();
+            var initialPlayer = PlayerGroup.GetRandomPlayer();
             var gameResult = GetGameResult();
             while (gameResult == null)
             {
-                var gameRound = new GameRound();
+                var gameRound = new GameRound(Rules, PlayerGroup, initialPlayer);
                 var roundResult = gameRound.PlayRound();
+                initialPlayer = PlayerGroup.GetNextPlayer(initialPlayer);
                 // update game state using roundResult
                 gameResult = GetGameResult();
             }

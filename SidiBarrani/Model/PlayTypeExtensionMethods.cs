@@ -32,5 +32,26 @@ namespace SidiBarrani.Model
             }
             throw new ArgumentException();
         }
+
+        public static string GetStringRepresentation(this PlayType playtype)
+        {
+            switch (playtype)
+            {
+                case PlayType.TrumpClovers:
+                    return "Clovers";
+                case PlayType.TrumpHearts:
+                    return "Hearts";
+                case PlayType.TrumpPikes:
+                    return "Pikes";
+                case PlayType.TrumpTiles:
+                    return "Tiles";
+                case PlayType.UpDown:
+                    return "UpDown";
+                case PlayType.DownUp:
+                    return "DownUp";
+                default:
+                    throw new NotImplementedException();
+            }
+        }
     }
 }
