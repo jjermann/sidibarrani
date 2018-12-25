@@ -7,16 +7,21 @@ namespace SidiBarrani.Model
         private Bet() { }
         public Bet(PlayType playType, int amount)
         {
-            BetAmount = new BetAmount(amount);
+            BetAmount = new ScoreAmount(amount);
             PlayType = playType;
         }
         public Bet(PlayType playType, bool isGeneralType = false)
         {
-            BetAmount = new BetAmount(isGeneralType);
+            BetAmount = new ScoreAmount(isMatch: true, isGeneral: true);
             PlayType = playType;
         }
-        public BetAmount BetAmount {get;}
+        public ScoreAmount BetAmount {get;}
         public PlayType PlayType {get;}
+
+        public bool IsSuccessFor(ScoreAmount amount)
+        {
+            return amount.CompareTo(BetAmount) >= 0;
+        }
 
         public int CompareTo(Bet other)
         {
@@ -57,9 +62,9 @@ namespace SidiBarrani.Model
         }
         public static bool operator ==(Bet lhs, Bet rhs)
         {
-            if (Object.ReferenceEquals(lhs, null))
+            if (object.ReferenceEquals(lhs, null))
             {
-                return Object.ReferenceEquals(rhs, null);
+                return object.ReferenceEquals(rhs, null);
             }
             return lhs.Equals(rhs);
         }
@@ -87,11 +92,11 @@ namespace SidiBarrani.Model
         public override string ToString()
         {
             var str = $"{PlayType.GetStringRepresentation()}";
-            if (BetAmount.IsGeneralBet)
+            if (BetAmount.IsGeneral)
             {
                 str += " General (500)";
             }
-            else if (BetAmount.IsMatchBet)
+            else if (BetAmount.IsMatch)
             {
                 str += " Match (257)";
             }

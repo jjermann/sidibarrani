@@ -7,6 +7,7 @@ namespace SidiBarrani.Model
     {
         public int MinBet {get;set;} = 40;
         public bool AllowUpDown {get;set;} = true;
+        public int EndScore {get;set;} = 200;
 
         public IList<Bet> GetValidBets()
         {

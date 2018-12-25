@@ -21,15 +21,22 @@ namespace SidiBarrani.Model
                 .OrderBy(c => Guid.NewGuid())
                 .ToList();
         }
-        public Card Draw()
+        public IList<Card> Draw(int n=1)
         {
-            if (!Cards.Any())
+            if (Cards.Count < n)
             {
                 throw new InvalidOperationException();
             }
-            var topCard = Cards.Last();
-            Cards.Remove(topCard);
-            return topCard;
+            var drawnCards = Cards.TakeLast(n).ToList();
+            foreach (var card in drawnCards)
+            {
+                Cards.Remove(card);
+            }
+            var orderedCards = drawnCards
+                .OrderBy(c => c.CardSuit)
+                .ThenBy(c => c.CardRank)
+                .ToList();
+            return orderedCards;
         }
         private IList<Card> Cards {get;set;}
 
@@ -39,6 +46,10 @@ namespace SidiBarrani.Model
             var cardPile = new CardPile(deck.Cards);
             cardPile.Shuffle();
             return cardPile;
+        }
+        public override string ToString()
+        {
+            return string.Join(", ", Cards.Select(c => c.ToString()).Reverse());
         }
     }
 }

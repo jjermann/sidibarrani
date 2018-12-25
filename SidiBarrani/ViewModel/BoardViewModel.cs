@@ -30,30 +30,31 @@ namespace SidiBarrani.ViewModel
             var initialPlayer = playerGroup.GetRandomPlayer();
 
             //For testing
-            var betStage = new BetStage(rules, playerGroup, initialPlayer);
-            var betResult = betStage.GetBetResult();
-            while (betResult == null) {
-                var validActionDictionary = betStage
-                    .GetValidBetActions()
-                    .GroupBy(a => a.Player)
-                    .ToDictionary(g => g.Key, g => g.ToList());
-                // foreach (var player in validActionDictionary.Keys) {
-                //     var validPlayerActions = validActionDictionary[player];
-                //     //Create a task for player to return an action with cancelation token in case an action occurs somewhere else (or something of that sort)
-                //     //-> Figure out how to handle time for Sidi/Barrani!
-                // }
-                var randomAction = validActionDictionary.Values
-                    .SelectMany(l => l)
-                    .OrderBy(a => Guid.NewGuid())
-                    .FirstOrDefault();
-                betStage.AddBetActionAndProgress(randomAction);
-                Test = betStage.ToString();
-                betResult = betStage.GetBetResult();
-            }
-            Test = betStage.ToString();
+            // var betStage = new BetStage(rules, playerGroup, initialPlayer);
+            // var betResult = betStage.GetBetResult();
+            // while (betResult == null) {
+            //     var validActionDictionary = betStage
+            //         .GetValidBetActions()
+            //         .GroupBy(a => a.Player)
+            //         .ToDictionary(g => g.Key, g => g.ToList());
+            //     // foreach (var player in validActionDictionary.Keys) {
+            //     //     var validPlayerActions = validActionDictionary[player];
+            //     //     //Create a task for player to return an action with cancelation token in case an action occurs somewhere else (or something of that sort)
+            //     //     //-> Figure out how to handle time for Sidi/Barrani!
+            //     // }
+            //     var randomAction = validActionDictionary.Values
+            //         .SelectMany(l => l)
+            //         .OrderBy(a => Guid.NewGuid())
+            //         .FirstOrDefault();
+            //     betStage.AddBetActionAndProceed(randomAction);
+            //     Test = betStage.ToString();
+            //     betResult = betStage.GetBetResult();
+            // }
+            // Test = betStage.ToString();
 
-            // Game = new Game(rules, playerGroup);
-            // var gameResult = Game.PlayGame();
+            Game = new Game(rules, playerGroup);
+            var gameResult = Game.ProcessGame();
+            Test += gameResult.ToString();
         }
 
         public PlayerGroup GetPlayerGroup()

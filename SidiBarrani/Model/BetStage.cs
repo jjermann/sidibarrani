@@ -76,7 +76,7 @@ namespace SidiBarrani.Model
             }
 
             //Case no Sidi/Barrani occured (followedActions are all Pass)
-            var isGeneralBet = lastBetBetAction?.Bet != null && lastBetBetAction.Bet.BetAmount.IsGeneralBet;
+            var isGeneralBet = lastBetBetAction?.Bet != null && lastBetBetAction.Bet.BetAmount.IsGeneral;
             var tooViewFollowedActions = (!isGeneralBet && followedActions.Count < 3)
                 || (isGeneralBet && followedActions.Count < 2);
             if (tooViewFollowedActions)
@@ -178,7 +178,7 @@ namespace SidiBarrani.Model
                 })
                 .ToList();
 
-            var generalBetAction = lastBetAction?.Bet != null && lastBetAction.Bet.BetAmount.IsGeneralBet
+            var generalBetAction = lastBetAction?.Bet != null && lastBetAction.Bet.BetAmount.IsGeneral
                 ? lastBetAction
                 : null;
             if (generalBetAction == null || CurrentPlayer.Team != generalBetAction.Player.Team)
@@ -216,7 +216,7 @@ namespace SidiBarrani.Model
             return validBetActions;
         }
 
-        public bool AddBetActionAndProgress(BetAction betAction = null)
+        public bool AddBetActionAndProceed(BetAction betAction = null)
         {
             if (betAction == null)
             {

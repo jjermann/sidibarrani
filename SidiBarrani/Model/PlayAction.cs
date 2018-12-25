@@ -2,18 +2,17 @@ using System;
 
 namespace SidiBarrani.Model
 {
-    public class BetAction : IEquatable<BetAction>
+    public class PlayAction : IEquatable<PlayAction>
     {
         public Player Player {get;set;}
-        public BetActionType Type {get;set;}
-        public Bet Bet {get;set;}
+        public Card Card {get;set;}
 
-        public bool Equals(BetAction other)
+        public bool Equals(PlayAction other)
         {
             if (other == null) {
                 return false;
             }
-            return Bet == other.Bet && Type == other.Type && Player == other.Player;
+            return Player == other.Player && Card == other.Card;
         }
         public override bool Equals(object other)
         {
@@ -36,13 +35,12 @@ namespace SidiBarrani.Model
            	unchecked
             {
                 var hashCode = 13;
-                hashCode = (hashCode * 397) ^ Bet.GetHashCode();
-                hashCode = (hashCode * 397) ^ Type.GetHashCode();
+                hashCode = (hashCode * 397) ^ Card.GetHashCode();
                 hashCode = (hashCode * 397) ^ Player.GetHashCode();
                 return hashCode;
             }
         }
-        public static bool operator ==(BetAction lhs, BetAction rhs)
+        public static bool operator ==(PlayAction lhs, PlayAction rhs)
         {
             if (object.ReferenceEquals(lhs, null))
             {
@@ -50,18 +48,14 @@ namespace SidiBarrani.Model
             }
             return lhs.Equals(rhs);
         }
-        public static bool operator !=(BetAction lhs, BetAction rhs)
+        public static bool operator !=(PlayAction lhs, PlayAction rhs)
         {
             return !(lhs == rhs);
         }
 
         public override string ToString()
         {
-            if (Type != BetActionType.Bet)
-            {
-                return $"{Player}: {Type}";
-            }
-            var str = $"{Player}: {Bet}";
+            var str = $"{Player} plays {Card}";
             return str;
         }
     }
