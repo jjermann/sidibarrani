@@ -16,7 +16,7 @@ namespace SidiBarrani.Model
         }
 
         private Rules Rules {get;set;}
-        private Player CurrentPlayer {get;set;}
+        public Player CurrentPlayer {get; private set;}
         private PlayerGroup PlayerGroup {get;}
         private PlayType PlayType {get;}
         private IList<PlayAction> PlayActionList {get;}

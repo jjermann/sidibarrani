@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using ReactiveUI;
 using SidiBarrani.Model;
 using System.Linq;
+using System.Threading;
 
 namespace SidiBarrani.ViewModel
 {
@@ -26,70 +27,12 @@ namespace SidiBarrani.ViewModel
         public BoardViewModel()
         {
             var rules = new Rules();
-            var playerGroup = GetPlayerGroup();
+            var playerGroup = Generators.GetExamplePlayerGroup();
             var initialPlayer = playerGroup.GetRandomPlayer();
-
-            //For testing
-            // var betStage = new BetStage(rules, playerGroup, initialPlayer);
-            // var betResult = betStage.GetBetResult();
-            // while (betResult == null) {
-            //     var validActionDictionary = betStage
-            //         .GetValidBetActions()
-            //         .GroupBy(a => a.Player)
-            //         .ToDictionary(g => g.Key, g => g.ToList());
-            //     // foreach (var player in validActionDictionary.Keys) {
-            //     //     var validPlayerActions = validActionDictionary[player];
-            //     //     //Create a task for player to return an action with cancelation token in case an action occurs somewhere else (or something of that sort)
-            //     //     //-> Figure out how to handle time for Sidi/Barrani!
-            //     // }
-            //     var randomAction = validActionDictionary.Values
-            //         .SelectMany(l => l)
-            //         .OrderBy(a => Guid.NewGuid())
-            //         .FirstOrDefault();
-            //     betStage.AddBetActionAndProceed(randomAction);
-            //     Test = betStage.ToString();
-            //     betResult = betStage.GetBetResult();
-            // }
-            // Test = betStage.ToString();
 
             Game = new Game(rules, playerGroup);
             var gameResult = Game.ProcessGame();
             Test += gameResult.ToString();
-        }
-
-        public PlayerGroup GetPlayerGroup()
-        {
-            var player1 = new Player
-            {
-                Name = "Player1"
-            };
-            var player2 = new Player
-            {
-                Name = "Player2"
-            };
-            var team1 = new Team {
-                Player1 = player1,
-                Player2 = player2 
-            };
-            player1.Team = team1;
-            player2.Team = team1;
-
-            var player3 = new Player
-            {
-                Name = "Player3"
-            };
-            var player4 = new Player
-            {
-                Name = "Player4"
-            };
-            var team2 = new Team {
-                Player1 = player3,
-                Player2 = player4
-            };
-            player3.Team = team2;
-            player4.Team = team2;
-            var playerGroup = new PlayerGroup(team1, team2);
-            return playerGroup;
         }
     }
 }

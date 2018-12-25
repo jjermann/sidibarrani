@@ -19,6 +19,7 @@ namespace SidiBarrani.Model
         private PlayType PlayType {get;}
         private IList<StickResult> StickResultList {get;}
         private StickRound CurrentStickRound {get;set;}
+        public Player CurrentPlayer => CurrentStickRound.CurrentPlayer;
 
         public PlayResult GetPlayResult()
         {
@@ -133,6 +134,7 @@ namespace SidiBarrani.Model
             if (stickResult != null)
             {
                 StickResultList.Add(stickResult);
+                stickResult.Winner.Context.WonSticks.Add(stickResult.StickPile);
                 CurrentStickRound = IsOver()
                     ? null
                     : new StickRound(Rules, PlayerGroup, stickResult.Winner, PlayType);

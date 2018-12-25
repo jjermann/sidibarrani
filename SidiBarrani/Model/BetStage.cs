@@ -17,7 +17,7 @@ namespace SidiBarrani.Model
             BetActionList = new List<BetAction>();
         }
         private Rules Rules {get;set;}
-        private Player CurrentPlayer {get;set;}
+        public Player CurrentPlayer {get; private set;}
         private PlayerGroup PlayerGroup {get;}
         private List<BetAction> BetActionList {get;}
 
