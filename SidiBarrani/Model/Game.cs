@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SidiBarrani.Model
 {
@@ -17,14 +18,14 @@ namespace SidiBarrani.Model
         private PlayerGroup PlayerGroup {get;}
         private IList<RoundResult> RoundResultsList {get;}
 
-        public GameResult ProcessGame()
+        public async Task<GameResult> ProcessGame()
         {
             var initialPlayer = PlayerGroup.GetRandomPlayer();
             var gameResult = GetGameResult(Rules, PlayerGroup, RoundResultsList);
             while (gameResult == null)
             {
                 var gameRound = new GameRound(Rules, PlayerGroup, initialPlayer);
-                var roundResult = gameRound.ProcessRound();
+                var roundResult = await gameRound.ProcessRound();
                 RoundResultsList.Add(roundResult);
                 initialPlayer = PlayerGroup.GetNextPlayer(initialPlayer);
                 gameResult = GetGameResult(Rules, PlayerGroup, RoundResultsList);

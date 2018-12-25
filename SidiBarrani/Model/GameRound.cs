@@ -18,7 +18,7 @@ namespace SidiBarrani.Model
             PlayerGroup = playerGroup;
             InitialPlayer = initialPlayer;
         }
-        public RoundResult ProcessRound()
+        public async Task<RoundResult> ProcessRound()
         {
             var cardPile = CardPile.CreateFullCardPile();
             var contextDictionary = DistributeCards(PlayerGroup, InitialPlayer, cardPile);
@@ -26,8 +26,8 @@ namespace SidiBarrani.Model
             {
                 player.Context = contextDictionary[player];
             }
-            var betResult = ProcessBetting(Rules, PlayerGroup, InitialPlayer);
-            var playResult = ProcessPlaying(Rules, PlayerGroup, InitialPlayer, betResult.Bet.PlayType);
+            var betResult = await ProcessBetting(Rules, PlayerGroup, InitialPlayer);
+            var playResult = await ProcessPlaying(Rules, PlayerGroup, InitialPlayer, betResult.Bet.PlayType);
             var roundResult = DetermineRoundResult(Rules, PlayerGroup, betResult, playResult);
             return roundResult;
         }
@@ -47,21 +47,21 @@ namespace SidiBarrani.Model
             return contextDictionary;
         }
 
-        private static BetResult ProcessBetting(Rules rules, PlayerGroup playerGroup, Player initialPlayer)
+        private static async Task<BetResult> ProcessBetting(Rules rules, PlayerGroup playerGroup, Player initialPlayer)
         {
             var betStage = new BetStage(rules, playerGroup, initialPlayer);
             var betResult = betStage.GetBetResult();
             while (betResult == null) {
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(betStage.CurrentPlayer);
                 UpdatePlayerContext(playerList, betStage);
-                var betAction = GetNextBetAction(playerList).Result;
+                var betAction = await GetNextBetAction(playerList);
                 betStage.AddBetActionAndProceed(betAction);
                 betResult = betStage.GetBetResult();
             }
             return betResult;
         }
 
-        private static PlayResult ProcessPlaying(Rules rules, PlayerGroup playerGroup, Player initialPlayer, PlayType playType)
+        private static async Task<PlayResult> ProcessPlaying(Rules rules, PlayerGroup playerGroup, Player initialPlayer, PlayType playType)
         {
             var playStage = new PlayStage(rules, playerGroup, initialPlayer, playType);
             var playResult = playStage.GetPlayResult();
@@ -69,7 +69,7 @@ namespace SidiBarrani.Model
             {
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(playStage.CurrentPlayer);
                 UpdatePlayerContext(playerList, playStage);
-                var playAction = GetNextPlayAction(playerList).Result;
+                var playAction = await GetNextPlayAction(playerList);
                 playStage.AddPlayActionAndProceed(playAction);
                 playResult = playStage.GetPlayResult();
             }
@@ -175,40 +175,18 @@ namespace SidiBarrani.Model
 
         private static async Task<BetAction> GetNextBetAction(IList<Player> playerList)
         {
-            var betActionTasks = playerList
-                .Select(p => Task.Run(() => p.BetActionGenerator(p.Context)))
-                .ToList();
-            BetAction betAction = null;
-            while (betAction == null && betActionTasks.Any())
-            {
-                var task = await Task.WhenAny(betActionTasks);
-                betAction = task.Result;
-                betActionTasks.Remove(task);
-            }
-            return betAction;
-            // var betActionTask = Observable.Merge(playerList.Select(p => p.BetCommand.Execute()))
-            //     .FirstAsync(a => a != null)
-            //     .ToTask();
-            // return betActionTask.Result;
+            var betActionTask = Observable.Merge(playerList.Select(p => p.BetCommand.Execute()))
+                .FirstAsync(a => a != null)
+                .ToTask();
+            return await betActionTask;
         }
 
         private static async Task<PlayAction> GetNextPlayAction(IList<Player> playerList)
         {
-            var playActionTasks = playerList
-                .Select(p => Task.Run(() => p.PlayActionGenerator(p.Context)))
-                .ToList();
-            PlayAction playAction = null;
-            while (playAction == null && playActionTasks.Any())
-            {
-                var task = await Task.WhenAny(playActionTasks);
-                playAction = task.Result;
-                playActionTasks.Remove(task);
-            }
-            return playAction;
-            // var playActionTask = Observable.Merge(playerList.Select(p => p.PlayCommand.Execute()))
-            //     .FirstAsync(a => a != null)
-            //     .ToTask();
-            // return playActionTask.Result;
+            var playActionTask = Observable.Merge(playerList.Select(p => p.PlayCommand.Execute()))
+                .FirstAsync(a => a != null)
+                .ToTask();
+            return await playActionTask;
         }
     }
 }

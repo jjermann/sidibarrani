@@ -31,8 +31,11 @@ namespace SidiBarrani.ViewModel
             var initialPlayer = playerGroup.GetRandomPlayer();
 
             Game = new Game(rules, playerGroup);
-            var gameResult = Game.ProcessGame();
-            Test += gameResult.ToString();
+            var gameResult = Game.ProcessGame()
+                .ContinueWith(t =>
+                {
+                    Test = t.Result.ToString();
+                });
         }
     }
 }
