@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DynamicData;
 
 namespace SidiBarrani.Model
 {
@@ -14,20 +15,22 @@ namespace SidiBarrani.Model
             if (!PlayerGroup.GetPlayerList().Contains(initialPlayer)) {
                 throw new ArgumentException();
             }
-            BetActionList = new List<BetAction>();
+            BetActionSourceList = new SourceList<BetAction>();
+            BetActionList = BetActionSourceList.AsObservableList();
         }
         private Rules Rules {get;set;}
         public Player CurrentPlayer {get; private set;}
         private PlayerGroup PlayerGroup {get;}
-        private List<BetAction> BetActionList {get;}
+        private SourceList<BetAction> BetActionSourceList {get;}
+        public IObservableList<BetAction> BetActionList {get;}
 
         private BetAction GetLastBetBetAction()
         {
-            return BetActionList.LastOrDefault(b => b.Type == BetActionType.Bet);
+            return BetActionSourceList.Items.LastOrDefault(b => b.Type == BetActionType.Bet);
         }
         private BetAction GetLastNonPassBetAction()
         {
-            return BetActionList.LastOrDefault(b => b.Type != BetActionType.Pass);
+            return BetActionSourceList.Items.LastOrDefault(b => b.Type != BetActionType.Pass);
         }
 
         public BetResult GetBetResult()
@@ -96,10 +99,10 @@ namespace SidiBarrani.Model
 
         private IList<BetAction> GetFollowedBetActions(BetAction betAction)
         {
-            var betActionIndex = BetActionList.IndexOf(betAction);
-            var followUpCount = BetActionList.Count - (betActionIndex+1);
+            var betActionIndex = BetActionSourceList.Items.IndexOf(betAction);
+            var followUpCount = BetActionSourceList.Count - (betActionIndex+1);
             var followedActions = followUpCount > 0
-                ? BetActionList.GetRange(betActionIndex+1, followUpCount)
+                ? BetActionSourceList.Items.ToList().GetRange(betActionIndex+1, followUpCount)
                 : new List<BetAction>();
             return followedActions;
         }
@@ -228,7 +231,7 @@ namespace SidiBarrani.Model
             {
                 return false;
             }
-            BetActionList.Add(betAction);
+            BetActionSourceList.Add(betAction);
             if (betAction.Player == CurrentPlayer)
             {
                 CurrentPlayer = PlayerGroup.GetNextPlayer(CurrentPlayer);
@@ -238,7 +241,7 @@ namespace SidiBarrani.Model
 
         public override string ToString()
         {
-            var str = string.Join(Environment.NewLine, BetActionList.Select(a => $"BetAction: {a}"));
+            var str = string.Join(Environment.NewLine, BetActionSourceList.Items.Select(a => $"BetAction: {a}"));
             var betResult = GetBetResult();
             if (betResult != null)
             {

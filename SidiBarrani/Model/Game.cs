@@ -2,33 +2,51 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using DynamicData;
+using ReactiveUI;
 
 namespace SidiBarrani.Model
 {
-    public class Game
+    public class Game : ReactiveObject
     {
         private Game() { }
         public Game(Rules rules, PlayerGroup playerGroup)
         {
             Rules = rules;
             PlayerGroup = playerGroup;
-            RoundResultsList = new List<RoundResult>();
+            RoundResultSourceList = new SourceList<RoundResult>();
+            RoundResultList = RoundResultSourceList.AsObservableList();
         }
         private Rules Rules {get;}
         private PlayerGroup PlayerGroup {get;}
-        private IList<RoundResult> RoundResultsList {get;}
+        private SourceList<RoundResult> RoundResultSourceList {get;}
+        public IObservableList<RoundResult> RoundResultList {get;}
+
+        private GameRound _gameRound;
+        public GameRound GameRound
+        {
+            get { return _gameRound; }
+            private set { this.RaiseAndSetIfChanged(ref _gameRound, value); }
+        }
+        private RoundResult _roundResult;
+        public RoundResult RoundResult
+        {
+            get { return _roundResult; }
+            private set { this.RaiseAndSetIfChanged(ref _roundResult, value); }
+        }
 
         public async Task<GameResult> ProcessGame()
         {
             var initialPlayer = PlayerGroup.GetRandomPlayer();
-            var gameResult = GetGameResult(Rules, PlayerGroup, RoundResultsList);
+            var gameResult = GetGameResult(Rules, PlayerGroup, RoundResultSourceList.Items.ToList());
             while (gameResult == null)
             {
-                var gameRound = new GameRound(Rules, PlayerGroup, initialPlayer);
-                var roundResult = await gameRound.ProcessRound();
-                RoundResultsList.Add(roundResult);
+                GameRound = new GameRound(Rules, PlayerGroup, initialPlayer);
+                RoundResult = await GameRound.ProcessRound();
+                GameRound = null;
+                RoundResultSourceList.Add(RoundResult);
                 initialPlayer = PlayerGroup.GetNextPlayer(initialPlayer);
-                gameResult = GetGameResult(Rules, PlayerGroup, RoundResultsList);
+                gameResult = GetGameResult(Rules, PlayerGroup, RoundResultSourceList.Items.ToList());
             }
             return gameResult;
         }

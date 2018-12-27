@@ -1,24 +1,35 @@
 using System.Collections.Generic;
 using System.Linq;
+using DynamicData;
+using ReactiveUI;
 
 namespace SidiBarrani.Model
 {
-    public class PlayStage
+    public class PlayStage : ReactiveObject
     {
         private PlayStage() { }
         public PlayStage(Rules rules, PlayerGroup playerGroup, Player initialPlayer, PlayType playType) {
             Rules = rules;
             PlayerGroup = playerGroup;
             PlayType = playType;
-            StickResultList = new List<StickResult>();
+            StickResultSourceList = new SourceList<StickResult>();
+            StickResultList = StickResultSourceList.AsObservableList();
             CurrentStickRound = new StickRound(Rules, PlayerGroup, initialPlayer, PlayType);
         }
 
         private Rules Rules {get;set;}
         private PlayerGroup PlayerGroup {get;}
         private PlayType PlayType {get;}
-        private IList<StickResult> StickResultList {get;}
-        private StickRound CurrentStickRound {get;set;}
+        private SourceList<StickResult> StickResultSourceList {get;}
+        public IObservableList<StickResult> StickResultList {get;}
+
+        private StickRound _stickRound;
+        public StickRound CurrentStickRound
+        {
+            get { return _stickRound; }
+            private set { this.RaiseAndSetIfChanged(ref _stickRound, value); }
+        }
+        //TODO: Make this readonly reactive
         public Player CurrentPlayer => CurrentStickRound.CurrentPlayer;
 
         public PlayResult GetPlayResult()
@@ -30,7 +41,8 @@ namespace SidiBarrani.Model
             var playerResultDictionary = PlayerGroup
                 .GetPlayerList()
                 .ToDictionary(p => p, p => {
-                    var wonCards = StickResultList
+                    var wonCards = StickResultSourceList
+                        .Items
                         .Where(r => r.Winner == p)
                         .SelectMany(r => r.StickPile.Cards)
                         .ToList();
@@ -92,7 +104,7 @@ namespace SidiBarrani.Model
             var team2Amount = teamResultDictionary[PlayerGroup.Team2]
                 .Select(c => c.GetValue(PlayType))
                 .Sum();
-            var lastStickTeam = StickResultList.Last().Winner.Team;
+            var lastStickTeam = StickResultSourceList.Items.Last().Winner.Team;
             if (lastStickTeam == PlayerGroup.Team1)
             {
                 team1Amount += 5;
@@ -111,7 +123,7 @@ namespace SidiBarrani.Model
 
         private bool IsOver()
         {
-            return StickResultList.Count == 9;
+            return StickResultSourceList.Count == 9;
         }
 
         public IList<PlayAction> GetValidPlayActions()
@@ -133,7 +145,7 @@ namespace SidiBarrani.Model
             var stickResult = CurrentStickRound.GetStickResult();
             if (stickResult != null)
             {
-                StickResultList.Add(stickResult);
+                StickResultSourceList.Add(stickResult);
                 stickResult.Winner.Context.WonSticks.Add(stickResult.StickPile);
                 CurrentStickRound = IsOver()
                     ? null

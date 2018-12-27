@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using DynamicData;
+using ReactiveUI;
 
 namespace SidiBarrani.Model
 {
-    public class StickRound
+    public class StickRound : ReactiveObject
     {
         private StickRound() { }
         public StickRound(Rules rules, PlayerGroup playerGroup, Player initialPlayer, PlayType playType) {
@@ -12,16 +14,25 @@ namespace SidiBarrani.Model
             PlayerGroup = playerGroup;
             CurrentPlayer = initialPlayer;
             PlayType = playType;
-            PlayActionList = new List<PlayAction>();
+
+            PlayActionSourceList = new SourceList<PlayAction>();
+            PlayActionList = PlayActionSourceList.AsObservableList();
         }
 
         private Rules Rules {get;set;}
-        public Player CurrentPlayer {get; private set;}
         private PlayerGroup PlayerGroup {get;}
         private PlayType PlayType {get;}
-        private IList<PlayAction> PlayActionList {get;}
+        private SourceList<PlayAction> PlayActionSourceList {get;}
+        public IObservableList<PlayAction> PlayActionList {get;}
 
-        private CardSuit? StickSuit => PlayActionList?.FirstOrDefault()?.Card.CardSuit;
+        private Player _currentPlayer;
+        public Player CurrentPlayer
+        {
+            get { return _currentPlayer; }
+            private set { this.RaiseAndSetIfChanged(ref _currentPlayer, value); }
+        }
+        public CardSuit? StickSuit => PlayActionSourceList.Items.FirstOrDefault()?.Card.CardSuit;
+
         private CardComparer GetCardComparer()
         {
             if (!StickSuit.HasValue)
@@ -35,18 +46,19 @@ namespace SidiBarrani.Model
         {
             var stickPile = new StickPile
             {
-                Cards = PlayActionList.Select(a => a.Card).ToList()
+                Cards = PlayActionSourceList.Items.Select(a => a.Card).ToList()
             };
             return stickPile;
         }
 
         public StickResult GetStickResult()
         {
-            if (!StickSuit.HasValue || PlayActionList.Count != 4)
+            if (!StickSuit.HasValue || PlayActionSourceList.Count != 4)
             {
                 return null;
             }
-            var winner = PlayActionList
+            var winner = PlayActionSourceList
+                .Items
                 .OrderByDescending(a => a.Card, GetCardComparer())
                 .First()
                 .Player;
@@ -73,7 +85,8 @@ namespace SidiBarrani.Model
                 return allHandPlayActionList;
             }
             var cardComparer = GetCardComparer();
-            var highestPlayedCard = PlayActionList
+            var highestPlayedCard = PlayActionSourceList
+                .Items
                 .OrderByDescending(a => a.Card, cardComparer)
                 .Select(a => a.Card)
                 .First();
@@ -115,7 +128,7 @@ namespace SidiBarrani.Model
                 return false;
             }
             CurrentPlayer.Context.CardsInHand.Remove(playAction.Card);
-            PlayActionList.Add(playAction);
+            PlayActionSourceList.Add(playAction);
             CurrentPlayer = PlayerGroup.GetNextPlayer(CurrentPlayer);
             return true;
         }
