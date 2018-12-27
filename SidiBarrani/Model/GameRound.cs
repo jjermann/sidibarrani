@@ -22,6 +22,12 @@ namespace SidiBarrani.Model
             get { return _betStage; }
             private set { this.RaiseAndSetIfChanged(ref _betStage, value); }
         }
+        private BetAction _betAction;
+        public BetAction BetAction
+        {
+            get { return _betAction; }
+            private set { this.RaiseAndSetIfChanged(ref _betAction, value); }
+        }
         private BetResult _betResult;
         public BetResult BetResult
         {
@@ -33,6 +39,12 @@ namespace SidiBarrani.Model
         {
             get { return _playStage; }
             private set { this.RaiseAndSetIfChanged(ref _playStage, value); }
+        }
+        private PlayAction _playAction;
+        public PlayAction PlayAction
+        {
+            get { return _playAction; }
+            private set { this.RaiseAndSetIfChanged(ref _playAction, value); }
         }
         private PlayResult _playResult;
         public PlayResult PlayResult
@@ -79,20 +91,21 @@ namespace SidiBarrani.Model
             return contextDictionary;
         }
 
-        private static async Task<BetResult> ProcessBetting(BetStage betStage, PlayerGroup playerGroup)
+        private async Task<BetResult> ProcessBetting(BetStage betStage, PlayerGroup playerGroup)
         {
             var betResult = betStage.GetBetResult();
             while (betResult == null) {
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(betStage.CurrentPlayer);
                 UpdatePlayerContext(playerList, betStage);
                 var betAction = await GetNextBetAction(playerList);
+                BetAction = betAction;
                 betStage.AddBetActionAndProceed(betAction);
                 betResult = betStage.GetBetResult();
             }
             return betResult;
         }
 
-        private static async Task<PlayResult> ProcessPlaying(PlayStage playStage, PlayerGroup playerGroup)
+        private async Task<PlayResult> ProcessPlaying(PlayStage playStage, PlayerGroup playerGroup)
         {
             var playResult = playStage.GetPlayResult();
             while (playResult == null)
@@ -100,6 +113,7 @@ namespace SidiBarrani.Model
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(playStage.CurrentPlayer);
                 UpdatePlayerContext(playerList, playStage);
                 var playAction = await GetNextPlayAction(playerList);
+                PlayAction = playAction;
                 playStage.AddPlayActionAndProceed(playAction);
                 playResult = playStage.GetPlayResult();
             }

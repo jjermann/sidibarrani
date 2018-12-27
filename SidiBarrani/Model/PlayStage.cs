@@ -29,6 +29,12 @@ namespace SidiBarrani.Model
             get { return _stickRound; }
             private set { this.RaiseAndSetIfChanged(ref _stickRound, value); }
         }
+        private StickResult _stickResult;
+        public StickResult StickResult
+        {
+            get { return _stickResult; }
+            private set { this.RaiseAndSetIfChanged(ref _stickResult, value); }
+        }
         //TODO: Make this readonly reactive
         public Player CurrentPlayer => CurrentStickRound.CurrentPlayer;
 
@@ -145,6 +151,7 @@ namespace SidiBarrani.Model
             var stickResult = CurrentStickRound.GetStickResult();
             if (stickResult != null)
             {
+                StickResult = stickResult;
                 StickResultSourceList.Add(stickResult);
                 stickResult.Winner.Context.WonSticks.Add(stickResult.StickPile);
                 CurrentStickRound = IsOver()
