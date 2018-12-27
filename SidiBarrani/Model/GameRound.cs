@@ -61,11 +61,7 @@ namespace SidiBarrani.Model
         public async Task<RoundResult> ProcessRound()
         {
             var cardPile = CardPile.CreateFullCardPile();
-            var contextDictionary = DistributeCards(PlayerGroup, InitialPlayer, cardPile);
-            foreach (var player in contextDictionary.Keys)
-            {
-                player.Context = contextDictionary[player];
-            }
+            DistributeCards(PlayerGroup, InitialPlayer, cardPile);
             BetStage = new BetStage(Rules, PlayerGroup, InitialPlayer);
             BetResult = await ProcessBetting(BetStage, PlayerGroup);
             BetStage = null;
@@ -76,19 +72,19 @@ namespace SidiBarrani.Model
             return roundResult;
         }
 
-        private static IDictionary<Player, PlayerContext> DistributeCards(PlayerGroup playerGroup, Player initialPlayer, CardPile cardPile)
+        private static void DistributeCards(PlayerGroup playerGroup, Player initialPlayer, CardPile cardPile)
         {
             var contextDictionary = new Dictionary<Player, PlayerContext>();
             var playerOrder = playerGroup.GetPlayerListFromInitialPlayer(initialPlayer);
             foreach (var player in playerOrder)
             {
-                var playerContext = new PlayerContext
-                {
-                    CardsInHand = cardPile.Draw(9)
-                };
-                contextDictionary[player] = playerContext;
+                player.Context.CardsInHand.Clear();
+                player.Context.AvailableBetActions.Clear();
+                player.Context.AvailablePlayActions.Clear();
+                player.Context.WonSticks.Clear();
+                player.Context.IsCurrentPlayer = player == initialPlayer;
+                player.Context.CardsInHand.AddRange(cardPile.Draw(9));
             }
-            return contextDictionary;
         }
 
         private async Task<BetResult> ProcessBetting(BetStage betStage, PlayerGroup playerGroup)

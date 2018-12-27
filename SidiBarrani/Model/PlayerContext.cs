@@ -9,6 +9,7 @@ namespace SidiBarrani.Model
             WonSticks = new List<StickPile>();
             AvailableBetActions = new List<BetAction>();
             AvailablePlayActions = new List<PlayAction>();
+            CardsInHand = new List<Card>();
         }
         public IList<Card> CardsInHand {get;set;}
         public IList<StickPile> WonSticks {get;set;}

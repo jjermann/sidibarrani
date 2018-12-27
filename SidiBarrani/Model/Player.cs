@@ -12,6 +12,7 @@ namespace SidiBarrani.Model
     {
         public Player()
         {
+            Context = new PlayerContext();
             this.WhenAnyValue(x => x.BetActionGenerator)
                 .Select(g => ReactiveCommand.CreateFromTask(() => Task.Run(() => g(Context))))
                 .ToProperty(this, x => x.BetCommand, out _betCommand, null);
