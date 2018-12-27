@@ -6,10 +6,10 @@ namespace SidiBarrani.Model
     {
         public static bool IsTrump(this PlayType playType)
         {
-            var isTrumpPlayType = playType == PlayType.TrumpClovers
+            var isTrumpPlayType = playType == PlayType.TrumpDiamonds
                 || playType == PlayType.TrumpHearts
-                || playType == PlayType.TrumpPikes
-                || playType == PlayType.TrumpTiles;
+                || playType == PlayType.TrumpClubs
+                || playType == PlayType.TrumpSpades;
             return isTrumpPlayType;
         }
         public static CardSuit GetTrumpSuit(this PlayType playType)
@@ -18,17 +18,17 @@ namespace SidiBarrani.Model
             {
                 return CardSuit.Hearts;
             }
-            if (playType == PlayType.TrumpClovers)
+            if (playType == PlayType.TrumpDiamonds)
             {
-                return CardSuit.Clovers;
+                return CardSuit.Diamonds;
             }
-            if (playType == PlayType.TrumpPikes)
+            if (playType == PlayType.TrumpClubs)
             {
-                return CardSuit.Pikes;
+                return CardSuit.Clubs;
             }
-            if (playType == PlayType.TrumpTiles)
+            if (playType == PlayType.TrumpSpades)
             {
-                return CardSuit.Tiles;
+                return CardSuit.Spades;
             }
             throw new ArgumentException();
         }
@@ -37,14 +37,14 @@ namespace SidiBarrani.Model
         {
             switch (playtype)
             {
-                case PlayType.TrumpClovers:
-                    return "Clovers";
+                case PlayType.TrumpDiamonds:
+                    return "Diamonds";
                 case PlayType.TrumpHearts:
                     return "Hearts";
-                case PlayType.TrumpPikes:
-                    return "Pikes";
-                case PlayType.TrumpTiles:
-                    return "Tiles";
+                case PlayType.TrumpClubs:
+                    return "Clubs";
+                case PlayType.TrumpSpades:
+                    return "Spades";
                 case PlayType.UpDown:
                     return "UpDown";
                 case PlayType.DownUp:

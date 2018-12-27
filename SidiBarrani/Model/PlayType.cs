@@ -3,9 +3,9 @@ namespace SidiBarrani.Model
     public enum PlayType
     {
         TrumpHearts,
-        TrumpTiles,
-        TrumpClovers,
-        TrumpPikes,
+        TrumpSpades,
+        TrumpDiamonds,
+        TrumpClubs,
         UpDown,
         DownUp
     }

@@ -28,10 +28,10 @@ namespace SidiBarrani.Model
             };
             var playTypeList = new List<PlayType>
             {
-                PlayType.TrumpClovers,
+                PlayType.TrumpDiamonds,
                 PlayType.TrumpHearts,
-                PlayType.TrumpPikes,
-                PlayType.TrumpTiles,
+                PlayType.TrumpClubs,
+                PlayType.TrumpSpades,
                 PlayType.UpDown,
                 PlayType.DownUp
             };
