@@ -64,9 +64,11 @@ namespace SidiBarrani.Model
             DistributeCards(PlayerGroup, InitialPlayer, cardPile);
             BetStage = new BetStage(Rules, PlayerGroup, InitialPlayer);
             BetResult = await ProcessBetting(BetStage, PlayerGroup);
+            await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
             BetStage = null;
             PlayStage = new PlayStage(Rules, PlayerGroup, InitialPlayer, BetResult.Bet.PlayType);
             PlayResult = await ProcessPlaying(PlayStage, PlayerGroup);
+            await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
             PlayStage = null;
             var roundResult = DetermineRoundResult(Rules, PlayerGroup, BetResult, PlayResult);
             return roundResult;
@@ -93,7 +95,7 @@ namespace SidiBarrani.Model
             while (betResult == null) {
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(betStage.CurrentPlayer);
                 UpdatePlayerContext(playerList, betStage);
-                var betAction = await GetNextBetAction(playerList);
+                var betAction = await Player.GetNextBetAction(playerList);
                 BetAction = betAction;
                 betStage.AddBetActionAndProceed(betAction);
                 betResult = betStage.GetBetResult();
@@ -108,9 +110,14 @@ namespace SidiBarrani.Model
             {
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(playStage.CurrentPlayer);
                 UpdatePlayerContext(playerList, playStage);
-                var playAction = await GetNextPlayAction(playerList);
+                var playAction = await Player.GetNextPlayAction(playerList);
                 PlayAction = playAction;
-                playStage.AddPlayActionAndProceed(playAction);
+                var stickResult = playStage.AddPlayActionAndProceed(playAction);
+                if (stickResult != null)
+                {
+                    await Player.GetPlayerConfirm(playerList);
+                    playStage.ProcessStickResult(stickResult);
+                }
                 playResult = playStage.GetPlayResult();
             }
             return playResult;
@@ -211,24 +218,6 @@ namespace SidiBarrani.Model
                     : new List<PlayAction>();
                 player.Context.IsCurrentPlayer = player == playStage.CurrentPlayer;
             }
-        }
-
-        private static async Task<BetAction> GetNextBetAction(IList<Player> playerList)
-        {
-            var betActionTask = Observable.Merge(playerList.Select(p => p.BetCommand.Execute()))
-                .FirstAsync(a => a != null)
-                .ToTask();
-            var betAction = await betActionTask;
-            return betAction;
-        }
-
-        private static async Task<PlayAction> GetNextPlayAction(IList<Player> playerList)
-        {
-            var playActionTask = Observable.Merge(playerList.Select(p => p.PlayCommand.Execute()))
-                .FirstAsync(a => a != null)
-                .ToTask();
-            var playAction = await playActionTask;
-            return playAction;
         }
     }
 }

@@ -43,6 +43,7 @@ namespace SidiBarrani.Model
             {
                 GameRound = new GameRound(Rules, PlayerGroup, initialPlayer);
                 RoundResult = await GameRound.ProcessRound();
+                await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
                 GameRound = null;
                 RoundResultSourceList.Add(RoundResult);
                 initialPlayer = PlayerGroup.GetNextPlayer(initialPlayer);

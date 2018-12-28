@@ -8,6 +8,8 @@ using ReactiveUI;
 using SidiBarrani.Model;
 using System.Linq;
 using System.Threading;
+using System.Reactive;
+using System.Reactive.Subjects;
 
 namespace SidiBarrani.ViewModel
 {
@@ -101,10 +103,27 @@ namespace SidiBarrani.ViewModel
                 CardSuit = CardSuit.Spades
             });
 
+        // private ISubject<object> SpaceKeyObservable {get;}
+        // public ReactiveCommand<Unit, Unit> SpaceKeyCommand {get;}
+
         public BoardViewModel()
         {
+            // SpaceKeyObservable = new Subject<object>();
+            // SpaceKeyCommand = ReactiveCommand.Create(() =>
+            // {
+            //     SpaceKeyObservable.OnNext(new object());
+            // });
+            // var confirmTaskGenerator = new Func<Task>(() =>
+            // {
+            //     return new Task(async () =>
+            //     {
+            //         await SpaceKeyObservable.FirstAsync();
+            //     });
+            // });
+
+            // PlayerGroup = PlayerGroupFactory.CreatePlayerGroup(confirmTaskGenerator);
+            PlayerGroup = PlayerGroupFactory.CreatePlayerGroup(null);
             Rules = new Rules();
-            PlayerGroup = Generators.GetExamplePlayerGroup();
             LogOutput = "";
             SetupReactiveProperties();
             SubscribeToReactiveProperties();
@@ -180,6 +199,7 @@ namespace SidiBarrani.ViewModel
         {
             Game = new Game(Rules, PlayerGroup);
             GameResult = await Game.ProcessGame();
+            await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
         }
     }
 }

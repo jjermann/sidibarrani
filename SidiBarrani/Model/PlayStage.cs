@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using DynamicData;
@@ -140,25 +141,26 @@ namespace SidiBarrani.Model
             return validPlayActions;
         }
 
-        public bool AddPlayActionAndProceed(PlayAction playAction)
+        public StickResult AddPlayActionAndProceed(PlayAction playAction)
         {
             var validPlayActions = GetValidPlayActions();
             if (!validPlayActions.Contains(playAction)) 
             {
-                return false;
+                throw new InvalidOperationException();
             }
             CurrentStickRound.AddPlayActionAndProceed(playAction);
             var stickResult = CurrentStickRound.GetStickResult();
-            if (stickResult != null)
-            {
-                StickResult = stickResult;
-                StickResultSourceList.Add(stickResult);
-                stickResult.Winner.Context.WonSticks.Add(stickResult.StickPile);
-                CurrentStickRound = IsOver()
-                    ? null
-                    : new StickRound(Rules, PlayerGroup, stickResult.Winner, PlayType);
-            }
-            return true;
+            return stickResult;
+        }
+
+        public void ProcessStickResult(StickResult stickResult)
+        {
+            StickResult = stickResult;
+            StickResultSourceList.Add(stickResult);
+            stickResult.Winner.Context.WonSticks.Add(stickResult.StickPile);
+            CurrentStickRound = IsOver()
+                ? null
+                : new StickRound(Rules, PlayerGroup, stickResult.Winner, PlayType);
         }
     }
 }
