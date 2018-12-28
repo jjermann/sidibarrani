@@ -12,10 +12,12 @@
 
     <Window.DataTemplates>
         <DataTemplate DataType="{x:Type vm:CardRepresentation}">
-            <Border>
-                <Image Source = "{Binding ImageName, Converter={StaticResource StringToBitmapConverter}}"
-                       Width = "100"
-                       Height = "140"
+            <Border BorderBrush = "Black"
+                    BorderThickness = "1"
+                    CornerRadius = "3"
+                    Width = "100"
+                    Height = "150">
+                <Image Source = "{Binding ImageSource, Converter={StaticResource StringToBitmapConverter}}"
                        Stretch = "Uniform" />
             </Border>
         </DataTemplate>
