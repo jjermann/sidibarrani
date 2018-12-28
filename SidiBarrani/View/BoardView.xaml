@@ -1,13 +1,32 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:view="clr-namespace:SidiBarrani.View"
+        xmlns:vm="clr-namespace:SidiBarrani.ViewModel"
         Title="BoardView"
         Width="800"
         Height="600">
-        <ScrollViewer HorizontalScrollBarVisibility="Auto">
-            <StackPanel Orientation="Vertical">
-                <TextBlock Name = "LogOutput"
-                           Text = "{Binding LogOutput}"
-                           FontSize = "12" />
-            </StackPanel>
-        </ScrollViewer>
+
+    <Window.Resources>
+        <view:StringToBitmapConverter x:Key="StringToBitmapConverter"/>
+    </Window.Resources>
+
+    <Window.DataTemplates>
+        <DataTemplate DataType="{x:Type vm:CardRepresentation}">
+            <Border>
+                <Image Source = "{Binding ImageName, Converter={StaticResource StringToBitmapConverter}}"
+                       Width = "100"
+                       Height = "140"
+                       Stretch = "Uniform" />
+            </Border>
+        </DataTemplate>
+    </Window.DataTemplates>
+
+    <ScrollViewer HorizontalScrollBarVisibility="Auto">
+        <StackPanel Orientation="Vertical" >
+            <ContentControl Content="{Binding TestCard}" />
+            <TextBlock Name = "LogOutput"
+                       Text = "{Binding LogOutput}"
+                       FontSize = "12" />
+        </StackPanel>
+    </ScrollViewer>
 </Window>

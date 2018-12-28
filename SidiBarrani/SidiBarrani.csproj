@@ -12,6 +12,11 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
+      <Content Include="Images\*.png">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+  </ItemGroup>
+  <ItemGroup>
     <PackageReference Include="Avalonia" Version="*"/>
     <PackageReference Include="Avalonia.Desktop" Version="*"/>
     <PackageReference Include="Avalonia.ReactiveUI" Version="*"/>

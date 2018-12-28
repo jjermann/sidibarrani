@@ -95,6 +95,12 @@ namespace SidiBarrani.ViewModel
             set { this.RaiseAndSetIfChanged(ref _logOutput, value); }
         }
 
+        public CardRepresentation TestCard {get;} = new CardRepresentation(new Card
+            {
+                CardRank = CardRank.Jack,
+                CardSuit = CardSuit.Spades
+            });
+
         public BoardViewModel()
         {
             Rules = new Rules();
