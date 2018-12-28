@@ -112,15 +112,7 @@ namespace SidiBarrani.ViewModel
             {
                 SpaceKeyObservable.OnNext(new object());
             });
-            var confirmTaskGenerator = new Func<Task>(() =>
-            {
-                return Task.Run(async () =>
-                {
-                    await SpaceKeyObservable.FirstAsync();
-                });
-            });
-
-            PlayerGroup = PlayerGroupFactory.CreatePlayerGroup(confirmTaskGenerator);
+            PlayerGroup = GetPlayerGroup();
             Rules = new Rules();
             LogOutput = "";
             SetupReactiveProperties();
@@ -191,6 +183,35 @@ namespace SidiBarrani.ViewModel
             this.WhenAnyValue(x => x.GameResult)
                 .Where(r => r!= null)
                 .Subscribe(r => LogOutput += "[GameResult] " + Environment.NewLine + r.ToString() + Environment.NewLine);
+        }
+
+        private PlayerGroup GetPlayerGroup()
+        {
+            var betActionTaskGenerator = new Func<PlayerContext, Task<BetAction>>(playerContext =>
+            {
+                return Task.Run(async () =>
+                {
+                    await SpaceKeyObservable.FirstAsync();
+                    return PlayerFactory.RandomBetActionGenerator(playerContext);
+                });
+            });
+            var playActionTaskGenerator = new Func<PlayerContext, Task<PlayAction>>(playerContext =>
+            {
+                return Task.Run(async () =>
+                {
+                    await SpaceKeyObservable.FirstAsync();
+                    return PlayerFactory.RandomPlayActionGenerator(playerContext);
+                });
+            });
+            var confirmTaskGenerator = new Func<Task>(() =>
+            {
+                return Task.Run(async () =>
+                {
+                    await SpaceKeyObservable.FirstAsync();
+                });
+            });
+
+            return PlayerGroupFactory.CreatePlayerGroup(betActionTaskGenerator, playActionTaskGenerator, confirmTaskGenerator);
         }
 
         private async void StartGame()

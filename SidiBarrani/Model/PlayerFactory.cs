@@ -9,20 +9,34 @@ namespace SidiBarrani.Model
 {
     public static class PlayerFactory
     {
-        //TODO
-        public static Player CreateHumanPlayer(string name, Func<Task> taskGenerator)
+        public static Player CreateHumanPlayer(
+            string name,
+            Func<PlayerContext, Task<BetAction>> betActionTaskGenerator,
+            Func<PlayerContext, Task<PlayAction>> playActionTaskGenerator,
+            Func<Task> confirmTaskGenerator)
         {
             var player = new Player
             {
                 Name = name,
-                BetActionGenerator = RandomBetActionGenerator,
-                PlayActionGenerator = RandomPlayActionGenerator,
-                ConfirmAction = GetConfirmActionFromTask(taskGenerator)
+                BetActionGenerator = GetFunctionFromTaskGenerator(betActionTaskGenerator),
+                PlayActionGenerator = GetFunctionFromTaskGenerator(playActionTaskGenerator),
+                ConfirmAction = GetActionFromTaskGenerator(confirmTaskGenerator)
             };
             return player;
         }
 
-        private static Action<PlayerContext> GetConfirmActionFromTask(Func<Task> taskGenerator)
+        private static Func<PlayerContext, T> GetFunctionFromTaskGenerator<T>(Func<PlayerContext, Task<T>> taskGenerator)
+        {
+            var fun = new Func<PlayerContext, T>(playerGroup => 
+            {
+                var task = taskGenerator(playerGroup);
+                var result = task.Result;
+                return result;
+            });
+            return fun;
+        }
+     
+        private static Action<PlayerContext> GetActionFromTaskGenerator(Func<Task> taskGenerator)
         {
             var action = new Action<PlayerContext>(playerGroup => 
             {
@@ -44,7 +58,7 @@ namespace SidiBarrani.Model
             return player;
         }
 
-        private static BetAction RandomBetActionGenerator(PlayerContext playerContext)
+        public static BetAction RandomBetActionGenerator(PlayerContext playerContext)
         {
             if (!playerContext.AvailableBetActions.Any()) {
                 return null;
@@ -68,7 +82,7 @@ namespace SidiBarrani.Model
             return randomAction;
         }
 
-        private static PlayAction RandomPlayActionGenerator(PlayerContext playerContext)
+        public static PlayAction RandomPlayActionGenerator(PlayerContext playerContext)
         {
             if (!playerContext.AvailablePlayActions.Any()) {
                 return null;

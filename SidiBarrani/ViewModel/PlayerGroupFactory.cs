@@ -8,9 +8,12 @@ namespace SidiBarrani.Model
 {
     public static class PlayerGroupFactory
     {
-        public static PlayerGroup CreatePlayerGroup(Func<Task> confirmTaskGenerator)
+        public static PlayerGroup CreatePlayerGroup(
+            Func<PlayerContext, Task<BetAction>> betActionTaskGenerator,
+            Func<PlayerContext, Task<PlayAction>> playActionTaskGenerator,
+            Func<Task> confirmTaskGenerator)
         {
-            var player1 = PlayerFactory.CreateHumanPlayer("Human1", confirmTaskGenerator);
+            var player1 = PlayerFactory.CreateHumanPlayer("Human1", betActionTaskGenerator, playActionTaskGenerator, confirmTaskGenerator);
             var player2 = PlayerFactory.CreateRandomPlayer("Random2");
             var team1 = Team.CreateTeam(player1, player2, "Team1");
             var player3 = PlayerFactory.CreateRandomPlayer("Random3");
