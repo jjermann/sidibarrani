@@ -103,26 +103,24 @@ namespace SidiBarrani.ViewModel
                 CardSuit = CardSuit.Spades
             });
 
-        // private ISubject<object> SpaceKeyObservable {get;}
-        // public ReactiveCommand<Unit, Unit> SpaceKeyCommand {get;}
+        private ISubject<object> SpaceKeyObservable {get;} = new Subject<object>();
+        public ReactiveCommand<Unit, Unit> SpaceKeyCommand {get;}
 
         public BoardViewModel()
         {
-            // SpaceKeyObservable = new Subject<object>();
-            // SpaceKeyCommand = ReactiveCommand.Create(() =>
-            // {
-            //     SpaceKeyObservable.OnNext(new object());
-            // });
-            // var confirmTaskGenerator = new Func<Task>(() =>
-            // {
-            //     return new Task(async () =>
-            //     {
-            //         await SpaceKeyObservable.FirstAsync();
-            //     });
-            // });
+            SpaceKeyCommand = ReactiveCommand.Create(() =>
+            {
+                SpaceKeyObservable.OnNext(new object());
+            });
+            var confirmTaskGenerator = new Func<Task>(() =>
+            {
+                return Task.Run(async () =>
+                {
+                    await SpaceKeyObservable.FirstAsync();
+                });
+            });
 
-            // PlayerGroup = PlayerGroupFactory.CreatePlayerGroup(confirmTaskGenerator);
-            PlayerGroup = PlayerGroupFactory.CreatePlayerGroup(null);
+            PlayerGroup = PlayerGroupFactory.CreatePlayerGroup(confirmTaskGenerator);
             Rules = new Rules();
             LogOutput = "";
             SetupReactiveProperties();

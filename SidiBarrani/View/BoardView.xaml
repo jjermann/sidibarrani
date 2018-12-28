@@ -23,10 +23,10 @@
         </DataTemplate>
     </Window.DataTemplates>
 
-    <!-- <Window.KeyBindings>
-        <KeyBinding Gesture="Space"
+    <Window.KeyBindings>
+        <KeyBinding Gesture="Up"
                     Command="{Binding SpaceKeyCommand}" />
-    </Window.KeyBindings> -->
+    </Window.KeyBindings>
 
     <ScrollViewer HorizontalScrollBarVisibility="Auto">
         <StackPanel Orientation="Vertical" >

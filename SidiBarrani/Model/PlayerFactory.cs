@@ -17,8 +17,7 @@ namespace SidiBarrani.Model
                 Name = name,
                 BetActionGenerator = RandomBetActionGenerator,
                 PlayActionGenerator = RandomPlayActionGenerator,
-                ConfirmAction = ImmediateConfirm
-                // ConfirmAction = GetConfirmActionFromTask(taskGenerator)
+                ConfirmAction = GetConfirmActionFromTask(taskGenerator)
             };
             return player;
         }
