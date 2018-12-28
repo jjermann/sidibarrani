@@ -12,31 +12,24 @@
 
     <Window.DataTemplates>
         <DataTemplate DataType="{x:Type vm:CardRepresentation}">
-            <Border Width = "400"
-                    Height = "400">
-                <TextBlock Text = "TEST"
-                           FontSize = "30" />
-            </Border>
-            <!-- <Border BorderBrush = "Black"
+            <Border BorderBrush = "Black"
                     BorderThickness = "1"
                     CornerRadius = "3"
                     Width = "100"
                     Height = "150">
                 <Image Source = "{Binding ImageSource, Converter={StaticResource StringToBitmapConverter}}"
                        Stretch = "Uniform" />
-            </Border> -->
+            </Border>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:TableRepresentation}">
-            <Border Width = "400"
-                    Height = "400">
-                <!-- <TextBlock Text = "TEST"
-                           FontSize = "30" /> -->
+            <StackPanel Orientation = "Horizontal"
+                        HorizontalAlignment = "Center"
+                        VerticalAlignment = "Center">
                 <ContentControl Content="{Binding MainCardRepresentation}" />
-                <!-- <ContentControl Content="{Binding MainCardRepresentation}" />
                 <ContentControl Content="{Binding RightCardRepresentation}" />
                 <ContentControl Content="{Binding OppositeCardRepresentation}" />
-                <ContentControl Content="{Binding LeftCardRepresentation}" /> -->
-            </Border>
+                <ContentControl Content="{Binding LeftCardRepresentation}" />
+            </StackPanel>
         </DataTemplate>
     </Window.DataTemplates>
 
@@ -53,7 +46,7 @@
                 <ImageBrush Source = "Images/table.jpg"
                             Stretch = "UniformToFill" />
             </Border.Background>
-            <ContentControl Content="{Binding StickRoundRepresentation}" />
+            <ContentControl Content="{Binding TableRepresentation}" />
         </Border>
         <ScrollViewer HorizontalScrollBarVisibility="Auto"
                       Padding="10">

@@ -1,11 +1,14 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DynamicData;
+using DynamicData.Binding;
+using ReactiveUI;
 
 namespace SidiBarrani.Model
 {
-    public class BetStage
+    public class BetStage : ReactiveObject
     {
         public BetStage(Rules rules, PlayerGroup playerGroup, Player initialPlayer)
         {
@@ -16,21 +19,28 @@ namespace SidiBarrani.Model
                 throw new ArgumentException();
             }
             BetActionSourceList = new SourceList<BetAction>();
-            BetActionList = BetActionSourceList.AsObservableList();
+            BetActionSourceList
+                .Connect()
+                .ToCollection()
+                .ToProperty(this, x => x.BetActionList, out _betActionList, new ReadOnlyCollection<BetAction>(new List<BetAction>()));
         }
         private Rules Rules {get;set;}
         public Player CurrentPlayer {get; private set;}
         private PlayerGroup PlayerGroup {get;}
-        public SourceList<BetAction> BetActionSourceList {get;}
-        public IObservableList<BetAction> BetActionList {get;}
+        private SourceList<BetAction> BetActionSourceList {get;}
+        private ObservableAsPropertyHelper<IReadOnlyCollection<BetAction>> _betActionList;
+        public IReadOnlyCollection<BetAction> BetActionList
+        {
+            get { return _betActionList.Value; }
+        }
 
         private BetAction GetLastBetBetAction()
         {
-            return BetActionSourceList.Items.LastOrDefault(b => b.Type == BetActionType.Bet);
+            return BetActionList.LastOrDefault(b => b.Type == BetActionType.Bet);
         }
         private BetAction GetLastNonPassBetAction()
         {
-            return BetActionSourceList.Items.LastOrDefault(b => b.Type != BetActionType.Pass);
+            return BetActionList.LastOrDefault(b => b.Type != BetActionType.Pass);
         }
 
         public BetResult GetBetResult()
@@ -99,10 +109,10 @@ namespace SidiBarrani.Model
 
         private IList<BetAction> GetFollowedBetActions(BetAction betAction)
         {
-            var betActionIndex = BetActionSourceList.Items.IndexOf(betAction);
+            var betActionIndex = BetActionList.IndexOf(betAction);
             var followUpCount = BetActionSourceList.Count - (betActionIndex+1);
             var followedActions = followUpCount > 0
-                ? BetActionSourceList.Items.ToList().GetRange(betActionIndex+1, followUpCount)
+                ? BetActionList.ToList().GetRange(betActionIndex+1, followUpCount)
                 : new List<BetAction>();
             return followedActions;
         }
@@ -241,7 +251,7 @@ namespace SidiBarrani.Model
 
         public override string ToString()
         {
-            var str = string.Join(Environment.NewLine, BetActionSourceList.Items.Select(a => $"BetAction: {a}"));
+            var str = string.Join(Environment.NewLine, BetActionList.Select(a => $"BetAction: {a}"));
             var betResult = GetBetResult();
             if (betResult != null)
             {

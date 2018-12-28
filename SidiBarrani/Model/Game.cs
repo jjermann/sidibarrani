@@ -1,8 +1,10 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace SidiBarrani.Model
@@ -15,12 +17,19 @@ namespace SidiBarrani.Model
             Rules = rules;
             PlayerGroup = playerGroup;
             RoundResultSourceList = new SourceList<RoundResult>();
-            RoundResultList = RoundResultSourceList.AsObservableList();
+            RoundResultSourceList
+                .Connect()
+                .ToCollection()
+                .ToProperty(this, x => x.RoundResultList, out _roundResultList, new ReadOnlyCollection<RoundResult>(new List<RoundResult>()));
         }
         private Rules Rules {get;}
         private PlayerGroup PlayerGroup {get;}
         private SourceList<RoundResult> RoundResultSourceList {get;}
-        public IObservableList<RoundResult> RoundResultList {get;}
+        private ObservableAsPropertyHelper<IReadOnlyCollection<RoundResult>> _roundResultList;
+        public IReadOnlyCollection<RoundResult> RoundResultList
+        {
+            get { return _roundResultList.Value; }
+        }
 
         private GameRound _gameRound;
         public GameRound GameRound
@@ -38,7 +47,7 @@ namespace SidiBarrani.Model
         public async Task<GameResult> ProcessGame()
         {
             var initialPlayer = PlayerGroup.GetRandomPlayer();
-            var gameResult = GetGameResult(Rules, PlayerGroup, RoundResultSourceList.Items.ToList());
+            var gameResult = GetGameResult(Rules, PlayerGroup, RoundResultList.ToList());
             while (gameResult == null)
             {
                 GameRound = new GameRound(Rules, PlayerGroup, initialPlayer);
@@ -47,7 +56,7 @@ namespace SidiBarrani.Model
                 GameRound = null;
                 RoundResultSourceList.Add(RoundResult);
                 initialPlayer = PlayerGroup.GetNextPlayer(initialPlayer);
-                gameResult = GetGameResult(Rules, PlayerGroup, RoundResultSourceList.Items.ToList());
+                gameResult = GetGameResult(Rules, PlayerGroup, RoundResultList.ToList());
             }
             return gameResult;
         }

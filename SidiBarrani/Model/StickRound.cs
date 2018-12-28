@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace SidiBarrani.Model
@@ -19,13 +21,13 @@ namespace SidiBarrani.Model
             PlayActionSourceList
                 .Connect()
                 .ToCollection()
-                .ToProperty(this, x => x.PlayActionList, out _playActionList, null);
+                .ToProperty(this, x => x.PlayActionList, out _playActionList, new ReadOnlyCollection<PlayAction>(new List<PlayAction>()));
         }
 
         private Rules Rules {get;set;}
         private PlayerGroup PlayerGroup {get;}
         private PlayType PlayType {get;}
-        public SourceList<PlayAction> PlayActionSourceList {get;}
+        private SourceList<PlayAction> PlayActionSourceList {get;}
         private ObservableAsPropertyHelper<IReadOnlyCollection<PlayAction>> _playActionList;
         public IReadOnlyCollection<PlayAction> PlayActionList
         {
@@ -38,7 +40,7 @@ namespace SidiBarrani.Model
             get { return _currentPlayer; }
             private set { this.RaiseAndSetIfChanged(ref _currentPlayer, value); }
         }
-        public CardSuit? StickSuit => PlayActionSourceList.Items.FirstOrDefault()?.Card.CardSuit;
+        public CardSuit? StickSuit => PlayActionList.FirstOrDefault()?.Card.CardSuit;
 
         private CardComparer GetCardComparer()
         {
@@ -53,7 +55,7 @@ namespace SidiBarrani.Model
         {
             var stickPile = new StickPile
             {
-                Cards = PlayActionSourceList.Items.Select(a => a.Card).ToList()
+                Cards = PlayActionList.Select(a => a.Card).ToList()
             };
             return stickPile;
         }
@@ -64,8 +66,7 @@ namespace SidiBarrani.Model
             {
                 return null;
             }
-            var winner = PlayActionSourceList
-                .Items
+            var winner = PlayActionList
                 .OrderByDescending(a => a.Card, GetCardComparer())
                 .First()
                 .Player;
@@ -92,8 +93,7 @@ namespace SidiBarrani.Model
                 return allHandPlayActionList;
             }
             var cardComparer = GetCardComparer();
-            var highestPlayedCard = PlayActionSourceList
-                .Items
+            var highestPlayedCard = PlayActionList
                 .OrderByDescending(a => a.Card, cardComparer)
                 .Select(a => a.Card)
                 .First();

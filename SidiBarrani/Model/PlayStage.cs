@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using DynamicData;
+using DynamicData.Binding;
 using ReactiveUI;
 
 namespace SidiBarrani.Model
@@ -14,7 +16,11 @@ namespace SidiBarrani.Model
             PlayerGroup = playerGroup;
             PlayType = playType;
             StickResultSourceList = new SourceList<StickResult>();
-            StickResultList = StickResultSourceList.AsObservableList();
+            StickResultSourceList
+                .Connect()
+                .ToCollection()
+                .ToProperty(this, x => x.StickResultList, out _stickResultList, new ReadOnlyCollection<StickResult>(new List<StickResult>()));
+
             CurrentStickRound = new StickRound(Rules, PlayerGroup, initialPlayer, PlayType);
         }
 
@@ -22,7 +28,11 @@ namespace SidiBarrani.Model
         private PlayerGroup PlayerGroup {get;}
         private PlayType PlayType {get;}
         private SourceList<StickResult> StickResultSourceList {get;}
-        public IObservableList<StickResult> StickResultList {get;}
+        private ObservableAsPropertyHelper<IReadOnlyCollection<StickResult>> _stickResultList;
+        public IReadOnlyCollection<StickResult> StickResultList
+        {
+            get { return _stickResultList.Value; }
+        }
 
         private StickRound _stickRound;
         public StickRound CurrentStickRound
@@ -48,8 +58,7 @@ namespace SidiBarrani.Model
             var playerResultDictionary = PlayerGroup
                 .GetPlayerList()
                 .ToDictionary(p => p, p => {
-                    var wonCards = StickResultSourceList
-                        .Items
+                    var wonCards = StickResultList
                         .Where(r => r.Winner == p)
                         .SelectMany(r => r.StickPile.Cards)
                         .ToList();
@@ -111,7 +120,7 @@ namespace SidiBarrani.Model
             var team2Amount = teamResultDictionary[PlayerGroup.Team2]
                 .Select(c => c.GetValue(PlayType))
                 .Sum();
-            var lastStickTeam = StickResultSourceList.Items.Last().Winner.Team;
+            var lastStickTeam = StickResultList.Last().Winner.Team;
             if (lastStickTeam == PlayerGroup.Team1)
             {
                 team1Amount += 5;
