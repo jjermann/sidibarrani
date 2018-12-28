@@ -16,14 +16,21 @@ namespace SidiBarrani.Model
             PlayType = playType;
 
             PlayActionSourceList = new SourceList<PlayAction>();
-            PlayActionList = PlayActionSourceList.AsObservableList();
+            PlayActionSourceList
+                .Connect()
+                .ToCollection()
+                .ToProperty(this, x => x.PlayActionList, out _playActionList, null);
         }
 
         private Rules Rules {get;set;}
         private PlayerGroup PlayerGroup {get;}
         private PlayType PlayType {get;}
-        private SourceList<PlayAction> PlayActionSourceList {get;}
-        public IObservableList<PlayAction> PlayActionList {get;}
+        public SourceList<PlayAction> PlayActionSourceList {get;}
+        private ObservableAsPropertyHelper<IReadOnlyCollection<PlayAction>> _playActionList;
+        public IReadOnlyCollection<PlayAction> PlayActionList
+        {
+            get { return _playActionList.Value; }
+        }
 
         private Player _currentPlayer;
         public Player CurrentPlayer

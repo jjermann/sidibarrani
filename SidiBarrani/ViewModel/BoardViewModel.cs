@@ -89,7 +89,13 @@ namespace SidiBarrani.ViewModel
         {
             get { return _currentPlayAction.Value; }
         }
-        
+        private TableRepresentation _tableRepresentation;
+        public TableRepresentation TableRepresentation
+        {
+            get { return _tableRepresentation; }
+            set { this.RaiseAndSetIfChanged(ref _tableRepresentation, value); }
+        }
+
         private string _logOutput;
         public string LogOutput
         {
@@ -157,11 +163,6 @@ namespace SidiBarrani.ViewModel
 
         private void SubscribeToReactiveProperties()
         {
-            // var roundResultSubscription = Game.RoundResultList
-            //     .Connect()
-            //     .SelectMany(cs => cs)
-            //     .Select(c => c.Item.Current)
-            //     .Subscribe(s => LogOutput += s.ToString());
             this.WhenAnyValue(x => x.CurrentBetAction)
                 .Where(r => r!= null)
                 .Subscribe(r => LogOutput += "[Bet] " + r.ToString() + Environment.NewLine);
@@ -217,8 +218,11 @@ namespace SidiBarrani.ViewModel
         private async void StartGame()
         {
             Game = new Game(Rules, PlayerGroup);
+            TableRepresentation = new TableRepresentation(Game, PlayerGroup.GetPlayerList());
             GameResult = await Game.ProcessGame();
             await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
+            TableRepresentation = null;
+            Game = null;
         }
     }
 }

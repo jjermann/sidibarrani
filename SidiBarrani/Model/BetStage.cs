@@ -21,7 +21,7 @@ namespace SidiBarrani.Model
         private Rules Rules {get;set;}
         public Player CurrentPlayer {get; private set;}
         private PlayerGroup PlayerGroup {get;}
-        private SourceList<BetAction> BetActionSourceList {get;}
+        public SourceList<BetAction> BetActionSourceList {get;}
         public IObservableList<BetAction> BetActionList {get;}
 
         private BetAction GetLastBetBetAction()

@@ -12,7 +12,7 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-      <Content Include="Images\*.png">
+      <Content Include="Images\*.*">
           <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
       </Content>
   </ItemGroup>

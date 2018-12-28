@@ -3,8 +3,8 @@
         xmlns:view="clr-namespace:SidiBarrani.View"
         xmlns:vm="clr-namespace:SidiBarrani.ViewModel"
         Title="BoardView"
-        Width="800"
-        Height="600">
+        Width="1500"
+        Height="1000">
 
     <Window.Resources>
         <view:StringToBitmapConverter x:Key="StringToBitmapConverter"/>
@@ -12,28 +12,56 @@
 
     <Window.DataTemplates>
         <DataTemplate DataType="{x:Type vm:CardRepresentation}">
-            <Border BorderBrush = "Black"
+            <Border Width = "400"
+                    Height = "400">
+                <TextBlock Text = "TEST"
+                           FontSize = "30" />
+            </Border>
+            <!-- <Border BorderBrush = "Black"
                     BorderThickness = "1"
                     CornerRadius = "3"
                     Width = "100"
                     Height = "150">
                 <Image Source = "{Binding ImageSource, Converter={StaticResource StringToBitmapConverter}}"
                        Stretch = "Uniform" />
+            </Border> -->
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:TableRepresentation}">
+            <Border Width = "400"
+                    Height = "400">
+                <!-- <TextBlock Text = "TEST"
+                           FontSize = "30" /> -->
+                <ContentControl Content="{Binding MainCardRepresentation}" />
+                <!-- <ContentControl Content="{Binding MainCardRepresentation}" />
+                <ContentControl Content="{Binding RightCardRepresentation}" />
+                <ContentControl Content="{Binding OppositeCardRepresentation}" />
+                <ContentControl Content="{Binding LeftCardRepresentation}" /> -->
             </Border>
         </DataTemplate>
     </Window.DataTemplates>
 
     <Window.KeyBindings>
-        <KeyBinding Gesture="Up"
-                    Command="{Binding SpaceKeyCommand}" />
+        <KeyBinding Gesture = "Up"
+                    Command = "{Binding SpaceKeyCommand}" />
     </Window.KeyBindings>
 
-    <ScrollViewer HorizontalScrollBarVisibility="Auto">
-        <StackPanel Orientation="Vertical" >
-            <ContentControl Content="{Binding TestCard}" />
-            <TextBlock Name = "LogOutput"
-                       Text = "{Binding LogOutput}"
-                       FontSize = "12" />
-        </StackPanel>
-    </ScrollViewer>
+    <StackPanel Orientation="Horizontal"
+                VerticalAlignment="Top">
+        <Border Width = "1000"
+                Height = "1000">
+            <Border.Background>
+                <ImageBrush Source = "Images/table.jpg"
+                            Stretch = "UniformToFill" />
+            </Border.Background>
+            <ContentControl Content="{Binding StickRoundRepresentation}" />
+        </Border>
+        <ScrollViewer HorizontalScrollBarVisibility="Auto"
+                      Padding="10">
+            <StackPanel Orientation="Vertical" >
+                <TextBlock Name = "LogOutput"
+                           Text = "{Binding LogOutput}"
+                           FontSize = "12" />
+            </StackPanel>
+        </ScrollViewer>
+    </StackPanel>
 </Window>
