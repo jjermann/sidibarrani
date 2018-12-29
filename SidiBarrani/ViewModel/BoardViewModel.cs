@@ -89,8 +89,8 @@ namespace SidiBarrani.ViewModel
         {
             get { return _currentPlayAction.Value; }
         }
-        private TableRepresentation _tableRepresentation;
-        public TableRepresentation TableRepresentation
+        private GameRepresentation _tableRepresentation;
+        public GameRepresentation TableRepresentation
         {
             get { return _tableRepresentation; }
             set { this.RaiseAndSetIfChanged(ref _tableRepresentation, value); }
@@ -218,7 +218,7 @@ namespace SidiBarrani.ViewModel
         private async void StartGame()
         {
             Game = new Game(Rules, PlayerGroup);
-            TableRepresentation = new TableRepresentation(Game, PlayerGroup.GetPlayerList());
+            TableRepresentation = new GameRepresentation(Game, PlayerGroup.GetPlayerList());
             GameResult = await Game.ProcessGame();
             await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
             TableRepresentation = null;

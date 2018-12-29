@@ -23,14 +23,30 @@
                        Stretch = "UniformToFill" />
             </Border>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:TableRepresentation}">
+        <DataTemplate DataType="{x:Type vm:HandRepresentation}">
             <Grid>
-                <Border BorderBrush = "Black"
-                        BorderThickness = "2"
-                        Width = "600"
-                        Height = "600"
-                        HorizontalAlignment = "Center"
-                        VerticalAlignment = "Center">
+                <ItemsControl Items = "{Binding CardsInHand}">
+     	    		<ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment = "Center"
+                                        VerticalAlignment = "Center"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:MainBoardRepresentation}">
+            <Border BorderBrush = "Black"
+                    BorderThickness = "0"
+                    CornerRadius = "3"
+                    Width = "600"
+                    Height = "600"
+                    Padding = "10">
+                <Border.Background>
+                    <ImageBrush Source = "Images/mainBoard.jpg"
+                                Stretch = "UniformToFill" />
+                </Border.Background>
                 <Grid>
                     <ContentControl Content = "{Binding MainCardRepresentation}"
                                     HorizontalAlignment = "Center"
@@ -45,28 +61,17 @@
                                     HorizontalAlignment = "Left"
                                     VerticalAlignment = "Center" />
                 </Grid>
-                </Border>
-                <!-- <StackPanel Orientation = "Horizontal"
-                            HorizontalAlignment = "Center"
-                            VerticalAlignment = "Center">
-                    <ContentControl Content = "{Binding MainCardRepresentation}" />
-                    <ContentControl Content = "{Binding RightCardRepresentation}" />
-                    <ContentControl Content = "{Binding OppositeCardRepresentation}" />
-                    <ContentControl Content = "{Binding LeftCardRepresentation}" />
-                </StackPanel> -->
-                <DockPanel>
-                    <ItemsControl DockPanel.Dock = "Bottom"
-                                  Items = "{Binding MainCardsInHand}"
-                                  Margin = "0,0,0,20">
-          	    		<ItemsControl.ItemsPanel>
-                            <ItemsPanelTemplate>
-                                <StackPanel Orientation="Horizontal"
-                                            HorizontalAlignment = "Center"
-                                            VerticalAlignment = "Bottom"/>
-                            </ItemsPanelTemplate>
-                        </ItemsControl.ItemsPanel>
-                    </ItemsControl>
-                </DockPanel>
+            </Border>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:GameRepresentation}">
+            <Grid>
+                <ContentControl HorizontalAlignment = "Center"
+                                VerticalAlignment = "Center"
+                                Content = "{Binding MainBoardRepresentation}" />
+                <ContentControl HorizontalAlignment = "Center"
+                                VerticalAlignment = "Bottom"
+                                Margin = "0,0,0,20"
+                                Content = "{Binding MainHandRepresentation}" />
             </Grid>
         </DataTemplate>
     </Window.DataTemplates>
@@ -81,7 +86,7 @@
         <Border Width = "1000"
                 Height = "1000">
             <Border.Background>
-                <ImageBrush Source = "Images/table.jpg"
+                <ImageBrush Source = "Images/background.jpg"
                             Stretch = "UniformToFill" />
             </Border.Background>
             <ContentControl Content = "{Binding TableRepresentation}" />
