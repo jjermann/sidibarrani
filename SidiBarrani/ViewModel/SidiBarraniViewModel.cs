@@ -13,7 +13,7 @@ using System.Reactive.Subjects;
 
 namespace SidiBarrani.ViewModel
 {
-    public class BoardViewModel : ReactiveObject
+    public class SidiBarraniViewModel : ReactiveObject
     {
         private Rules _rules;
         public Rules Rules
@@ -89,11 +89,11 @@ namespace SidiBarrani.ViewModel
         {
             get { return _currentPlayAction.Value; }
         }
-        private GameRepresentation _tableRepresentation;
-        public GameRepresentation TableRepresentation
+        private GameRepresentation _gameRepresentation;
+        public GameRepresentation GameRepresentation
         {
-            get { return _tableRepresentation; }
-            set { this.RaiseAndSetIfChanged(ref _tableRepresentation, value); }
+            get { return _gameRepresentation; }
+            set { this.RaiseAndSetIfChanged(ref _gameRepresentation, value); }
         }
 
         private string _logOutput;
@@ -112,7 +112,7 @@ namespace SidiBarrani.ViewModel
         private ISubject<object> SpaceKeyObservable {get;} = new Subject<object>();
         public ReactiveCommand<Unit, Unit> SpaceKeyCommand {get;}
 
-        public BoardViewModel()
+        public SidiBarraniViewModel()
         {
             SpaceKeyCommand = ReactiveCommand.Create(() =>
             {
@@ -218,10 +218,10 @@ namespace SidiBarrani.ViewModel
         private async void StartGame()
         {
             Game = new Game(Rules, PlayerGroup);
-            TableRepresentation = new GameRepresentation(Game, PlayerGroup.GetPlayerList());
+            GameRepresentation = new GameRepresentation(Game, PlayerGroup.GetPlayerList());
             GameResult = await Game.ProcessGame();
             await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
-            TableRepresentation = null;
+            GameRepresentation = null;
             Game = null;
         }
     }

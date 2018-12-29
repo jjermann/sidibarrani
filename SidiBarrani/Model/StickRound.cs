@@ -139,5 +139,10 @@ namespace SidiBarrani.Model
             CurrentPlayer = PlayerGroup.GetNextPlayer(CurrentPlayer);
             return true;
         }
+
+        public void ResetCardContext()
+        {
+            PlayActionSourceList.Clear();
+        }
     }
 }

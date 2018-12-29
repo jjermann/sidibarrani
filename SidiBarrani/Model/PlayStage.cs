@@ -167,6 +167,11 @@ namespace SidiBarrani.Model
             StickResult = stickResult;
             StickResultSourceList.Add(stickResult);
             stickResult.Winner.Context.WonSticks.Add(stickResult.StickPile);
+        }
+
+        public void UpdateStickRound(StickResult stickResult)
+        {
+            CurrentStickRound.ResetCardContext();
             CurrentStickRound = IsOver()
                 ? null
                 : new StickRound(Rules, PlayerGroup, stickResult.Winner, PlayType);

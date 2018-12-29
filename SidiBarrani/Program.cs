@@ -12,7 +12,7 @@ namespace SidiBarrani
             AppBuilder.Configure<App>()
                 .UsePlatformDetect()
                 .UseReactiveUI()
-                .Start<BoardView>(() => new BoardViewModel());
+                .Start<BoardView>(() => new SidiBarraniViewModel());
         }
     }
 }

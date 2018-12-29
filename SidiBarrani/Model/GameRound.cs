@@ -69,6 +69,7 @@ namespace SidiBarrani.Model
             PlayStage = new PlayStage(Rules, PlayerGroup, InitialPlayer, BetResult.Bet.PlayType);
             PlayResult = await ProcessPlaying(PlayStage, PlayerGroup);
             await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
+
             PlayStage = null;
             var roundResult = DetermineRoundResult(Rules, PlayerGroup, BetResult, PlayResult);
             return roundResult;
@@ -96,6 +97,7 @@ namespace SidiBarrani.Model
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(betStage.CurrentPlayer);
                 UpdatePlayerContext(playerList, betStage);
                 var betAction = await Player.GetNextBetAction(playerList);
+                ResetPlayerActionContext(playerGroup.GetPlayerList());
                 BetAction = betAction;
                 betStage.AddBetActionAndProceed(betAction);
                 betResult = betStage.GetBetResult();
@@ -111,12 +113,14 @@ namespace SidiBarrani.Model
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(playStage.CurrentPlayer);
                 UpdatePlayerContext(playerList, playStage);
                 var playAction = await Player.GetNextPlayAction(playerList);
+                ResetPlayerActionContext(playerList);
                 PlayAction = playAction;
                 var stickResult = playStage.AddPlayActionAndProceed(playAction);
                 if (stickResult != null)
                 {
-                    await Player.GetPlayerConfirm(playerList);
                     playStage.ProcessStickResult(stickResult);
+                    await Player.GetPlayerConfirm(playerList);
+                    playStage.UpdateStickRound(stickResult);
                 }
                 playResult = playStage.GetPlayResult();
             }
@@ -192,12 +196,12 @@ namespace SidiBarrani.Model
 
         private static void UpdatePlayerContext(IList<Player> playerList, BetStage betStage)
         {
+            ResetPlayerActionContext(playerList);
             var validActionDictionary = betStage
                 .GetValidBetActions()
                 .GroupBy(a => a.Player)
                 .ToDictionary(g => g.Key, g => g.ToList());
             foreach (var player in playerList) {
-                player.Context.AvailableBetActions.Clear();
                 var hasActions = validActionDictionary.ContainsKey(player);
                 if (hasActions)
                 {
@@ -207,14 +211,22 @@ namespace SidiBarrani.Model
             }
         }
 
+        private static void ResetPlayerActionContext(IList<Player> playerList)
+        {
+            foreach (var player in playerList) {
+                player.Context.AvailableBetActions.Clear();
+                player.Context.AvailablePlayActions.Clear();
+            }
+        }
+
         private static void UpdatePlayerContext(IList<Player> playerList, PlayStage playStage)
         {
+            ResetPlayerActionContext(playerList);
             var validActionDictionary = playStage
                 .GetValidPlayActions()
                 .GroupBy(a => a.Player)
                 .ToDictionary(g => g.Key, g => g.ToList());
             foreach (var player in playerList) {
-                player.Context.AvailablePlayActions.Clear();
                 var hasActions = validActionDictionary.ContainsKey(player);
                 if (hasActions)
                 {
