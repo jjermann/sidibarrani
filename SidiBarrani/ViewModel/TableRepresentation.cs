@@ -32,10 +32,23 @@ namespace SidiBarrani.ViewModel
         public StickRound StickRound {
             get { return _stickRound.Value; }
         }
-        private ObservableAsPropertyHelper<IReadOnlyCollection<CardRepresentation>> _cardsInHand;
-        public IReadOnlyCollection<CardRepresentation> CardsInHand {
-            get { return _cardsInHand.Value; }
+        private ObservableAsPropertyHelper<IReadOnlyCollection<CardRepresentation>> _mainCardsInHand;
+        public IReadOnlyCollection<CardRepresentation> MainCardsInHand {
+            get { return _mainCardsInHand.Value; }
         }
+        private ObservableAsPropertyHelper<IReadOnlyCollection<CardRepresentation>> _leftCardsInHand;
+        public IReadOnlyCollection<CardRepresentation> LeftCardsInHand {
+            get { return _leftCardsInHand.Value; }
+        }
+        private ObservableAsPropertyHelper<IReadOnlyCollection<CardRepresentation>> _rightCardsInHand;
+        public IReadOnlyCollection<CardRepresentation> RightCardsInHand {
+            get { return _rightCardsInHand.Value; }
+        }
+        private ObservableAsPropertyHelper<IReadOnlyCollection<CardRepresentation>> _oppositeCardsInHand;
+        public IReadOnlyCollection<CardRepresentation> OppositeCardsInHand {
+            get { return _oppositeCardsInHand.Value; }
+        }
+
         private Game Game {get;}
         private IList<Player> PlayerList {get;}
         private TableRepresentation() { }
@@ -71,7 +84,22 @@ namespace SidiBarrani.ViewModel
                 .Connect()
                 .Transform(c => new CardRepresentation(c))
                 .ToCollection()
-                .ToProperty(this, x => x.CardsInHand, out _cardsInHand, new ReadOnlyCollection<CardRepresentation>(new List<CardRepresentation>()));
+                .ToProperty(this, x => x.MainCardsInHand, out _mainCardsInHand, new ReadOnlyCollection<CardRepresentation>(new List<CardRepresentation>()));
+            leftPlayer.Context.CardsInHand
+                .Connect()
+                .Transform(c => new CardRepresentation(c) { IsFaceUp = false })
+                .ToCollection()
+                .ToProperty(this, x => x.LeftCardsInHand, out _leftCardsInHand, new ReadOnlyCollection<CardRepresentation>(new List<CardRepresentation>()));
+            rightPlayer.Context.CardsInHand
+                .Connect()
+                .Transform(c => new CardRepresentation(c) { IsFaceUp = false })
+                .ToCollection()
+                .ToProperty(this, x => x.RightCardsInHand, out _rightCardsInHand, new ReadOnlyCollection<CardRepresentation>(new List<CardRepresentation>()));
+            oppositePlayer.Context.CardsInHand
+                .Connect()
+                .Transform(c => new CardRepresentation(c) { IsFaceUp = false })
+                .ToCollection()
+                .ToProperty(this, x => x.OppositeCardsInHand, out _oppositeCardsInHand, new ReadOnlyCollection<CardRepresentation>(new List<CardRepresentation>()));
         }
     }
 }

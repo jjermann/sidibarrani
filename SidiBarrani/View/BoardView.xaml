@@ -8,32 +8,55 @@
 
     <Window.Resources>
         <view:StringToBitmapConverter x:Key = "StringToBitmapConverter"/>
+        <view:DoubleToThicknessConverter x:Key = "DoubleToThicknessConverter"/>
+        <view:StringToBrushConverter x:Key = "StringToBrushConverter"/>
     </Window.Resources>
 
     <Window.DataTemplates>
         <DataTemplate DataType = "{x:Type vm:CardRepresentation}">
-            <Border BorderBrush = "Black"
-                    BorderThickness = "1"
+            <Border BorderBrush = "{Binding BorderColor, Converter={StaticResource StringToBrushConverter}}"
+                    BorderThickness = "{Binding BorderThickness, Converter={StaticResource DoubleToThicknessConverter}}"
                     CornerRadius = "3"
                     Width = "100"
                     Height = "150">
                 <Image Source = "{Binding ImageSource, Converter={StaticResource StringToBitmapConverter}}"
-                       Stretch = "Uniform" />
+                       Stretch = "UniformToFill" />
             </Border>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:TableRepresentation}">
             <Grid>
-                <StackPanel Orientation = "Horizontal"
+                <Border BorderBrush = "Black"
+                        BorderThickness = "2"
+                        Width = "600"
+                        Height = "600"
+                        HorizontalAlignment = "Center"
+                        VerticalAlignment = "Center">
+                <Grid>
+                    <ContentControl Content = "{Binding MainCardRepresentation}"
+                                    HorizontalAlignment = "Center"
+                                    VerticalAlignment = "Bottom" />
+                    <ContentControl Content = "{Binding RightCardRepresentation}"
+                                    HorizontalAlignment = "Right"
+                                    VerticalAlignment = "Center" />
+                    <ContentControl Content = "{Binding OppositeCardRepresentation}"
+                                    HorizontalAlignment = "Center"
+                                    VerticalAlignment = "Top" />
+                    <ContentControl Content = "{Binding LeftCardRepresentation}"
+                                    HorizontalAlignment = "Left"
+                                    VerticalAlignment = "Center" />
+                </Grid>
+                </Border>
+                <!-- <StackPanel Orientation = "Horizontal"
                             HorizontalAlignment = "Center"
                             VerticalAlignment = "Center">
                     <ContentControl Content = "{Binding MainCardRepresentation}" />
                     <ContentControl Content = "{Binding RightCardRepresentation}" />
                     <ContentControl Content = "{Binding OppositeCardRepresentation}" />
                     <ContentControl Content = "{Binding LeftCardRepresentation}" />
-                </StackPanel>
+                </StackPanel> -->
                 <DockPanel>
                     <ItemsControl DockPanel.Dock = "Bottom"
-                                  Items = "{Binding CardsInHand}"
+                                  Items = "{Binding MainCardsInHand}"
                                   Margin = "0,0,0,20">
           	    		<ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>

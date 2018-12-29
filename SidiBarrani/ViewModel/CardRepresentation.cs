@@ -11,13 +11,18 @@ namespace SidiBarrani.ViewModel
         private string CardImageSource {get;}
         private string BackImageSource {get;}
 
-        private bool _isHighlighted;
-        public bool IsHighlighted
+        private string _borderColor;
+        public string BorderColor
         {
-            get {return _isHighlighted;}
-            set {this.RaiseAndSetIfChanged(ref _isHighlighted, value);}
+            get {return _borderColor;}
+            set {this.RaiseAndSetIfChanged(ref _borderColor, value);}
         }
-
+        private double _borderThickness;
+        public double BorderThickness
+        {
+            get {return _borderThickness;}
+            set {this.RaiseAndSetIfChanged(ref _borderThickness, value);}
+        }
         private bool _isFaceUp;
         public bool IsFaceUp
         {
@@ -39,7 +44,10 @@ namespace SidiBarrani.ViewModel
             var rankName = card.CardRank.ToString().ToLowerInvariant();
             CardImageSource = Path.Combine(@"Images", $"{suitName}_{rankName}.png");
             BackImageSource = Path.Combine(@"Images", "card_back.png");
+
             IsFaceUp = true;
+            BorderColor = "Black";
+            BorderThickness = 1;
 
             this.WhenAnyValue(x => x.IsFaceUp)
                 .Select(isFaceUp => isFaceUp
