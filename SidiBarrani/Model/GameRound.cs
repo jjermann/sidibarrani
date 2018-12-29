@@ -40,6 +40,7 @@ namespace SidiBarrani.Model
             get { return _playStage; }
             private set { this.RaiseAndSetIfChanged(ref _playStage, value); }
         }
+        // TODO: Make this readonly
         private PlayAction _playAction;
         public PlayAction PlayAction
         {

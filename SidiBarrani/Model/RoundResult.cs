@@ -8,6 +8,7 @@ namespace SidiBarrani.Model
         public PlayerGroup PlayerGroup {get;set;}
         public int Team1FinalScore {get; set;}
         public int Team2FinalScore {get; set;}
+
         public override string ToString()
         {
             var str = $"Round Winner: {WinningTeam}" + Environment.NewLine

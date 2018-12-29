@@ -4,6 +4,10 @@ namespace SidiBarrani.Model
 {
     public class ScoreAmount : IComparable<ScoreAmount>, IEquatable<ScoreAmount>
     {
+        public int Amount {get; set;}
+        public bool IsMatch {get;}
+        public bool IsGeneral {get;}
+
         private ScoreAmount() { }
         public ScoreAmount(int amount)
         {
@@ -30,9 +34,6 @@ namespace SidiBarrani.Model
             IsMatch = isMatch;
             IsGeneral = isGeneral;
         }
-        public int Amount {get; set;}
-        public bool IsMatch {get;}
-        public bool IsGeneral {get;}
 
         public int GetRoundedAmount()
         {

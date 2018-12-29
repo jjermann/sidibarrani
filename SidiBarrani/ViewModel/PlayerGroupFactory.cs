@@ -25,6 +25,6 @@ namespace SidiBarrani.Model
             var team2 = Team.CreateTeam(player3, player4, "Team2");
             var playerGroup = new PlayerGroup(team1, team2);
             return playerGroup;
-        }        
+        }
     }
 }

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -10,20 +11,6 @@ namespace SidiBarrani.Model
 {
     public class StickRound : ReactiveObject
     {
-        private StickRound() { }
-        public StickRound(Rules rules, PlayerGroup playerGroup, Player initialPlayer, PlayType playType) {
-            Rules = rules;
-            PlayerGroup = playerGroup;
-            CurrentPlayer = initialPlayer;
-            PlayType = playType;
-
-            PlayActionSourceList = new SourceList<PlayAction>();
-            PlayActionSourceList
-                .Connect()
-                .ToCollection()
-                .ToProperty(this, x => x.PlayActionList, out _playActionList, new ReadOnlyCollection<PlayAction>(new List<PlayAction>()));
-        }
-
         private Rules Rules {get;set;}
         private PlayerGroup PlayerGroup {get;}
         private PlayType PlayType {get;}
@@ -40,7 +27,28 @@ namespace SidiBarrani.Model
             get { return _currentPlayer; }
             private set { this.RaiseAndSetIfChanged(ref _currentPlayer, value); }
         }
-        public CardSuit? StickSuit => PlayActionList.FirstOrDefault()?.Card.CardSuit;
+        private ObservableAsPropertyHelper<CardSuit?> _stickSuit;
+        public CardSuit? StickSuit
+        {
+            get { return _stickSuit.Value; }
+        }
+
+        private StickRound() { }
+        public StickRound(Rules rules, PlayerGroup playerGroup, Player initialPlayer, PlayType playType) {
+            Rules = rules;
+            PlayerGroup = playerGroup;
+            CurrentPlayer = initialPlayer;
+            PlayType = playType;
+
+            PlayActionSourceList = new SourceList<PlayAction>();
+            PlayActionSourceList
+                .Connect()
+                .ToCollection()
+                .ToProperty(this, x => x.PlayActionList, out _playActionList, new ReadOnlyCollection<PlayAction>(new List<PlayAction>()));
+            this.WhenAnyValue(x => x.PlayActionList)
+                .Select(playActionList => playActionList.FirstOrDefault()?.Card.CardSuit)
+                .ToProperty(this, x => x.StickSuit, out _stickSuit, null);
+        }
 
         private CardComparer GetCardComparer()
         {

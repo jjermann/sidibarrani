@@ -9,6 +9,7 @@ namespace SidiBarrani.Model
             Cards = new List<Card>();
         }
         public IList<Card> Cards {get;set;}
+
         public override string ToString()
         {
             return string.Join(", ", Cards.Select(c => c.ToString()).Reverse());

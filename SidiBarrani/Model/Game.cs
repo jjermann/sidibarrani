@@ -11,17 +11,6 @@ namespace SidiBarrani.Model
 {
     public class Game : ReactiveObject
     {
-        private Game() { }
-        public Game(Rules rules, PlayerGroup playerGroup)
-        {
-            Rules = rules;
-            PlayerGroup = playerGroup;
-            RoundResultSourceList = new SourceList<RoundResult>();
-            RoundResultSourceList
-                .Connect()
-                .ToCollection()
-                .ToProperty(this, x => x.RoundResultList, out _roundResultList, new ReadOnlyCollection<RoundResult>(new List<RoundResult>()));
-        }
         private Rules Rules {get;}
         private PlayerGroup PlayerGroup {get;}
         private SourceList<RoundResult> RoundResultSourceList {get;}
@@ -42,6 +31,18 @@ namespace SidiBarrani.Model
         {
             get { return _roundResult; }
             private set { this.RaiseAndSetIfChanged(ref _roundResult, value); }
+        }
+
+        private Game() { }
+        public Game(Rules rules, PlayerGroup playerGroup)
+        {
+            Rules = rules;
+            PlayerGroup = playerGroup;
+            RoundResultSourceList = new SourceList<RoundResult>();
+            RoundResultSourceList
+                .Connect()
+                .ToCollection()
+                .ToProperty(this, x => x.RoundResultList, out _roundResultList, new ReadOnlyCollection<RoundResult>(new List<RoundResult>()));
         }
 
         public async Task<GameResult> ProcessGame()

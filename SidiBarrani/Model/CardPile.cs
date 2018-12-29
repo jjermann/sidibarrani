@@ -6,6 +6,8 @@ namespace SidiBarrani.Model
 {
     public class CardPile
     {
+        private IList<Card> Cards {get;set;}
+
         public CardPile(IList<Card> cardList = null)
         {
             var cards = new List<Card>();
@@ -38,8 +40,6 @@ namespace SidiBarrani.Model
                 .ToList();
             return orderedCards;
         }
-        private IList<Card> Cards {get;set;}
-
         public static CardPile CreateFullCardPile()
         {
             var deck = new Deck();

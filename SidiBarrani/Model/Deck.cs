@@ -4,6 +4,8 @@ namespace SidiBarrani.Model
 {
     public class Deck
     {
+        public IList<Card> Cards {get; set;}
+
         public Deck()
         {
             Cards = new List<Card>
@@ -46,6 +48,5 @@ namespace SidiBarrani.Model
                 new Card {CardSuit = CardSuit.Clubs, CardRank = CardRank.Ace}
             };
         }
-        public IList<Card> Cards {get; set;}
     }
 }

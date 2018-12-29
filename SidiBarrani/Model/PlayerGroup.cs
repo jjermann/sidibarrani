@@ -6,19 +6,20 @@ namespace SidiBarrani.Model
 {
     public class PlayerGroup
     {
+        public Team Team1 {get;}
+        public Team Team2 {get;}
+
         private PlayerGroup() { }
         public PlayerGroup(Team team1, Team team2)
         {
             Team1 = team1;
             Team2 = team2;
         }
-        public Team Team1 {get;}
-        public Team Team2 {get;}
 
         public IList<Player> GetPlayerList()
         {
             var playerList = new List<Player>
-            {   
+            {
                 Team1.Player1,
                 Team2.Player1,
                 Team1.Player2,

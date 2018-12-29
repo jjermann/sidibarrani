@@ -58,6 +58,5 @@ namespace SidiBarrani.Model
             var str = $"{CardRank.ToString()} of {CardSuit.ToString()}";
             return str;
         }
-        
     }
 }

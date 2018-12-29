@@ -10,6 +10,16 @@ namespace SidiBarrani.Model
 {
     public class BetStage : ReactiveObject
     {
+        private Rules Rules {get;set;}
+        public Player CurrentPlayer {get; private set;}
+        private PlayerGroup PlayerGroup {get;}
+        private SourceList<BetAction> BetActionSourceList {get;}
+        private ObservableAsPropertyHelper<IReadOnlyCollection<BetAction>> _betActionList;
+        public IReadOnlyCollection<BetAction> BetActionList
+        {
+            get { return _betActionList.Value; }
+        }
+
         public BetStage(Rules rules, PlayerGroup playerGroup, Player initialPlayer)
         {
             Rules = rules;
@@ -23,15 +33,6 @@ namespace SidiBarrani.Model
                 .Connect()
                 .ToCollection()
                 .ToProperty(this, x => x.BetActionList, out _betActionList, new ReadOnlyCollection<BetAction>(new List<BetAction>()));
-        }
-        private Rules Rules {get;set;}
-        public Player CurrentPlayer {get; private set;}
-        private PlayerGroup PlayerGroup {get;}
-        private SourceList<BetAction> BetActionSourceList {get;}
-        private ObservableAsPropertyHelper<IReadOnlyCollection<BetAction>> _betActionList;
-        public IReadOnlyCollection<BetAction> BetActionList
-        {
-            get { return _betActionList.Value; }
         }
 
         private BetAction GetLastBetBetAction()
@@ -237,7 +238,7 @@ namespace SidiBarrani.Model
                 return true;
             }
             var validBetActions = GetValidBetActions();
-            if (!validBetActions.Contains(betAction)) 
+            if (!validBetActions.Contains(betAction))
             {
                 return false;
             }

@@ -28,7 +28,7 @@ namespace SidiBarrani.Model
 
         private static Func<PlayerContext, T> GetFunctionFromTaskGenerator<T>(Func<PlayerContext, Task<T>> taskGenerator)
         {
-            var fun = new Func<PlayerContext, T>(playerGroup => 
+            var fun = new Func<PlayerContext, T>(playerGroup =>
             {
                 var task = taskGenerator(playerGroup);
                 var result = task.Result;
@@ -36,10 +36,10 @@ namespace SidiBarrani.Model
             });
             return fun;
         }
-     
+
         private static Action<PlayerContext> GetActionFromTaskGenerator(Func<Task> taskGenerator)
         {
-            var action = new Action<PlayerContext>(playerGroup => 
+            var action = new Action<PlayerContext>(playerGroup =>
             {
                 var task = taskGenerator();
                 task.Wait();

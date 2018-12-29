@@ -12,19 +12,9 @@ namespace SidiBarrani.Model
 {
     public class Player : ReactiveObject
     {
-        public Player()
-        {
-            Context = new PlayerContext();
-            this.WhenAnyValue(x => x.BetActionGenerator)
-                .Select(g => ReactiveCommand.CreateFromTask(() => Task.Run(() => g(Context))))
-                .ToProperty(this, x => x.RequestBetCommand, out _requestBetCommand, null);
-            this.WhenAnyValue(x => x.PlayActionGenerator)
-                .Select(g => ReactiveCommand.CreateFromTask(() => Task.Run(() => g(Context))))
-                .ToProperty(this, x => x.RequestPlayCommand, out _requestPlayCommand, null);
-            this.WhenAnyValue(x => x.ConfirmAction)
-                .Select(g => ReactiveCommand.CreateFromTask(() => Task.Run(() => g(Context))))
-                .ToProperty(this, x => x.RequestConfirmCommand, out _requestConfirmCommand, null);
-        }
+        public string Name {get;set;}
+        public Team Team {get; set;}
+        public PlayerContext Context {get;set;}
 
         private ObservableAsPropertyHelper<ReactiveCommand<Unit, BetAction>> _requestBetCommand;
         public ReactiveCommand<Unit, BetAction> RequestBetCommand
@@ -60,9 +50,19 @@ namespace SidiBarrani.Model
             set { this.RaiseAndSetIfChanged(ref _confirmAction, value); }
         }
 
-        public string Name {get;set;}
-        public Team Team {get; set;}
-        public PlayerContext Context {get;set;}
+        public Player()
+        {
+            Context = new PlayerContext();
+            this.WhenAnyValue(x => x.BetActionGenerator)
+                .Select(g => ReactiveCommand.CreateFromTask(() => Task.Run(() => g(Context))))
+                .ToProperty(this, x => x.RequestBetCommand, out _requestBetCommand, null);
+            this.WhenAnyValue(x => x.PlayActionGenerator)
+                .Select(g => ReactiveCommand.CreateFromTask(() => Task.Run(() => g(Context))))
+                .ToProperty(this, x => x.RequestPlayCommand, out _requestPlayCommand, null);
+            this.WhenAnyValue(x => x.ConfirmAction)
+                .Select(g => ReactiveCommand.CreateFromTask(() => Task.Run(() => g(Context))))
+                .ToProperty(this, x => x.RequestConfirmCommand, out _requestConfirmCommand, null);
+        }
 
         public static async Task<BetAction> GetNextBetAction(IList<Player> playerList)
         {

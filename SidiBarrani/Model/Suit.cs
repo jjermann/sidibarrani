@@ -5,6 +5,6 @@ namespace SidiBarrani.Model
         Hearts,
         Spades,
         Diamonds,
-        Clubs 
+        Clubs
     }
 }

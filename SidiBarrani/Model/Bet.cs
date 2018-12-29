@@ -4,6 +4,9 @@ namespace SidiBarrani.Model
 {
     public class Bet : IComparable<Bet>, IEquatable<Bet>
     {
+        public ScoreAmount BetAmount {get;}
+        public PlayType PlayType {get;}
+
         private Bet() { }
         public Bet(PlayType playType, int amount)
         {
@@ -15,8 +18,6 @@ namespace SidiBarrani.Model
             BetAmount = new ScoreAmount(isMatch: true, isGeneral: true);
             PlayType = playType;
         }
-        public ScoreAmount BetAmount {get;}
-        public PlayType PlayType {get;}
 
         public bool IsSuccessFor(ScoreAmount amount)
         {

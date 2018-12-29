@@ -7,6 +7,7 @@ namespace SidiBarrani.Model
         public PlayerGroup PlayerGroup {get;set;}
         public ScoreAmount Team1Score {get;set;}
         public ScoreAmount Team2Score {get;set;}
+
         public override string ToString()
         {
             var msg = $"Score {PlayerGroup.Team1}: {Team1Score}" + Environment.NewLine

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -10,20 +11,6 @@ namespace SidiBarrani.Model
 {
     public class PlayStage : ReactiveObject
     {
-        private PlayStage() { }
-        public PlayStage(Rules rules, PlayerGroup playerGroup, Player initialPlayer, PlayType playType) {
-            Rules = rules;
-            PlayerGroup = playerGroup;
-            PlayType = playType;
-            StickResultSourceList = new SourceList<StickResult>();
-            StickResultSourceList
-                .Connect()
-                .ToCollection()
-                .ToProperty(this, x => x.StickResultList, out _stickResultList, new ReadOnlyCollection<StickResult>(new List<StickResult>()));
-
-            CurrentStickRound = new StickRound(Rules, PlayerGroup, initialPlayer, PlayType);
-        }
-
         private Rules Rules {get;set;}
         private PlayerGroup PlayerGroup {get;}
         private PlayType PlayType {get;}
@@ -46,8 +33,28 @@ namespace SidiBarrani.Model
             get { return _stickResult; }
             private set { this.RaiseAndSetIfChanged(ref _stickResult, value); }
         }
-        //TODO: Make this readonly reactive
-        public Player CurrentPlayer => CurrentStickRound.CurrentPlayer;
+        private ObservableAsPropertyHelper<Player> _currentPlayer;
+        public Player CurrentPlayer
+        {
+            get { return _currentPlayer.Value; }
+        }
+
+        private PlayStage() { }
+        public PlayStage(Rules rules, PlayerGroup playerGroup, Player initialPlayer, PlayType playType) {
+            Rules = rules;
+            PlayerGroup = playerGroup;
+            PlayType = playType;
+            StickResultSourceList = new SourceList<StickResult>();
+            StickResultSourceList
+                .Connect()
+                .ToCollection()
+                .ToProperty(this, x => x.StickResultList, out _stickResultList, new ReadOnlyCollection<StickResult>(new List<StickResult>()));
+
+            this.WhenAnyValue(x => x.CurrentStickRound.CurrentPlayer)
+                .Select(p => p)
+                .ToProperty(this, x => x.CurrentPlayer, out _currentPlayer, null);
+            CurrentStickRound = new StickRound(Rules, PlayerGroup, initialPlayer, PlayType);
+        }
 
         public PlayResult GetPlayResult()
         {
@@ -111,7 +118,7 @@ namespace SidiBarrani.Model
                     Team2Score = generalPlayer.Team == PlayerGroup.Team2
                         ? matchAmount
                         : zeroAmount
-                };                
+                };
             }
             //Case no General/Match
             var team1Amount = teamResultDictionary[PlayerGroup.Team1]
@@ -134,7 +141,7 @@ namespace SidiBarrani.Model
                 PlayerGroup = PlayerGroup,
                 Team1Score = new ScoreAmount(team1Amount),
                 Team2Score = new ScoreAmount(team2Amount)
-            };  
+            };
         }
 
         private bool IsOver()
@@ -153,7 +160,7 @@ namespace SidiBarrani.Model
         public StickResult AddPlayActionAndProceed(PlayAction playAction)
         {
             var validPlayActions = GetValidPlayActions();
-            if (!validPlayActions.Contains(playAction)) 
+            if (!validPlayActions.Contains(playAction))
             {
                 throw new InvalidOperationException();
             }
