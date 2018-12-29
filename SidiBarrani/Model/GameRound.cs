@@ -197,10 +197,12 @@ namespace SidiBarrani.Model
                 .GroupBy(a => a.Player)
                 .ToDictionary(g => g.Key, g => g.ToList());
             foreach (var player in playerList) {
+                player.Context.AvailableBetActions.Clear();
                 var hasActions = validActionDictionary.ContainsKey(player);
-                player.Context.AvailableBetActions = hasActions
-                    ? validActionDictionary[player]
-                    : new List<BetAction>();
+                if (hasActions)
+                {
+                    player.Context.AvailableBetActions.AddRange(validActionDictionary[player]);
+                }
                 player.Context.IsCurrentPlayer = player == betStage.CurrentPlayer;
             }
         }
@@ -212,10 +214,12 @@ namespace SidiBarrani.Model
                 .GroupBy(a => a.Player)
                 .ToDictionary(g => g.Key, g => g.ToList());
             foreach (var player in playerList) {
+                player.Context.AvailablePlayActions.Clear();
                 var hasActions = validActionDictionary.ContainsKey(player);
-                player.Context.AvailablePlayActions = hasActions
-                    ? validActionDictionary[player]
-                    : new List<PlayAction>();
+                if (hasActions)
+                {
+                    player.Context.AvailablePlayActions.AddRange(validActionDictionary[player]);
+                }
                 player.Context.IsCurrentPlayer = player == playStage.CurrentPlayer;
             }
         }

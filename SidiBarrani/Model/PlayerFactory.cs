@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
+using DynamicData;
 
 namespace SidiBarrani.Model
 {
@@ -60,7 +61,7 @@ namespace SidiBarrani.Model
 
         public static BetAction RandomBetActionGenerator(PlayerContext playerContext)
         {
-            if (!playerContext.AvailableBetActions.Any()) {
+            if (!playerContext.AvailableBetActions.Items.Any()) {
                 return null;
             }
             var availableActions = playerContext.AvailableBetActions;
@@ -73,18 +74,18 @@ namespace SidiBarrani.Model
                 availableActions.Add(null);
             }
 
-            var randomAction = availableActions.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            var randomAction = availableActions.Items.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             while (randomAction == null)
             {
                 Task.Delay(1);
-                randomAction = availableActions.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+                randomAction = availableActions.Items.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             }
             return randomAction;
         }
 
         public static PlayAction RandomPlayActionGenerator(PlayerContext playerContext)
         {
-            if (!playerContext.AvailablePlayActions.Any()) {
+            if (!playerContext.AvailablePlayActions.Items.Any()) {
                 return null;
             }
             var availableActions = playerContext.AvailablePlayActions;
@@ -96,11 +97,11 @@ namespace SidiBarrani.Model
             {
                 availableActions.Add(null);
             }
-            var randomAction = availableActions.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+            var randomAction = availableActions.Items.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             while (randomAction == null)
             {
                 Task.Delay(1);
-                randomAction = availableActions.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
+                randomAction = availableActions.Items.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             }
             return randomAction;
         }

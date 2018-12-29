@@ -80,7 +80,7 @@ namespace SidiBarrani.Model
 
         public IList<PlayAction> GetValidPlayActions()
         {
-            var allHandPlayActionList = CurrentPlayer.Context.CardsInHand
+            var allHandPlayActionList = CurrentPlayer.Context.CardsInHand.Items
                 .Select(c => new PlayAction
                 {
                     Player = CurrentPlayer,

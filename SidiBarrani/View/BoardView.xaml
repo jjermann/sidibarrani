@@ -7,11 +7,11 @@
         Height="1000">
 
     <Window.Resources>
-        <view:StringToBitmapConverter x:Key="StringToBitmapConverter"/>
+        <view:StringToBitmapConverter x:Key = "StringToBitmapConverter"/>
     </Window.Resources>
 
     <Window.DataTemplates>
-        <DataTemplate DataType="{x:Type vm:CardRepresentation}">
+        <DataTemplate DataType = "{x:Type vm:CardRepresentation}">
             <Border BorderBrush = "Black"
                     BorderThickness = "1"
                     CornerRadius = "3"
@@ -22,14 +22,29 @@
             </Border>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:TableRepresentation}">
-            <StackPanel Orientation = "Horizontal"
-                        HorizontalAlignment = "Center"
-                        VerticalAlignment = "Center">
-                <ContentControl Content="{Binding MainCardRepresentation}" />
-                <ContentControl Content="{Binding RightCardRepresentation}" />
-                <ContentControl Content="{Binding OppositeCardRepresentation}" />
-                <ContentControl Content="{Binding LeftCardRepresentation}" />
-            </StackPanel>
+            <Grid>
+                <StackPanel Orientation = "Horizontal"
+                            HorizontalAlignment = "Center"
+                            VerticalAlignment = "Center">
+                    <ContentControl Content = "{Binding MainCardRepresentation}" />
+                    <ContentControl Content = "{Binding RightCardRepresentation}" />
+                    <ContentControl Content = "{Binding OppositeCardRepresentation}" />
+                    <ContentControl Content = "{Binding LeftCardRepresentation}" />
+                </StackPanel>
+                <DockPanel>
+                    <ItemsControl DockPanel.Dock = "Bottom"
+                                  Items = "{Binding CardsInHand}"
+                                  Margin = "0,0,0,20">
+          	    		<ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Orientation="Horizontal"
+                                            HorizontalAlignment = "Center"
+                                            VerticalAlignment = "Bottom"/>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                    </ItemsControl>
+                </DockPanel>
+            </Grid>
         </DataTemplate>
     </Window.DataTemplates>
 
@@ -38,19 +53,19 @@
                     Command = "{Binding SpaceKeyCommand}" />
     </Window.KeyBindings>
 
-    <StackPanel Orientation="Horizontal"
-                VerticalAlignment="Top">
+    <StackPanel Orientation = "Horizontal"
+                VerticalAlignment = "Top">
         <Border Width = "1000"
                 Height = "1000">
             <Border.Background>
                 <ImageBrush Source = "Images/table.jpg"
                             Stretch = "UniformToFill" />
             </Border.Background>
-            <ContentControl Content="{Binding TableRepresentation}" />
+            <ContentControl Content = "{Binding TableRepresentation}" />
         </Border>
-        <ScrollViewer HorizontalScrollBarVisibility="Auto"
-                      Padding="10">
-            <StackPanel Orientation="Vertical" >
+        <ScrollViewer HorizontalScrollBarVisibility = "Auto"
+                      Padding = "10">
+            <StackPanel Orientation = "Vertical" >
                 <TextBlock Name = "LogOutput"
                            Text = "{Binding LogOutput}"
                            FontSize = "12" />

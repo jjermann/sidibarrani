@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reactive.Linq;
@@ -31,6 +32,10 @@ namespace SidiBarrani.ViewModel
         public StickRound StickRound {
             get { return _stickRound.Value; }
         }
+        private ObservableAsPropertyHelper<IReadOnlyCollection<CardRepresentation>> _cardsInHand;
+        public IReadOnlyCollection<CardRepresentation> CardsInHand {
+            get { return _cardsInHand.Value; }
+        }
         private Game Game {get;}
         private IList<Player> PlayerList {get;}
         private TableRepresentation() { }
@@ -62,6 +67,11 @@ namespace SidiBarrani.ViewModel
                 .Select(playActionList => playActionList?.SingleOrDefault(playAction => playAction.Player == oppositePlayer)?.Card)
                 .Select(c => c == null ? null : new CardRepresentation(c))
                 .ToProperty(this, x => x.OppositeCardRepresentation, out _oppositeCardRepresentation, null);
+            mainPlayer.Context.CardsInHand
+                .Connect()
+                .Transform(c => new CardRepresentation(c))
+                .ToCollection()
+                .ToProperty(this, x => x.CardsInHand, out _cardsInHand, new ReadOnlyCollection<CardRepresentation>(new List<CardRepresentation>()));
         }
     }
 }

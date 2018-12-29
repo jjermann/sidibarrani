@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using DynamicData;
 
 namespace SidiBarrani.Model
 {
@@ -6,15 +7,16 @@ namespace SidiBarrani.Model
     {
         public PlayerContext()
         {
-            WonSticks = new List<StickPile>();
-            AvailableBetActions = new List<BetAction>();
-            AvailablePlayActions = new List<PlayAction>();
-            CardsInHand = new List<Card>();
+            WonSticks = new SourceList<StickPile>();
+            AvailableBetActions = new SourceList<BetAction>();
+            AvailablePlayActions = new SourceList<PlayAction>();
+            CardsInHand = new SourceList<Card>();
         }
-        public IList<Card> CardsInHand {get;set;}
-        public IList<StickPile> WonSticks {get;set;}
-        public IList<BetAction> AvailableBetActions {get;set;}
-        public IList<PlayAction> AvailablePlayActions {get;set;}
+
+        public ISourceList<Card> CardsInHand {get;set;}
+        public ISourceList<StickPile> WonSticks {get;set;}
+        public ISourceList<BetAction> AvailableBetActions {get;set;}
+        public ISourceList<PlayAction> AvailablePlayActions {get;set;}
         public bool IsCurrentPlayer {get;set;}
     }
 }
