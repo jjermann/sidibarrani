@@ -18,10 +18,10 @@ namespace SidiBarrani.ViewModel
         public HandRepresentation OppositeHandRepresentation {get;}
         public HandRepresentation LeftHandRepresentation {get;}
 
-        private ObservableAsPropertyHelper<PlayTypeRepresentation> _currentPlayTypeRepresentation;
-        public PlayTypeRepresentation CurrentPlayTypeRepresentation
+        private ObservableAsPropertyHelper<BetResultRepresentation> _betResultRepresentation;
+        public BetResultRepresentation BetResultRepresentation
         {
-            get { return _currentPlayTypeRepresentation.Value; }
+            get { return _betResultRepresentation.Value; }
         }
 
         private GameRepresentation() { }
@@ -41,8 +41,8 @@ namespace SidiBarrani.ViewModel
             LeftHandRepresentation = new HandRepresentation(leftPlayer.Context);
 
             this.WhenAnyValue(x => x.Game.GameRound.BetResult)
-                .Select(betResult => betResult?.Bet?.PlayType == null ? null : new PlayTypeRepresentation(betResult.Bet.PlayType, 30))
-                .ToProperty(this, x => x.CurrentPlayTypeRepresentation, out _currentPlayTypeRepresentation, null);
+                .Select(betResult => betResult == null ? null : new BetResultRepresentation(betResult))
+                .ToProperty(this, x => x.BetResultRepresentation, out _betResultRepresentation, null);
         }
     }
 }

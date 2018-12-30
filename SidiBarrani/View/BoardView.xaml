@@ -70,6 +70,37 @@
                        Stretch = "Fill" />
             </Border>
         </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:ScoreAmountRepresentation}">
+            <Grid>
+                <TextBlock Text = "{Binding AmountString}"
+                           Foreground = "{Binding AmountColor, Converter={StaticResource StringToBrushConverter}}"
+                           FontSize = "30" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:BetResultRepresentation}">
+            <StackPanel Orientation = "Vertical">
+                <StackPanel Orientation = "Horizontal">
+                    <ContentControl Content = "{Binding PlayStyleRepresentation}"
+                                    VerticalAlignment = "Center"
+                                    Margin = "5" />
+                    <ContentControl Content = "{Binding ScoreAmountRepresentation}"
+                                    VerticalAlignment = "Center"
+                                    Margin = "5" />
+                </StackPanel>
+                <TextBlock Text = "[Sidi]"
+                           Margin = "5"
+                           IsVisible = "{Binding IsSidi}"
+                           VerticalAlignment = "Center"
+                           HorizontalAlignment = "Center"
+                           FontSize = "20" />
+                <TextBlock Text = "[Barrani]"
+                           Margin = "5"
+                           IsVisible = "{Binding IsBarrani}"
+                           VerticalAlignment = "Center"
+                           HorizontalAlignment = "Center"
+                           FontSize = "20" />
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType = "{x:Type vm:BetsRepresentation}">
             <StackPanel Orientation = "Horizontal">
                 <ContentControl Name = "PlayType"
@@ -103,12 +134,12 @@
                 </Border.Background>
                 <Grid>
                     <ContentControl HorizontalAlignment = "Center"
-                                    VerticalAlignment = "Top"
-                                    Margin = "20"
-                                    Content = "{Binding CurrentPlayTypeRepresentation}" />
-                    <ContentControl HorizontalAlignment = "Center"
                                     VerticalAlignment = "Center"
                                     Content = "{Binding BoardRepresentation}" />
+                    <ContentControl HorizontalAlignment = "Center"
+                                    VerticalAlignment = "Center"
+                                    Margin = "20"
+                                    Content = "{Binding BetResultRepresentation}" />
                     <StackPanel Orientation = "Vertical"
                                 HorizontalAlignment = "Center"
                                 VerticalAlignment = "Bottom">
