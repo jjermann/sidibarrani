@@ -7,7 +7,7 @@ using SidiBarrani.Model;
 
 namespace SidiBarrani.ViewModel
 {
-    public class MainBoardRepresentation : ReactiveObject
+    public class BoardRepresentation : ReactiveObject
     {
         private ObservableAsPropertyHelper<CardRepresentation> _mainCardRepresentation;
         public CardRepresentation MainCardRepresentation {
@@ -32,8 +32,8 @@ namespace SidiBarrani.ViewModel
 
         private Game Game {get;}
         private IList<Player> PlayerList {get;}
-        private MainBoardRepresentation() { }
-        public MainBoardRepresentation(Game game, IList<Player> playerList)
+        private BoardRepresentation() { }
+        public BoardRepresentation(Game game, IList<Player> playerList)
         {
             Game = game;
             PlayerList = playerList;

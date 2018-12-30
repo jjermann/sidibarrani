@@ -36,7 +36,7 @@
                 </ItemsControl>
             </Grid>
         </DataTemplate>
-        <DataTemplate DataType="{x:Type vm:MainBoardRepresentation}">
+        <DataTemplate DataType="{x:Type vm:BoardRepresentation}">
             <Border BorderBrush = "Black"
                     BorderThickness = "0"
                     CornerRadius = "3"
@@ -64,11 +64,11 @@
             </Border>
         </DataTemplate>
         <DataTemplate DataType = "{x:Type vm:PlayTypeRepresentation}">
-                <Grid Width = "100"
-                      Height = "100">
-                    <Image Source = "{Binding ImageSource, Converter={StaticResource StringToBitmapConverter}}"
-                           Stretch = "Stretch" />
-                </Grid>
+            <Border Width = "{Binding Size}"
+                    Height = "{Binding Size}">
+                <Image Source = "{Binding ImageSource, Converter={StaticResource StringToBitmapConverter}}"
+                       Stretch = "Fill" />
+            </Border>
         </DataTemplate>
         <DataTemplate DataType = "{x:Type vm:BetsRepresentation}">
             <StackPanel Orientation = "Horizontal">
@@ -95,23 +95,34 @@
             </StackPanel>
         </DataTemplate>
         <DataTemplate DataType = "{x:Type vm:GameRepresentation}">
-            <Grid>
-                <ContentControl HorizontalAlignment = "Center"
-                                VerticalAlignment = "Center"
-                                Content = "{Binding MainBoardRepresentation}" />
-                <StackPanel Orientation = "Vertical"
-                            HorizontalAlignment = "Center"
-                            VerticalAlignment = "Bottom">
-                    <ContentControl Content = "{Binding MainBetActionsRepresentation}"
+            <Border Width = "1000"
+                    Height = "1000">
+                <Border.Background>
+                    <ImageBrush Source = "Images/background.jpg"
+                                Stretch = "UniformToFill" />
+                </Border.Background>
+                <Grid>
+                    <ContentControl HorizontalAlignment = "Center"
+                                    VerticalAlignment = "Top"
                                     Margin = "20"
-                                    HorizontalAlignment = "Center"
-                                    VerticalAlignment = "Bottom" />
-                    <ContentControl Content = "{Binding MainHandRepresentation}"
-                                    Margin = "20"
-                                    HorizontalAlignment = "Center"
-                                    VerticalAlignment = "Bottom" />
-                </StackPanel>
-            </Grid>
+                                    Content = "{Binding CurrentPlayTypeRepresentation}" />
+                    <ContentControl HorizontalAlignment = "Center"
+                                    VerticalAlignment = "Center"
+                                    Content = "{Binding BoardRepresentation}" />
+                    <StackPanel Orientation = "Vertical"
+                                HorizontalAlignment = "Center"
+                                VerticalAlignment = "Bottom">
+                        <ContentControl Content = "{Binding MainBetActionsRepresentation}"
+                                        Margin = "20"
+                                        HorizontalAlignment = "Center"
+                                        VerticalAlignment = "Bottom" />
+                        <ContentControl Content = "{Binding MainHandRepresentation}"
+                                        Margin = "20"
+                                        HorizontalAlignment = "Center"
+                                        VerticalAlignment = "Bottom" />
+                    </StackPanel>
+                </Grid>
+            </Border>
         </DataTemplate>
     </Window.DataTemplates>
 
@@ -122,14 +133,7 @@
 
     <StackPanel Orientation = "Horizontal"
                 VerticalAlignment = "Top">
-        <Border Width = "1000"
-                Height = "1000">
-            <Border.Background>
-                <ImageBrush Source = "Images/background.jpg"
-                            Stretch = "UniformToFill" />
-            </Border.Background>
-            <ContentControl Content = "{Binding GameRepresentation}" />
-        </Border>
+        <ContentControl Content = "{Binding GameRepresentation}" />
         <ScrollViewer HorizontalScrollBarVisibility = "Auto"
                       Padding = "10">
             <StackPanel Orientation = "Vertical" >

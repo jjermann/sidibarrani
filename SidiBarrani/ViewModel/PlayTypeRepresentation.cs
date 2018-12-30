@@ -7,11 +7,14 @@ namespace SidiBarrani.ViewModel
     public class PlayTypeRepresentation
     {
         public string ImageSource {get;}
+        public double Size {get;}
         private PlayType PlayType {get;}
-        public PlayTypeRepresentation(PlayType playType)
+        private PlayTypeRepresentation() { }
+        public PlayTypeRepresentation(PlayType playType, double size)
         {
             PlayType = playType;
-            var playTypeStr = playType.ToString().ToLowerInvariant();
+            Size = size;
+            var playTypeStr = playType.GetStringRepresentation().ToLowerInvariant();
             ImageSource = Path.Combine(@"Images", $"{playTypeStr}.png");
         }
     }

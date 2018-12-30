@@ -70,9 +70,10 @@ namespace SidiBarrani.Model
             PlayStage = new PlayStage(Rules, PlayerGroup, InitialPlayer, BetResult.Bet.PlayType);
             PlayResult = await ProcessPlaying(PlayStage, PlayerGroup);
             await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
-
             PlayStage = null;
             var roundResult = DetermineRoundResult(Rules, PlayerGroup, BetResult, PlayResult);
+            BetResult = null;
+            PlayResult = null;
             return roundResult;
         }
 

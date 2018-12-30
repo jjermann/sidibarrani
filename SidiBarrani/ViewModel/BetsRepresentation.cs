@@ -24,7 +24,7 @@ namespace SidiBarrani.ViewModel
         private BetsRepresentation() { }
         public BetsRepresentation(PlayType playType, IList<ScoreAmount> betAmountList)
         {
-            PlayTypeRepresentation = new PlayTypeRepresentation(playType);
+            PlayTypeRepresentation = new PlayTypeRepresentation(playType, 20);
             BetAmountList = betAmountList;
         }
     }
