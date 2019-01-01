@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive;
@@ -25,6 +26,7 @@ namespace SidiBarrani.ViewModel
             get { return _betResultRepresentation.Value; }
         }
         public ReactiveCommand<Unit, Unit> UpKeyCommand {get;}
+        public IObservable<BetAction> BetActionObservable {get;}
 
         private GameRepresentation() { }
         public GameRepresentation(Game game, IList<Player> playerList)
@@ -43,6 +45,7 @@ namespace SidiBarrani.ViewModel
             LeftHandRepresentation = new HandRepresentation(leftPlayer.Context);
 
             UpKeyCommand = ReactiveCommand.Create(() => {});
+            BetActionObservable = MainBetActionsRepresentation.BetActionCommand;
             this.WhenAnyValue(x => x.Game.GameRound.BetResult)
                 .Select(betResult => betResult == null ? null : new BetResultRepresentation(betResult))
                 .ToProperty(this, x => x.BetResultRepresentation, out _betResultRepresentation, null);

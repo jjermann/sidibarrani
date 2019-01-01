@@ -70,7 +70,7 @@ namespace SidiBarrani.ViewModel
             GameRepresentation = new GameRepresentation(Game, PlayerGroup.GetPlayerList());
             foreach (var player in PlayerGroup.GetPlayerList())
             {
-                AttachPlayerInteractions(player, GameRepresentation);
+                AttachPlayerInteractions(player, GameRepresentation, isHuman: player == PlayerGroup.Team1.Player1);
             }
             GameResult = await Game.ProcessGame();
             await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
@@ -79,14 +79,22 @@ namespace SidiBarrani.ViewModel
             Game = null;
         }
 
-        private static void AttachPlayerInteractions(Player player, GameRepresentation gameRepresentation)
+        private static void AttachPlayerInteractions(Player player, GameRepresentation gameRepresentation, bool isHuman = false)
         {
             var betActionTaskGenerator = new Func<PlayerContext, Task<BetAction>>(playerContext =>
             {
                 return Task.Run(async () =>
                 {
-                    await gameRepresentation.UpKeyCommand.FirstAsync();
-                    return PlayerInteractionsFactory.RandomBetActionGenerator(playerContext);
+                    if (isHuman)
+                    {
+                        var betAction = await gameRepresentation.BetActionObservable.FirstAsync();
+                        return betAction;
+                    }
+                    else
+                    {
+                        await gameRepresentation.UpKeyCommand.FirstAsync();
+                        return PlayerInteractionsFactory.RandomBetActionGenerator(playerContext);
+                    }
                 });
             });
             var playActionTaskGenerator = new Func<PlayerContext, Task<PlayAction>>(playerContext =>
