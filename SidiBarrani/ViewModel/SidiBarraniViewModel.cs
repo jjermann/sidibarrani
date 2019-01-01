@@ -109,16 +109,16 @@ namespace SidiBarrani.ViewModel
                 CardSuit = CardSuit.Spades
             });
 
-        private ISubject<object> SpaceKeyObservable {get;} = new Subject<object>();
-        public ReactiveCommand<Unit, Unit> SpaceKeyCommand {get;}
+        private ISubject<object> UpKeyObservable {get;} = new Subject<object>();
+        public ReactiveCommand<Unit, Unit> UpKeyCommand {get;}
 
         public SidiBarraniViewModel()
         {
-            SpaceKeyCommand = ReactiveCommand.Create(() =>
+            UpKeyCommand = ReactiveCommand.Create(() =>
             {
-                SpaceKeyObservable.OnNext(new object());
+                UpKeyObservable.OnNext(new object());
             });
-            PlayerGroup = GetPlayerGroup();
+            PlayerGroup = GetPlayerGroup(UpKeyObservable);
             Rules = new Rules();
             LogOutput = "";
             SetupReactiveProperties();
@@ -186,13 +186,13 @@ namespace SidiBarrani.ViewModel
                 .Subscribe(r => LogOutput += "[GameResult] " + Environment.NewLine + r.ToString() + Environment.NewLine);
         }
 
-        private PlayerGroup GetPlayerGroup()
+        private static PlayerGroup GetPlayerGroup(ISubject<object> upKeyObservable)
         {
             var betActionTaskGenerator = new Func<PlayerContext, Task<BetAction>>(playerContext =>
             {
                 return Task.Run(async () =>
                 {
-                    await SpaceKeyObservable.FirstAsync();
+                    await upKeyObservable.FirstAsync();
                     return PlayerFactory.RandomBetActionGenerator(playerContext);
                 });
             });
@@ -200,7 +200,7 @@ namespace SidiBarrani.ViewModel
             {
                 return Task.Run(async () =>
                 {
-                    await SpaceKeyObservable.FirstAsync();
+                    await upKeyObservable.FirstAsync();
                     return PlayerFactory.RandomPlayActionGenerator(playerContext);
                 });
             });
@@ -208,7 +208,7 @@ namespace SidiBarrani.ViewModel
             {
                 return Task.Run(async () =>
                 {
-                    await SpaceKeyObservable.FirstAsync();
+                    await upKeyObservable.FirstAsync();
                 });
             });
 

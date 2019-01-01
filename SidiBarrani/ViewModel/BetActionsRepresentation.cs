@@ -1,7 +1,9 @@
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
@@ -65,11 +67,31 @@ namespace SidiBarrani.ViewModel
         public bool HasBetSelected {
             get { return _hasBetSelected.Value; }
         }
+        public ReactiveCommand<string, BetAction> BetActionCommand {get;}
 
         private BetActionsRepresentation() { }
         public BetActionsRepresentation(PlayerContext playerContext)
         {
             PlayerContext = playerContext;
+            BetActionCommand = ReactiveCommand.Create<string, BetAction>(t =>
+            {
+                switch(t)
+                {
+                    case "Pass":
+                        return BetActionList.SingleOrDefault(a => a != null && a.Type == BetActionType.Pass);
+                    case "Sidi":
+                        return BetActionList.SingleOrDefault(a => a != null && a.Type == BetActionType.Sidi);
+                    case "Barrani":
+                        return BetActionList.SingleOrDefault(a => a != null && a.Type == BetActionType.Barrani);
+                    case "Bet":
+                        return BetActionList.SingleOrDefault(a => a != null && SelectedBetRepresentation?.Bet != null && a.Type == BetActionType.Bet && a.Bet == SelectedBetRepresentation.Bet);
+                    default:
+                        throw new ArgumentException();
+                }
+            });
+            // BetActionCommand.Subscribe(a => {
+            //     //TODO
+            // });
             PlayerContext.AvailableBetActions
                 .Connect()
                 .ToCollection()
@@ -97,12 +119,13 @@ namespace SidiBarrani.ViewModel
                     .Select(g => new PlayTypeRepresentation(g.Key, 30.0))
                     .ToList())
                 .ToProperty(this, x => x.PlayTypeRepresentationList, out _playTypeRepresentationList);
-            this.WhenAnyValue(x => x.BetActionList)
-                .Select(betActionList => betActionList
-                    ?.Where(a => a != null)
-                    .Where(a => a.Type == BetActionType.Bet)
-                    .GroupBy(a => a.Bet.BetAmount)
-                    .Select(g => new ScoreAmountRepresentation(g.Key))
+            this.WhenAnyValue(
+                x => x.BetActionList,
+                x => x.SelectedPlayTypeRepresentation,
+                (betActionList,r) => betActionList
+                    ?.Where(a => a != null && r != null)
+                    .Where(a => a.Type == BetActionType.Bet && a.Bet.PlayType == r.PlayType)
+                    .Select(a => new ScoreAmountRepresentation(a.Bet.BetAmount))
                     .ToList())
                 .ToProperty(this, x => x.ScoreAmountRepresentationList, out _scoreAmountRepresentationList);
             this.WhenAnyValue<BetActionsRepresentation, BetAction, IReadOnlyCollection<BetAction>, PlayTypeRepresentation, ScoreAmountRepresentation>(
@@ -110,8 +133,7 @@ namespace SidiBarrani.ViewModel
                 x => x.SelectedPlayTypeRepresentation,
                 x => x.SelectedScoreAmountRepresentation,
                 (l,p,s) => l?.SingleOrDefault(a => (a?.Bet != null && p!= null && s != null) && a.Bet.PlayType == p.PlayType && a.Bet.BetAmount == s.ScoreAmount))
-                .Select(a => {
-                    return a == null ? null : new BetRepresentation(a.Bet);})
+                .Select(a => a == null ? null : new BetRepresentation(a.Bet))
                 .ToProperty(this, x => x.SelectedBetRepresentation, out _selectedBetRepresentation);
             this.WhenAnyValue(x => x.SelectedBetRepresentation)
                 .Select(r => r != null)

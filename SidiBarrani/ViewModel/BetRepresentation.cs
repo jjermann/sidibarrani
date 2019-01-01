@@ -6,7 +6,7 @@ namespace SidiBarrani.ViewModel
 {
     public class BetRepresentation
     {
-        private Bet Bet {get;}
+        public Bet Bet {get;}
         public PlayTypeRepresentation PlayStyleRepresentation {get;}
         public ScoreAmountRepresentation ScoreAmountRepresentation {get;}
 

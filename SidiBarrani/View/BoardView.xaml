@@ -108,18 +108,22 @@
             <Border Background = "White">
                 <StackPanel IsVisible = "{Binding CanAct}"
                             Orientation = "Vertical">
-                    <Button IsVisible = "{Binding CanPass}">
-                        <TextBlock Text = "Pass" />
-                    </Button>
-                    <Button IsVisible = "{Binding CanSidi}">
-                        <TextBlock Text = "Sidi" />
-                    </Button>
-                    <Button IsVisible = "{Binding CanBarrani}">
-                        <TextBlock Text = "Barrani" />
-                    </Button>
-                    <Button IsVisible = "{Binding HasBetSelected}">
-                        <ContentControl Content = "{Binding SelectedBetRepresentation}" />
-                    </Button>
+                    <Button Content = "Pass"
+                            IsVisible = "{Binding CanPass}"
+                            Command = "{Binding BetActionCommand}"
+                            CommandParameter = "Pass" />
+                    <Button Content = "Sidi"
+                            IsVisible = "{Binding CanSidi}"
+                            Command = "{Binding BetActionCommand}"
+                            CommandParameter = "Sidi" />
+                    <Button Content = "Barrani"
+                            IsVisible = "{Binding CanBarrani}"
+                            Command = "{Binding BetActionCommand}"
+                            CommandParameter = "Barrani" />
+                    <Button Content = "{Binding SelectedBetRepresentation}"
+                            IsVisible = "{Binding HasBetSelected}"
+                            Command = "{Binding BetActionCommand}"
+                            CommandParameter = "Bet" />
                     <StackPanel Orientation = "Horizontal"
                                 IsVisible = "{Binding CanBet}">
                         <ListBox Items = "{Binding PlayTypeRepresentationList}"
@@ -164,7 +168,7 @@
 
     <Window.KeyBindings>
         <KeyBinding Gesture = "Up"
-                    Command = "{Binding SpaceKeyCommand}" />
+                    Command = "{Binding UpKeyCommand}" />
     </Window.KeyBindings>
 
     <StackPanel Orientation = "Horizontal"
