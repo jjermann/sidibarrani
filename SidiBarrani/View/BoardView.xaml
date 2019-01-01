@@ -137,10 +137,6 @@
         <DataTemplate DataType = "{x:Type vm:GameRepresentation}">
             <Border Width = "1000"
                     Height = "1000">
-                <Border.KeyBindings>
-                    <KeyBinding Gesture = "Up"
-                                Command = "{Binding UpKeyCommand}" />
-                </Border.KeyBindings>
                 <Border.Background>
                     <ImageBrush Source = "Images/background.jpg"
                                 Stretch = "UniformToFill" />
@@ -169,6 +165,12 @@
             </Border>
         </DataTemplate>
     </Window.DataTemplates>
+
+    <!-- TODO: Can't we define inside GameRepresentation? -->
+    <Window.KeyBindings>
+        <KeyBinding Gesture = "Up"
+                    Command = "{Binding GameRepresentation.UpKeyCommand}" />
+    </Window.KeyBindings>
 
     <StackPanel Orientation = "Horizontal"
                 VerticalAlignment = "Top">
