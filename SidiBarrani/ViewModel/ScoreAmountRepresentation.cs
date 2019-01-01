@@ -4,7 +4,7 @@ namespace SidiBarrani.ViewModel
 {
     public class ScoreAmountRepresentation
     {
-        private ScoreAmount ScoreAmount {get;}
+        public ScoreAmount ScoreAmount {get;}
         public string AmountString {get;}
         public string AmountColor {get;}
 

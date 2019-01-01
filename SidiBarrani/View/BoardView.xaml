@@ -77,16 +77,19 @@
                            FontSize = "30" />
             </Grid>
         </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:BetRepresentation}">
+            <StackPanel Orientation = "Horizontal">
+                <ContentControl Content = "{Binding PlayStyleRepresentation}"
+                                VerticalAlignment = "Center"
+                                Margin = "5" />
+                <ContentControl Content = "{Binding ScoreAmountRepresentation}"
+                                VerticalAlignment = "Center"
+                                Margin = "5" />
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType = "{x:Type vm:BetResultRepresentation}">
             <StackPanel Orientation = "Vertical">
-                <StackPanel Orientation = "Horizontal">
-                    <ContentControl Content = "{Binding PlayStyleRepresentation}"
-                                    VerticalAlignment = "Center"
-                                    Margin = "5" />
-                    <ContentControl Content = "{Binding ScoreAmountRepresentation}"
-                                    VerticalAlignment = "Center"
-                                    Margin = "5" />
-                </StackPanel>
+                <ContentControl Content = "{Binding BetRepresentation}" />
                 <TextBlock Text = "[Sidi]"
                            Margin = "5"
                            IsVisible = "{Binding IsSidi}"
@@ -101,29 +104,31 @@
                            FontSize = "20" />
             </StackPanel>
         </DataTemplate>
-        <DataTemplate DataType = "{x:Type vm:BetsRepresentation}">
-            <StackPanel Orientation = "Horizontal">
-                <ContentControl Name = "PlayType"
-                                Content = "{Binding PlayTypeRepresentation}" />
-                <Popup IsOpen = "True"
-                       PlacementTarget = "{Binding #PlayType}">
-                    <ItemsControl Items = "{Binding BetAmountList}" />
-                </Popup>
-            </StackPanel>
-        </DataTemplate>
         <DataTemplate DataType = "{x:Type vm:BetActionsRepresentation}">
-            <StackPanel IsVisible = "{Binding CanAct}"
-                        Orientation = "Vertical">
-                <TextBlock IsVisible = "{Binding CanPass}"
-                           Text = "Pass" />
-                <Grid IsVisible = "{Binding CanBet}">
-                    <ItemsControl Items = "{Binding BetAmountList}" />
-                </Grid>
-                <TextBlock IsVisible = "{Binding CanSidi}"
-                           Text = "Sidi" />
-                <TextBlock IsVisible = "{Binding CanBarrani}"
-                           Text = "Barrani" />
-            </StackPanel>
+            <Border Background = "White">
+                <StackPanel IsVisible = "{Binding CanAct}"
+                            Orientation = "Vertical">
+                    <Button IsVisible = "{Binding CanPass}">
+                        <TextBlock Text = "Pass" />
+                    </Button>
+                    <Button IsVisible = "{Binding CanSidi}">
+                        <TextBlock Text = "Sidi" />
+                    </Button>
+                    <Button IsVisible = "{Binding CanBarrani}">
+                        <TextBlock Text = "Barrani" />
+                    </Button>
+                    <Button IsVisible = "{Binding HasBetSelected}">
+                        <ContentControl Content = "{Binding SelectedBetRepresentation}" />
+                    </Button>
+                    <StackPanel Orientation = "Horizontal"
+                                IsVisible = "{Binding CanBet}">
+                        <ListBox Items = "{Binding PlayTypeRepresentationList}"
+                                 SelectedItem = "{Binding SelectedPlayTypeRepresentation}" />
+                        <ListBox Items = "{Binding ScoreAmountRepresentationList}"
+                                 SelectedItem = "{Binding SelectedScoreAmountRepresentation}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
         </DataTemplate>
         <DataTemplate DataType = "{x:Type vm:GameRepresentation}">
             <Border Width = "1000"

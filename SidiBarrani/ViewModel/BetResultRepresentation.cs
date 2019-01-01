@@ -7,8 +7,7 @@ namespace SidiBarrani.ViewModel
     public class BetResultRepresentation
     {
         private BetResult BetResult {get;}
-        public PlayTypeRepresentation PlayStyleRepresentation {get;}
-        public ScoreAmountRepresentation ScoreAmountRepresentation {get;}
+        public BetRepresentation BetRepresentation {get;}
         public bool IsSidi {get;}
         public bool IsBarrani {get;}
 
@@ -16,8 +15,7 @@ namespace SidiBarrani.ViewModel
         public BetResultRepresentation(BetResult betResult)
         {
             BetResult = betResult;
-            PlayStyleRepresentation = new PlayTypeRepresentation(betResult.Bet.PlayType, 40);
-            ScoreAmountRepresentation = new ScoreAmountRepresentation(betResult.Bet.BetAmount);
+            BetRepresentation = new BetRepresentation(betResult.Bet);
             IsSidi = !betResult.IsBarrani && betResult.IsSidi;
             IsBarrani = betResult.IsBarrani;
         }

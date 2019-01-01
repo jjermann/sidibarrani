@@ -12,6 +12,7 @@ namespace SidiBarrani.ViewModel
 {
     public class BetActionsRepresentation : ReactiveObject
     {
+        private PlayerContext PlayerContext {get;}
         private ObservableAsPropertyHelper<IReadOnlyCollection<BetAction>> _betActionList;
         private IReadOnlyCollection<BetAction> BetActionList {
             get { return _betActionList.Value; }
@@ -36,11 +37,34 @@ namespace SidiBarrani.ViewModel
         public bool CanBarrani {
             get { return _canAct.Value; }
         }
-        private ObservableAsPropertyHelper<IList<BetsRepresentation>> _betsRepresentationList;
-        public IList<BetsRepresentation> BetsRepresentationList {
-            get { return _betsRepresentationList.Value; }
+        private ObservableAsPropertyHelper<IList<PlayTypeRepresentation>> _playTypeRepresentationList;
+        public IList<PlayTypeRepresentation> PlayTypeRepresentationList {
+            get { return _playTypeRepresentationList.Value; }
         }
-        private PlayerContext PlayerContext {get;}
+        private PlayTypeRepresentation _selectedPlayTypeRepresentation;
+        public PlayTypeRepresentation SelectedPlayTypeRepresentation
+        {
+            get { return _selectedPlayTypeRepresentation; }
+            set { this.RaiseAndSetIfChanged(ref _selectedPlayTypeRepresentation, value); }
+        }
+        private ObservableAsPropertyHelper<IList<ScoreAmountRepresentation>> _scoreAmountRepresentationList;
+        public IList<ScoreAmountRepresentation> ScoreAmountRepresentationList {
+            get { return _scoreAmountRepresentationList.Value; }
+        }
+        private ScoreAmountRepresentation _selectedScoreAmountRepresentation;
+        public ScoreAmountRepresentation SelectedScoreAmountRepresentation
+        {
+            get { return _selectedScoreAmountRepresentation; }
+            set { this.RaiseAndSetIfChanged(ref _selectedScoreAmountRepresentation, value); }
+        }
+        private ObservableAsPropertyHelper<BetRepresentation> _selectedBetRepresentation;
+        public BetRepresentation SelectedBetRepresentation {
+            get { return _selectedBetRepresentation.Value; }
+        }
+        private ObservableAsPropertyHelper<bool> _hasBetSelected;
+        public bool HasBetSelected {
+            get { return _hasBetSelected.Value; }
+        }
 
         private BetActionsRepresentation() { }
         public BetActionsRepresentation(PlayerContext playerContext)
@@ -70,9 +94,28 @@ namespace SidiBarrani.ViewModel
                     ?.Where(a => a != null)
                     .Where(a => a.Type == BetActionType.Bet)
                     .GroupBy(a => a.Bet.PlayType)
-                    .Select(g => new BetsRepresentation(g.Key, g.Select(a => a.Bet.BetAmount).ToList()))
+                    .Select(g => new PlayTypeRepresentation(g.Key, 30.0))
                     .ToList())
-                .ToProperty(this, x => x.BetsRepresentationList, out _betsRepresentationList);
+                .ToProperty(this, x => x.PlayTypeRepresentationList, out _playTypeRepresentationList);
+            this.WhenAnyValue(x => x.BetActionList)
+                .Select(betActionList => betActionList
+                    ?.Where(a => a != null)
+                    .Where(a => a.Type == BetActionType.Bet)
+                    .GroupBy(a => a.Bet.BetAmount)
+                    .Select(g => new ScoreAmountRepresentation(g.Key))
+                    .ToList())
+                .ToProperty(this, x => x.ScoreAmountRepresentationList, out _scoreAmountRepresentationList);
+            this.WhenAnyValue<BetActionsRepresentation, BetAction, IReadOnlyCollection<BetAction>, PlayTypeRepresentation, ScoreAmountRepresentation>(
+                x => x.BetActionList,
+                x => x.SelectedPlayTypeRepresentation,
+                x => x.SelectedScoreAmountRepresentation,
+                (l,p,s) => l?.SingleOrDefault(a => (a?.Bet != null && p!= null && s != null) && a.Bet.PlayType == p.PlayType && a.Bet.BetAmount == s.ScoreAmount))
+                .Select(a => {
+                    return a == null ? null : new BetRepresentation(a.Bet);})
+                .ToProperty(this, x => x.SelectedBetRepresentation, out _selectedBetRepresentation);
+            this.WhenAnyValue(x => x.SelectedBetRepresentation)
+                .Select(r => r != null)
+                .ToProperty(this, x => x.HasBetSelected, out _hasBetSelected);
         }
     }
 }

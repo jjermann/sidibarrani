@@ -8,7 +8,7 @@ namespace SidiBarrani.ViewModel
     {
         public string ImageSource {get;}
         public double Size {get;}
-        private PlayType PlayType {get;}
+        public PlayType PlayType {get;}
         private PlayTypeRepresentation() { }
         public PlayTypeRepresentation(PlayType playType, double size)
         {
