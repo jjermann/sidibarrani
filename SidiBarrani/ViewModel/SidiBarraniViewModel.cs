@@ -101,6 +101,17 @@ namespace SidiBarrani.ViewModel
             {
                 return Task.Run(async () =>
                 {
+                    //TODO: Uncomment these to activate interactive playing
+                    // if (isHuman)
+                    // {
+                    //     var playAction = await gameRepresentation.PlayActionObservable.FirstAsync();
+                    //     return playAction;
+                    // }
+                    // else
+                    // {
+                    //     await gameRepresentation.UpKeyCommand.FirstAsync();
+                    //     return PlayerInteractionsFactory.RandomPlayActionGenerator(playerContext);
+                    // }
                     await gameRepresentation.UpKeyCommand.FirstAsync();
                     return PlayerInteractionsFactory.RandomPlayActionGenerator(playerContext);
                 });

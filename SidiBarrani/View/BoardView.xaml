@@ -14,14 +14,20 @@
 
     <Window.DataTemplates>
         <DataTemplate DataType = "{x:Type vm:CardRepresentation}">
-            <Border BorderBrush = "{Binding BorderColor, Converter={StaticResource StringToBrushConverter}}"
-                    BorderThickness = "{Binding BorderThickness, Converter={StaticResource DoubleToThicknessConverter}}"
-                    CornerRadius = "3"
-                    Width = "100"
-                    Height = "150">
-                <Image Source = "{Binding ImageSource, Converter={StaticResource StringToBitmapConverter}}"
-                       Stretch = "UniformToFill" />
-            </Border>
+            <Button Command = "{Binding PlayActionCommand}"
+                    CommandParameter = "{Binding}"
+                    BorderThickness = "0"
+                    Margin = "0"
+                    Padding = "0">
+                <Border BorderBrush = "{Binding BorderColor, Converter={StaticResource StringToBrushConverter}}"
+                        BorderThickness = "{Binding BorderThickness, Converter={StaticResource DoubleToThicknessConverter}}"
+                        CornerRadius = "3"
+                        Width = "100"
+                        Height = "150">
+                    <Image Source = "{Binding ImageSource, Converter={StaticResource StringToBitmapConverter}}"
+                           Stretch = "UniformToFill" />
+                </Border>
+            </Button>
         </DataTemplate>
         <DataTemplate DataType="{x:Type vm:HandRepresentation}">
             <Grid>

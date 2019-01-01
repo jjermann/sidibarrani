@@ -36,8 +36,10 @@ namespace SidiBarrani.ViewModel
             get {return _imageSource.Value;}
         }
 
+        public ReactiveCommand<CardRepresentation, PlayAction> PlayActionCommand {get;}
+
         private CardRepresentation() {}
-        public CardRepresentation(Card card)
+        public CardRepresentation(Card card, ReactiveCommand<CardRepresentation, PlayAction> playActionCommand = null)
         {
             Card = card;
             var suitName = card.CardSuit.ToString().ToLowerInvariant();
@@ -49,6 +51,7 @@ namespace SidiBarrani.ViewModel
             BorderColor = "Black";
             BorderThickness = 1;
 
+            PlayActionCommand = playActionCommand;
             this.WhenAnyValue(x => x.IsFaceUp)
                 .Select(isFaceUp => isFaceUp
                     ? CardImageSource

@@ -89,9 +89,6 @@ namespace SidiBarrani.ViewModel
                         throw new ArgumentException();
                 }
             });
-            // BetActionCommand.Subscribe(a => {
-            //     //TODO
-            // });
             PlayerContext.AvailableBetActions
                 .Connect()
                 .ToCollection()
