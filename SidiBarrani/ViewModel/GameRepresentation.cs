@@ -24,6 +24,7 @@ namespace SidiBarrani.ViewModel
         {
             get { return _betResultRepresentation.Value; }
         }
+        public ReactiveCommand<Unit, Unit> UpKeyCommand {get;}
 
         private GameRepresentation() { }
         public GameRepresentation(Game game, IList<Player> playerList)
@@ -41,6 +42,7 @@ namespace SidiBarrani.ViewModel
             OppositeHandRepresentation = new HandRepresentation(oppositePlayer.Context);
             LeftHandRepresentation = new HandRepresentation(leftPlayer.Context);
 
+            UpKeyCommand = ReactiveCommand.Create(() => {});
             this.WhenAnyValue(x => x.Game.GameRound.BetResult)
                 .Select(betResult => betResult == null ? null : new BetResultRepresentation(betResult))
                 .ToProperty(this, x => x.BetResultRepresentation, out _betResultRepresentation, null);

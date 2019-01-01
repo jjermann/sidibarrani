@@ -109,16 +109,9 @@ namespace SidiBarrani.ViewModel
                 CardSuit = CardSuit.Spades
             });
 
-        private ISubject<object> UpKeyObservable {get;} = new Subject<object>();
-        public ReactiveCommand<Unit, Unit> UpKeyCommand {get;}
-
         public SidiBarraniViewModel()
         {
-            UpKeyCommand = ReactiveCommand.Create(() =>
-            {
-                UpKeyObservable.OnNext(new object());
-            });
-            PlayerGroup = GetPlayerGroup(UpKeyObservable);
+            PlayerGroup = PlayerGroupFactory.CreatePlayerGroup();
             Rules = new Rules();
             LogOutput = "";
             SetupReactiveProperties();
@@ -186,43 +179,46 @@ namespace SidiBarrani.ViewModel
                 .Subscribe(r => LogOutput += "[GameResult] " + Environment.NewLine + r.ToString() + Environment.NewLine);
         }
 
-        private static PlayerGroup GetPlayerGroup(ISubject<object> upKeyObservable)
+        private async void StartGame()
+        {
+            Game = new Game(Rules, PlayerGroup);
+            GameRepresentation = new GameRepresentation(Game, PlayerGroup.GetPlayerList());
+            foreach (var player in PlayerGroup.GetPlayerList())
+            {
+                AttachPlayerInteractions(player, GameRepresentation);
+            }
+            GameResult = await Game.ProcessGame();
+            await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
+            GameRepresentation = null;
+            Game = null;
+        }
+
+        private static void AttachPlayerInteractions(Player player, GameRepresentation gameRepresentation)
         {
             var betActionTaskGenerator = new Func<PlayerContext, Task<BetAction>>(playerContext =>
             {
                 return Task.Run(async () =>
                 {
-                    await upKeyObservable.FirstAsync();
-                    return PlayerFactory.RandomBetActionGenerator(playerContext);
+                    await gameRepresentation.UpKeyCommand.FirstAsync();
+                    return PlayerInteractionsFactory.RandomBetActionGenerator(playerContext);
                 });
             });
             var playActionTaskGenerator = new Func<PlayerContext, Task<PlayAction>>(playerContext =>
             {
                 return Task.Run(async () =>
                 {
-                    await upKeyObservable.FirstAsync();
-                    return PlayerFactory.RandomPlayActionGenerator(playerContext);
+                    await gameRepresentation.UpKeyCommand.FirstAsync();
+                    return PlayerInteractionsFactory.RandomPlayActionGenerator(playerContext);
                 });
             });
             var confirmTaskGenerator = new Func<Task>(() =>
             {
                 return Task.Run(async () =>
                 {
-                    await upKeyObservable.FirstAsync();
+                    await gameRepresentation.UpKeyCommand.FirstAsync();
                 });
             });
-
-            return PlayerGroupFactory.CreatePlayerGroup(betActionTaskGenerator, playActionTaskGenerator, confirmTaskGenerator);
-        }
-
-        private async void StartGame()
-        {
-            Game = new Game(Rules, PlayerGroup);
-            GameRepresentation = new GameRepresentation(Game, PlayerGroup.GetPlayerList());
-            GameResult = await Game.ProcessGame();
-            await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
-            GameRepresentation = null;
-            Game = null;
+            player.AttachTaskGenerator(betActionTaskGenerator, playActionTaskGenerator, confirmTaskGenerator);
         }
     }
 }

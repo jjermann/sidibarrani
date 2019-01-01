@@ -8,22 +8,17 @@ using DynamicData;
 
 namespace SidiBarrani.Model
 {
-    public static class PlayerFactory
+    public static class PlayerInteractionsFactory
     {
-        public static Player CreateHumanPlayer(
-            string name,
+        public static void AttachTaskGenerator(
+            this Player player,
             Func<PlayerContext, Task<BetAction>> betActionTaskGenerator,
             Func<PlayerContext, Task<PlayAction>> playActionTaskGenerator,
             Func<Task> confirmTaskGenerator)
         {
-            var player = new Player
-            {
-                Name = name,
-                BetActionGenerator = GetFunctionFromTaskGenerator(betActionTaskGenerator),
-                PlayActionGenerator = GetFunctionFromTaskGenerator(playActionTaskGenerator),
-                ConfirmAction = GetActionFromTaskGenerator(confirmTaskGenerator)
-            };
-            return player;
+            player.BetActionGenerator = GetFunctionFromTaskGenerator(betActionTaskGenerator);
+            player.PlayActionGenerator = GetFunctionFromTaskGenerator(playActionTaskGenerator);
+            player.ConfirmAction = GetActionFromTaskGenerator(confirmTaskGenerator);
         }
 
         private static Func<PlayerContext, T> GetFunctionFromTaskGenerator<T>(Func<PlayerContext, Task<T>> taskGenerator)
@@ -47,16 +42,11 @@ namespace SidiBarrani.Model
             return action;
         }
 
-        public static Player CreateRandomPlayer(string name)
+        public static void AttachRandomGenerators(this Player player)
         {
-            var player = new Player
-            {
-                Name = name,
-                BetActionGenerator = RandomBetActionGenerator,
-                PlayActionGenerator = RandomPlayActionGenerator,
-                ConfirmAction = ImmediateConfirm
-            };
-            return player;
+            player.BetActionGenerator = RandomBetActionGenerator;
+            player.PlayActionGenerator = RandomPlayActionGenerator;
+            player.ConfirmAction = ImmediateConfirm;
         }
 
         public static BetAction RandomBetActionGenerator(PlayerContext playerContext)
