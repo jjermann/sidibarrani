@@ -1,5 +1,8 @@
+using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reactive.Linq;
+using System.Reactive.Subjects;
 using ReactiveUI;
 using SidiBarrani.Model;
 
@@ -29,17 +32,20 @@ namespace SidiBarrani.ViewModel
             get {return _isFaceUp;}
             set {this.RaiseAndSetIfChanged(ref _isFaceUp, value);}
         }
-
+        private ObservableAsPropertyHelper<bool> _canPlay;
+        public bool CanPlay
+        {
+            get {return _canPlay.Value;}
+        }
         private ObservableAsPropertyHelper<string> _imageSource;
         public string ImageSource
         {
             get {return _imageSource.Value;}
         }
-
         public ReactiveCommand<CardRepresentation, PlayAction> PlayActionCommand {get;}
 
         private CardRepresentation() {}
-        public CardRepresentation(Card card, ReactiveCommand<CardRepresentation, PlayAction> playActionCommand = null)
+        public CardRepresentation(Card card, IObservable<PlayAction> playActionObservable = null, ReactiveCommand<CardRepresentation, PlayAction> playActionCommand = null)
         {
             Card = card;
             var suitName = card.CardSuit.ToString().ToLowerInvariant();
@@ -51,6 +57,10 @@ namespace SidiBarrani.ViewModel
             BorderColor = "Black";
             BorderThickness = 1;
 
+            var canPlayObservable = playActionObservable != null
+                ? playActionObservable.Select(a => a!= null)
+                : new Subject<bool>();
+            canPlayObservable.ToProperty(this, x => x.CanPlay, out _canPlay, false);
             PlayActionCommand = playActionCommand;
             this.WhenAnyValue(x => x.IsFaceUp)
                 .Select(isFaceUp => isFaceUp

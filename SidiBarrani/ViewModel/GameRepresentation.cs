@@ -45,7 +45,9 @@ namespace SidiBarrani.ViewModel
             OppositeHandRepresentation = new HandRepresentation(oppositePlayer.Context);
             LeftHandRepresentation = new HandRepresentation(leftPlayer.Context);
 
-            UpKeyCommand = ReactiveCommand.Create(() => {});
+            UpKeyCommand = ReactiveCommand.Create(() => {
+                var foo = "";
+            });
             BetActionObservable = MainBetActionsRepresentation.BetActionCommand;
             PlayActionObservable = MainHandRepresentation.PlayActionCommand;
             this.WhenAnyValue(x => x.Game.GameRound.BetResult)

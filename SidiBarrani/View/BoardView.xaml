@@ -18,7 +18,8 @@
                     CommandParameter = "{Binding}"
                     BorderThickness = "0"
                     Margin = "0"
-                    Padding = "0">
+                    Padding = "0"
+                    IsEnabled = "{Binding CanPlay}">
                 <Border BorderBrush = "{Binding BorderColor, Converter={StaticResource StringToBrushConverter}}"
                         BorderThickness = "{Binding BorderThickness, Converter={StaticResource DoubleToThicknessConverter}}"
                         CornerRadius = "3"

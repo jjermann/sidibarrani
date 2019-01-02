@@ -70,7 +70,15 @@ namespace SidiBarrani.ViewModel
             GameRepresentation = new GameRepresentation(Game, PlayerGroup.GetPlayerList());
             foreach (var player in PlayerGroup.GetPlayerList())
             {
-                AttachPlayerInteractions(player, GameRepresentation, isHuman: player == PlayerGroup.Team1.Player1);
+                var isHuman = player == PlayerGroup.Team1.Player1;
+                if (isHuman)
+                {
+                    AttachHumanPlayerInteractions(player, GameRepresentation);
+                }
+                else
+                {
+                    AttachComputerPlayerInteractions(player, GameRepresentation);
+                }
             }
             GameResult = await Game.ProcessGame();
             await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
@@ -79,49 +87,35 @@ namespace SidiBarrani.ViewModel
             Game = null;
         }
 
-        private static void AttachPlayerInteractions(Player player, GameRepresentation gameRepresentation, bool isHuman = false)
+        private static void AttachHumanPlayerInteractions(Player player, GameRepresentation gameRepresentation)
+        {
+            player.AttachObservable(
+                gameRepresentation.BetActionObservable,
+                gameRepresentation.PlayActionObservable,
+                gameRepresentation.UpKeyCommand);
+        }
+
+        private static void AttachComputerPlayerInteractions(Player player, GameRepresentation gameRepresentation)
         {
             var betActionTaskGenerator = new Func<PlayerContext, Task<BetAction>>(playerContext =>
             {
                 return Task.Run(async () =>
                 {
-                    if (isHuman)
-                    {
-                        var betAction = await gameRepresentation.BetActionObservable.FirstAsync();
-                        return betAction;
-                    }
-                    else
-                    {
-                        await gameRepresentation.UpKeyCommand.FirstAsync();
-                        return PlayerInteractionsFactory.RandomBetActionGenerator(playerContext);
-                    }
+                    await Task.Delay(1000);
+                    return PlayerInteractionsFactory.RandomBetActionGenerator(playerContext);
                 });
             });
             var playActionTaskGenerator = new Func<PlayerContext, Task<PlayAction>>(playerContext =>
             {
                 return Task.Run(async () =>
                 {
-                    //TODO: Uncomment these to activate interactive playing
-                    // if (isHuman)
-                    // {
-                    //     var playAction = await gameRepresentation.PlayActionObservable.FirstAsync();
-                    //     return playAction;
-                    // }
-                    // else
-                    // {
-                    //     await gameRepresentation.UpKeyCommand.FirstAsync();
-                    //     return PlayerInteractionsFactory.RandomPlayActionGenerator(playerContext);
-                    // }
-                    await gameRepresentation.UpKeyCommand.FirstAsync();
+                    await Task.Delay(1000);
                     return PlayerInteractionsFactory.RandomPlayActionGenerator(playerContext);
                 });
             });
-            var confirmTaskGenerator = new Func<Task>(() =>
+            var confirmTaskGenerator = new Func<PlayerContext, Task>(playerContext =>
             {
-                return Task.Run(async () =>
-                {
-                    await gameRepresentation.UpKeyCommand.FirstAsync();
-                });
+                return Task.Delay(1000);
             });
             player.AttachTaskGenerator(betActionTaskGenerator, playActionTaskGenerator, confirmTaskGenerator);
         }

@@ -16,52 +16,28 @@ namespace SidiBarrani.Model
         public Team Team {get; set;}
         public PlayerContext Context {get;set;}
 
-        private ObservableAsPropertyHelper<ReactiveCommand<Unit, BetAction>> _requestBetCommand;
+        private ReactiveCommand<Unit, BetAction> _requestBetCommand;
         public ReactiveCommand<Unit, BetAction> RequestBetCommand
         {
-            get { return _requestBetCommand.Value; }
+            get { return _requestBetCommand; }
+            set { this.RaiseAndSetIfChanged(ref _requestBetCommand, value); }
         }
-        private ObservableAsPropertyHelper<ReactiveCommand<Unit, PlayAction>> _requestPlayCommand;
+        private ReactiveCommand<Unit, PlayAction> _requestPlayCommand;
         public ReactiveCommand<Unit, PlayAction> RequestPlayCommand
         {
-            get { return _requestPlayCommand.Value; }
+            get { return _requestPlayCommand; }
+            set { this.RaiseAndSetIfChanged(ref _requestPlayCommand, value); }
         }
-        private ObservableAsPropertyHelper<ReactiveCommand<Unit, Unit>> _requestConfirmCommand;
+        private ReactiveCommand<Unit, Unit> _requestConfirmCommand;
         public ReactiveCommand<Unit, Unit> RequestConfirmCommand
         {
-            get { return _requestConfirmCommand.Value; }
-        }
-        private Func<PlayerContext, BetAction> _betActionGenerator;
-        public Func<PlayerContext, BetAction> BetActionGenerator
-        {
-            get { return _betActionGenerator; }
-            set { this.RaiseAndSetIfChanged(ref _betActionGenerator, value); }
-        }
-        private Func<PlayerContext, PlayAction> _playActionGenerator;
-        public Func<PlayerContext, PlayAction> PlayActionGenerator
-        {
-            get { return _playActionGenerator; }
-            set { this.RaiseAndSetIfChanged(ref _playActionGenerator, value); }
-        }
-        private Action<PlayerContext> _confirmAction;
-        public Action<PlayerContext> ConfirmAction
-        {
-            get { return _confirmAction; }
-            set { this.RaiseAndSetIfChanged(ref _confirmAction, value); }
+            get { return _requestConfirmCommand; }
+            set { this.RaiseAndSetIfChanged(ref _requestConfirmCommand, value); }
         }
 
         public Player()
         {
             Context = new PlayerContext();
-            this.WhenAnyValue(x => x.BetActionGenerator)
-                .Select(g => ReactiveCommand.CreateFromTask(() => Task.Run(() => g(Context))))
-                .ToProperty(this, x => x.RequestBetCommand, out _requestBetCommand, null);
-            this.WhenAnyValue(x => x.PlayActionGenerator)
-                .Select(g => ReactiveCommand.CreateFromTask(() => Task.Run(() => g(Context))))
-                .ToProperty(this, x => x.RequestPlayCommand, out _requestPlayCommand, null);
-            this.WhenAnyValue(x => x.ConfirmAction)
-                .Select(g => ReactiveCommand.CreateFromTask(() => Task.Run(() => g(Context))))
-                .ToProperty(this, x => x.RequestConfirmCommand, out _requestConfirmCommand, null);
         }
 
         public static async Task<BetAction> GetNextBetAction(IList<Player> playerList)
@@ -85,10 +61,10 @@ namespace SidiBarrani.Model
         // TODO: Allow the possibility for players to declare victory! If they are wrong they lose.
         public static async Task GetPlayerConfirm(IList<Player> playerList)
         {
-            var confirmTask = Observable.Merge(playerList.Select(p => p.RequestConfirmCommand.Execute()))
+            var task = Observable.Merge(playerList.Select(p => p.RequestConfirmCommand.Execute().FirstAsync()))
                 .LastAsync()
                 .ToTask();
-            await confirmTask;
+            await task;
         }
 
         public override string ToString() {

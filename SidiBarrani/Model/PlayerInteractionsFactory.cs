@@ -1,52 +1,48 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
 using System.Reactive.Threading.Tasks;
 using System.Threading;
 using System.Threading.Tasks;
 using DynamicData;
+using ReactiveUI;
 
 namespace SidiBarrani.Model
 {
     public static class PlayerInteractionsFactory
     {
+        public static void AttachObservable(
+            this Player player,
+            IObservable<BetAction> betActionObservable,
+            IObservable<PlayAction> playActionObservable,
+            IObservable<Unit> confirmObservable)
+        {
+            player.RequestBetCommand = ReactiveCommand.CreateFromObservable(() => betActionObservable.FirstAsync());
+            player.RequestPlayCommand = ReactiveCommand.CreateFromObservable(() => playActionObservable.FirstAsync());
+            player.RequestConfirmCommand = ReactiveCommand.CreateFromObservable(() =>
+            {
+                return confirmObservable.FirstAsync();
+            });
+        }
+
         public static void AttachTaskGenerator(
             this Player player,
             Func<PlayerContext, Task<BetAction>> betActionTaskGenerator,
             Func<PlayerContext, Task<PlayAction>> playActionTaskGenerator,
-            Func<Task> confirmTaskGenerator)
+            Func<PlayerContext, Task> confirmTaskGenerator)
         {
-            player.BetActionGenerator = GetFunctionFromTaskGenerator(betActionTaskGenerator);
-            player.PlayActionGenerator = GetFunctionFromTaskGenerator(playActionTaskGenerator);
-            player.ConfirmAction = GetActionFromTaskGenerator(confirmTaskGenerator);
-        }
-
-        private static Func<PlayerContext, T> GetFunctionFromTaskGenerator<T>(Func<PlayerContext, Task<T>> taskGenerator)
-        {
-            var fun = new Func<PlayerContext, T>(playerGroup =>
-            {
-                var task = taskGenerator(playerGroup);
-                var result = task.Result;
-                return result;
-            });
-            return fun;
-        }
-
-        private static Action<PlayerContext> GetActionFromTaskGenerator(Func<Task> taskGenerator)
-        {
-            var action = new Action<PlayerContext>(playerGroup =>
-            {
-                var task = taskGenerator();
-                task.Wait();
-            });
-            return action;
+            player.RequestBetCommand = ReactiveCommand.CreateFromTask(() => betActionTaskGenerator(player.Context));
+            player.RequestPlayCommand = ReactiveCommand.CreateFromTask(() => playActionTaskGenerator(player.Context));
+            player.RequestConfirmCommand = ReactiveCommand.CreateFromTask(() => confirmTaskGenerator(player.Context));
         }
 
         public static void AttachRandomGenerators(this Player player)
         {
-            player.BetActionGenerator = RandomBetActionGenerator;
-            player.PlayActionGenerator = RandomPlayActionGenerator;
-            player.ConfirmAction = ImmediateConfirm;
+            player.RequestBetCommand = ReactiveCommand.Create(() => RandomBetActionGenerator(player.Context));
+            player.RequestPlayCommand = ReactiveCommand.Create(() => RandomPlayActionGenerator(player.Context));
+            player.RequestConfirmCommand = ReactiveCommand.Create(() => ImmediateConfirm(player.Context));
         }
 
         public static BetAction RandomBetActionGenerator(PlayerContext playerContext)
