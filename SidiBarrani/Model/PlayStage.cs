@@ -49,11 +49,10 @@ namespace SidiBarrani.Model
                 .Connect()
                 .ToCollection()
                 .ToProperty(this, x => x.StickResultList, out _stickResultList, new ReadOnlyCollection<StickResult>(new List<StickResult>()));
-
+            CurrentStickRound = new StickRound(Rules, PlayerGroup, initialPlayer, PlayType);
             this.WhenAnyValue(x => x.CurrentStickRound.CurrentPlayer)
                 .Select(p => p)
-                .ToProperty(this, x => x.CurrentPlayer, out _currentPlayer, null);
-            CurrentStickRound = new StickRound(Rules, PlayerGroup, initialPlayer, PlayType);
+                .ToProperty(this, x => x.CurrentPlayer, out _currentPlayer, CurrentStickRound.CurrentPlayer);
         }
 
         public PlayResult GetPlayResult()

@@ -115,7 +115,10 @@ namespace SidiBarrani.ViewModel
             });
             var confirmTaskGenerator = new Func<PlayerContext, Task>(playerContext =>
             {
-                return Task.Delay(1000);
+                return Task.Run(async () =>
+                {
+                    await Task.Delay(1000);
+                });
             });
             player.AttachTaskGenerator(betActionTaskGenerator, playActionTaskGenerator, confirmTaskGenerator);
         }

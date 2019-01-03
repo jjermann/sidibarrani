@@ -39,7 +39,7 @@ namespace SidiBarrani.ViewModel
                 return playAction;
             });
             var getPlayActionObservable = new Func<Card,IObservable<PlayAction>>(c =>
-                this.WhenAnyValue(x => x.AvailablePlayActionList).Select(l => l.SingleOrDefault(a => a.Card == c)));
+                this.WhenAnyValue(x => x.AvailablePlayActionList).Select(l => l.SingleOrDefault(a => a != null && a.Card == c)));
             PlayerContext.CardsInHand
                 .Connect()
                 .Transform(card => new CardRepresentation(card, getPlayActionObservable(card), PlayActionCommand))
