@@ -21,10 +21,7 @@ namespace SidiBarrani.Model
         {
             player.RequestBetCommand = ReactiveCommand.CreateFromObservable(() => betActionObservable.FirstAsync());
             player.RequestPlayCommand = ReactiveCommand.CreateFromObservable(() => playActionObservable.FirstAsync());
-            player.RequestConfirmCommand = ReactiveCommand.CreateFromObservable(() =>
-            {
-                return confirmObservable.FirstAsync();
-            });
+            player.RequestConfirmCommand = ReactiveCommand.CreateFromObservable(() => confirmObservable.FirstAsync());
         }
 
         public static void AttachTaskGenerator(

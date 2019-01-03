@@ -40,31 +40,33 @@ namespace SidiBarrani.Model
             Context = new PlayerContext();
         }
 
+        // TODO: Make this a ReactiveCommand?
         public static async Task<BetAction> GetNextBetAction(IList<Player> playerList)
         {
-            var betActionTask = Observable.Merge(playerList.Select(p => p.RequestBetCommand.Execute()))
-                .FirstAsync(a => a != null)
-                .ToTask();
-            var betAction = await betActionTask;
+            var betActionObservable = Observable.Merge(playerList.Select(p => p.RequestBetCommand.Execute()))
+                .FirstAsync(a => a != null);
+            var betAction = await betActionObservable;
             return betAction;
         }
 
+        // TODO: Make this a ReactiveCommand?
         public static async Task<PlayAction> GetNextPlayAction(IList<Player> playerList)
         {
-            var playActionTask = Observable.Merge(playerList.Select(p => p.RequestPlayCommand.Execute()))
-                .FirstAsync(a => a != null)
-                .ToTask();
-            var playAction = await playActionTask;
+            var playActionObservable = Observable.Merge(playerList.Select(p => p.RequestPlayCommand.Execute()))
+                .FirstAsync(a => a != null);
+            var playAction = await playActionObservable;
             return playAction;
         }
 
         // TODO: Allow the possibility for players to declare victory! If they are wrong they lose.
         public static async Task GetPlayerConfirm(IList<Player> playerList)
         {
-            var task = Observable.Merge(playerList.Select(p => p.RequestConfirmCommand.Execute().FirstAsync()))
-                .LastAsync()
-                .ToTask();
-            await task;
+            // TODO: Maybe rather don't use a task but more something like:
+            // var combinedCommand = ReactiveCommand.CreateCombined(playersList.Select(x => x.RequestConfirmCommand));
+            // and make this a command...
+            var lastConfirmationObservable = Observable.Merge(playerList.Select(p => p.RequestConfirmCommand.Execute()))
+                .LastAsync();
+            await lastConfirmationObservable;
         }
 
         public override string ToString() {

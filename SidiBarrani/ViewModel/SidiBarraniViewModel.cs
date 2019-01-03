@@ -97,6 +97,8 @@ namespace SidiBarrani.ViewModel
 
         private static void AttachComputerPlayerInteractions(Player player, GameRepresentation gameRepresentation)
         {
+            //TODO: Switch to Observables, e.g. 
+            //ReactiveCommand.CreateFromObservable(() => Observable.Delay(TimeSpan.FromSeconds(1));
             var betActionTaskGenerator = new Func<PlayerContext, Task<BetAction>>(playerContext =>
             {
                 return Task.Run(async () =>
