@@ -144,9 +144,9 @@ namespace SidiBarrani.Model
                     .Select(a => a.Player)
                     .ToList();
                 var betActionList = new List<BetAction>();
-                var nextOpposingPlayer = PlayerGroup
+                var nextActiveOpposingPlayer = PlayerGroup
                     .GetPlayerListFromInitialPlayer(CurrentPlayer)
-                    .First(p => p.Team == opposingTeam);
+                    .FirstOrDefault(p => p.Team == opposingTeam && !alreadyPassed.Contains(p));
                 if (!alreadyPassed.Contains(opposingTeam.Player1))
                 {
                     betActionList.Add(new BetAction
@@ -154,7 +154,7 @@ namespace SidiBarrani.Model
                         Player = opposingTeam.Player1,
                         Type = BetActionType.Barrani
                     });
-                    if (nextOpposingPlayer == opposingTeam.Player1)
+                    if (nextActiveOpposingPlayer == opposingTeam.Player1)
                     {
                         betActionList.Add(new BetAction
                         {
@@ -170,7 +170,7 @@ namespace SidiBarrani.Model
                         Player = opposingTeam.Player2,
                         Type = BetActionType.Barrani
                     });
-                    if (nextOpposingPlayer == opposingTeam.Player2)
+                    if (nextActiveOpposingPlayer == opposingTeam.Player2)
                     {
                         betActionList.Add(new BetAction
                         {

@@ -15,7 +15,7 @@ namespace SidiBarrani.Model
         }
         public Bet(PlayType playType, bool isGeneralType = false)
         {
-            BetAmount = new ScoreAmount(isMatch: true, isGeneral: true);
+            BetAmount = new ScoreAmount(isMatch: true, isGeneral: isGeneralType);
             PlayType = playType;
         }
 
