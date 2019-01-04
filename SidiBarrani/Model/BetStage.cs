@@ -195,7 +195,25 @@ namespace SidiBarrani.Model
             var generalBetAction = lastBetAction?.Bet != null && lastBetAction.Bet.BetAmount.IsGeneral
                 ? lastBetAction
                 : null;
-            if (generalBetAction == null || CurrentPlayer.Team != generalBetAction.Player.Team)
+            if (generalBetAction != null)
+            {
+                var opposingTeam = PlayerGroup.GetOtherTeam(generalBetAction.Player.Team);
+                var alreadyPassed = GetFollowedBetActions(generalBetAction)
+                    .Select(a => a.Player)
+                    .ToList();
+                var nextActiveOpposingPlayer = PlayerGroup
+                    .GetPlayerListFromInitialPlayer(CurrentPlayer)
+                    .FirstOrDefault(p => p.Team == opposingTeam && !alreadyPassed.Contains(p));
+                if (nextActiveOpposingPlayer != null)
+                {
+                    validBetActions.Add(new BetAction
+                    {
+                        Player = nextActiveOpposingPlayer,
+                        Type = BetActionType.Pass
+                    });
+                }
+            }
+            else
             {
                 validBetActions.Add(new BetAction
                 {
