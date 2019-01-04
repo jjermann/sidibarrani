@@ -50,7 +50,7 @@ namespace SidiBarrani.Model
             var availableActions = playerContext.AvailableBetActions;
             if (playerContext.IsCurrentPlayer)
             {
-                Task.Delay(1);
+                Thread.Sleep(1);
             }
             else
             {
@@ -60,7 +60,7 @@ namespace SidiBarrani.Model
             var randomAction = availableActions.Items.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             while (randomAction == null)
             {
-                Task.Delay(1);
+                Thread.Sleep(1);
                 randomAction = availableActions.Items.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             }
             return randomAction;
@@ -74,7 +74,7 @@ namespace SidiBarrani.Model
             var availableActions = playerContext.AvailablePlayActions;
             if (playerContext.IsCurrentPlayer)
             {
-                Task.Delay(1);
+                Thread.Sleep(1);
             }
             else
             {
@@ -83,7 +83,7 @@ namespace SidiBarrani.Model
             var randomAction = availableActions.Items.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             while (randomAction == null)
             {
-                Task.Delay(1);
+                Thread.Sleep(1);
                 randomAction = availableActions.Items.OrderBy(a => Guid.NewGuid()).FirstOrDefault();
             }
             return randomAction;
