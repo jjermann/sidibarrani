@@ -1,12 +1,62 @@
 using System;
+using System.Collections.Generic;
 
 namespace SidiBarrani.Model
 {
     public static class CardExtensionMethods
     {
+        public static int GetRank(this Card card, PlayType playType)
+        {
+            if (playType.IsTrump() && card.CardSuit == playType.GetTrumpSuit())
+            {
+                return 10 + _trumpRankList.IndexOf(card.CardRank);
+            }
+            if (playType.IsTrump() || playType == PlayType.UpDown)
+            {
+                return _upDownRankList.IndexOf(card.CardRank);
+            }
+            return _downUpRankList.IndexOf(card.CardRank);
+        }
+
+        private static IList<CardRank> _trumpRankList = new List<CardRank>
+        {
+            CardRank.Six,
+            CardRank.Seven,
+            CardRank.Eight,
+            CardRank.Ten,
+            CardRank.Queen,
+            CardRank.King,
+            CardRank.Ace,
+            CardRank.Nine,
+            CardRank.Jack
+        };
+        private static IList<CardRank> _upDownRankList = new List<CardRank>
+        {
+            CardRank.Six,
+            CardRank.Seven,
+            CardRank.Eight,
+            CardRank.Nine,
+            CardRank.Ten,
+            CardRank.Jack,
+            CardRank.Queen,
+            CardRank.King,
+            CardRank.Ace
+        };
+        private static IList<CardRank> _downUpRankList = new List<CardRank>
+        {
+            CardRank.Ace,
+            CardRank.King,
+            CardRank.Queen,
+            CardRank.Jack,
+            CardRank.Ten,
+            CardRank.Nine,
+            CardRank.Eight,
+            CardRank.Seven,
+            CardRank.Six
+        };
+
         public static int GetValue(this Card card, PlayType playType)
         {
-
             if (playType.IsTrump())
             {
                 var isTrumpCard = card.CardSuit == playType.GetTrumpSuit();

@@ -17,7 +17,7 @@ namespace SidiBarrani.Model
         public int Compare(Card x, Card y)
         {
             if (x.CardSuit == y.CardSuit) {
-                return x.GetValue(ActivePlayType).CompareTo(y.GetValue(ActivePlayType));
+                return x.GetRank(ActivePlayType).CompareTo(y.GetRank(ActivePlayType));
             }
             else
             {
