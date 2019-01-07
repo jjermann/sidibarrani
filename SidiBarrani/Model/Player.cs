@@ -64,9 +64,18 @@ namespace SidiBarrani.Model
             // TODO: Maybe rather don't use a task but more something like:
             // var combinedCommand = ReactiveCommand.CreateCombined(playersList.Select(x => x.RequestConfirmCommand));
             // and make this a command...
-            var lastConfirmationObservable = Observable.Merge(playerList.Select(p => p.RequestConfirmCommand.Execute()))
+            foreach (var p in playerList)
+            {
+                p.Context.CanConfirm = true;
+            }
+            var lastConfirmationObservable = Observable.Merge(playerList.Select(p =>p.RequestConfirmCommand.Execute()))
                 .LastAsync();
             await lastConfirmationObservable;
+            // TODO: CanConfirm should be immediately set to false once confirm was done
+            foreach (var p in playerList)
+            {
+                p.Context.CanConfirm = false;
+            }
         }
 
         public override string ToString() {

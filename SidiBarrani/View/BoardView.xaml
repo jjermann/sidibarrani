@@ -149,6 +149,12 @@
                                 Stretch = "UniformToFill" />
                 </Border.Background>
                 <Grid>
+                    <Button Content = "Proceed"
+                            Command = "{Binding ConfirmCommand}"
+                            HorizontalAlignment = "Right"
+                            VerticalAlignment = "Top"
+                            Margin = "20"
+                            IsVisible = "{Binding CanConfirm}" />
                     <ContentControl HorizontalAlignment = "Center"
                                     VerticalAlignment = "Center"
                                     Content = "{Binding BoardRepresentation}" />
@@ -182,12 +188,6 @@
             </ScrollViewer>
         </DataTemplate>
     </Window.DataTemplates>
-
-    <!-- TODO: Can't we define this inside GameRepresentation? -->
-    <Window.KeyBindings>
-        <KeyBinding Gesture = "Up"
-                    Command = "{Binding GameRepresentation.UpKeyCommand}" />
-    </Window.KeyBindings>
 
     <StackPanel Orientation = "Horizontal"
                 VerticalAlignment = "Top">

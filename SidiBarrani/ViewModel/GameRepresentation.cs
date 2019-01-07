@@ -25,7 +25,12 @@ namespace SidiBarrani.ViewModel
         {
             get { return _betResultRepresentation.Value; }
         }
-        public ReactiveCommand<Unit, Unit> UpKeyCommand {get;}
+        public ReactiveCommand<Unit, Unit> ConfirmCommand {get;}
+        private ObservableAsPropertyHelper<bool> _canConfirm;
+        public bool CanConfirm
+        {
+            get { return _canConfirm.Value; }
+        }
         public IObservable<BetAction> BetActionObservable {get;}
         public IObservable<PlayAction> PlayActionObservable {get;}
 
@@ -45,11 +50,11 @@ namespace SidiBarrani.ViewModel
             OppositeHandRepresentation = new HandRepresentation(oppositePlayer.Context);
             LeftHandRepresentation = new HandRepresentation(leftPlayer.Context);
 
-            UpKeyCommand = ReactiveCommand.Create(() => {
-                var foo = "";
-            });
+            ConfirmCommand = ReactiveCommand.Create(() => {});
             BetActionObservable = MainBetActionsRepresentation.BetActionCommand;
             PlayActionObservable = MainHandRepresentation.PlayActionCommand;
+            mainPlayer.Context.WhenAnyValue(x => x.CanConfirm)
+                .ToProperty(this, x => x.CanConfirm, out _canConfirm, false);
             this.WhenAnyValue(x => x.Game.GameRound.BetResult)
                 .Select(betResult => betResult == null ? null : new BetResultRepresentation(betResult))
                 .ToProperty(this, x => x.BetResultRepresentation, out _betResultRepresentation, null);

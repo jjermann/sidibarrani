@@ -63,7 +63,7 @@ namespace SidiBarrani.ViewModel
             StartGame();
         }
 
-        private async void StartGame()
+        private async Task<GameResult> StartGame()
         {
             Game = new Game(Rules, PlayerGroup);
             LogRepresentation = new LogRepresentation(Game, PlayerGroup);
@@ -80,11 +80,13 @@ namespace SidiBarrani.ViewModel
                     AttachComputerPlayerInteractions(player, GameRepresentation);
                 }
             }
-            GameResult = await Game.ProcessGame();
+            var gameResult = await Game.ProcessGame();
+            GameResult = gameResult;
             await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
             GameRepresentation = null;
             LogRepresentation = null;
             Game = null;
+            return gameResult;
         }
 
         private static void AttachHumanPlayerInteractions(Player player, GameRepresentation gameRepresentation)
@@ -92,7 +94,7 @@ namespace SidiBarrani.ViewModel
             player.AttachObservable(
                 gameRepresentation.BetActionObservable,
                 gameRepresentation.PlayActionObservable,
-                gameRepresentation.UpKeyCommand);
+                gameRepresentation.ConfirmCommand);
         }
 
         private static void AttachComputerPlayerInteractions(Player player, GameRepresentation gameRepresentation)
