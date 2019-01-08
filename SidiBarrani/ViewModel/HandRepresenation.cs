@@ -36,6 +36,7 @@ namespace SidiBarrani.ViewModel
             {
                 var playAction = AvailablePlayActionList
                     .SingleOrDefault(a => a != null && r != null && a.Card == r.Card);
+                    PlayerContext.AvailablePlayActions.Clear();
                 return playAction;
             });
             var getPlayActionObservable = new Func<Card,IObservable<PlayAction>>(c =>

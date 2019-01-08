@@ -75,19 +75,26 @@ namespace SidiBarrani.ViewModel
             PlayerContext = playerContext;
             BetActionCommand = ReactiveCommand.Create<string, BetAction>(t =>
             {
+                BetAction betAction;
                 switch(t)
                 {
                     case "Pass":
-                        return BetActionList.SingleOrDefault(a => a != null && a.Type == BetActionType.Pass);
+                        betAction = BetActionList.SingleOrDefault(a => a != null && a.Type == BetActionType.Pass);
+                        break;
                     case "Sidi":
-                        return BetActionList.SingleOrDefault(a => a != null && a.Type == BetActionType.Sidi);
+                        betAction = BetActionList.SingleOrDefault(a => a != null && a.Type == BetActionType.Sidi);
+                        break;
                     case "Barrani":
-                        return BetActionList.SingleOrDefault(a => a != null && a.Type == BetActionType.Barrani);
+                        betAction = BetActionList.SingleOrDefault(a => a != null && a.Type == BetActionType.Barrani);
+                        break;
                     case "Bet":
-                        return BetActionList.SingleOrDefault(a => a != null && SelectedBetRepresentation?.Bet != null && a.Type == BetActionType.Bet && a.Bet == SelectedBetRepresentation.Bet);
+                        betAction = BetActionList.SingleOrDefault(a => a != null && SelectedBetRepresentation?.Bet != null && a.Type == BetActionType.Bet && a.Bet == SelectedBetRepresentation.Bet);
+                        break;
                     default:
                         throw new ArgumentException();
                 }
+                PlayerContext.AvailableBetActions.Clear();
+                return betAction;
             });
             PlayerContext.AvailableBetActions
                 .Connect()

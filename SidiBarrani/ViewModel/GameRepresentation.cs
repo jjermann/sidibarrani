@@ -50,7 +50,10 @@ namespace SidiBarrani.ViewModel
             OppositeHandRepresentation = new HandRepresentation(oppositePlayer.Context);
             LeftHandRepresentation = new HandRepresentation(leftPlayer.Context);
 
-            ConfirmCommand = ReactiveCommand.Create(() => {});
+            ConfirmCommand = ReactiveCommand.Create(() =>
+            {
+                mainPlayer.Context.CanConfirm = false;
+            });
             BetActionObservable = MainBetActionsRepresentation.BetActionCommand;
             PlayActionObservable = MainHandRepresentation.PlayActionCommand;
             mainPlayer.Context.WhenAnyValue(x => x.CanConfirm)
