@@ -65,11 +65,11 @@ namespace SidiBarrani.Model
             DistributeCards(PlayerGroup, InitialPlayer, cardPile);
             BetStage = new BetStage(Rules, PlayerGroup, InitialPlayer);
             BetResult = await ProcessBetting(BetStage, PlayerGroup);
-            await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
+            await PlayerGroup.RequestConfirmCommand.Execute();
             BetStage = null;
             PlayStage = new PlayStage(Rules, PlayerGroup, InitialPlayer, BetResult.Bet.PlayType);
             PlayResult = await ProcessPlaying(PlayStage, PlayerGroup);
-            await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
+            await PlayerGroup.RequestConfirmCommand.Execute();
             PlayStage = null;
             var roundResult = DetermineRoundResult(Rules, PlayerGroup, BetResult, PlayResult);
             BetResult = null;
@@ -97,11 +97,8 @@ namespace SidiBarrani.Model
             var betResult = betStage.GetBetResult();
             while (betResult == null) {
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(betStage.CurrentPlayer);
-                UpdatePlayerContext(playerList, betStage);
-                var betAction = await Player.GetNextBetAction(playerList);
-                ResetPlayerActionContext(playerGroup.GetPlayerList());
-                BetAction = betAction;
-                betStage.AddBetActionAndProceed(betAction);
+                BetAction = await PlayerGroup.RequestBetCommand.Execute(betStage);
+                betStage.AddBetActionAndProceed(BetAction);
                 betResult = betStage.GetBetResult();
             }
             return betResult;
@@ -113,15 +110,12 @@ namespace SidiBarrani.Model
             while (playResult == null)
             {
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(playStage.CurrentPlayer);
-                UpdatePlayerContext(playerList, playStage);
-                var playAction = await Player.GetNextPlayAction(playerList);
-                ResetPlayerActionContext(playerList);
-                PlayAction = playAction;
-                var stickResult = playStage.AddPlayActionAndProceed(playAction);
+                PlayAction = await PlayerGroup.RequestPlayCommand.Execute(playStage);
+                var stickResult = playStage.AddPlayActionAndProceed(PlayAction);
                 if (stickResult != null)
                 {
                     playStage.ProcessStickResult(stickResult);
-                    await Player.GetPlayerConfirm(playerList);
+                    await PlayerGroup.RequestConfirmCommand.Execute();
                     playStage.UpdateStickRound(stickResult);
                 }
                 playResult = playStage.GetPlayResult();
@@ -193,48 +187,6 @@ namespace SidiBarrani.Model
                         : otherTeamFinalScore,
                 };
                 return roundResult;
-            }
-        }
-
-        private static void UpdatePlayerContext(IList<Player> playerList, BetStage betStage)
-        {
-            ResetPlayerActionContext(playerList);
-            var validActionDictionary = betStage
-                .GetValidBetActions()
-                .GroupBy(a => a.Player)
-                .ToDictionary(g => g.Key, g => g.ToList());
-            foreach (var player in playerList) {
-                var hasActions = validActionDictionary.ContainsKey(player);
-                if (hasActions)
-                {
-                    player.Context.AvailableBetActions.AddRange(validActionDictionary[player]);
-                }
-                player.Context.IsCurrentPlayer = player == betStage.CurrentPlayer;
-            }
-        }
-
-        private static void ResetPlayerActionContext(IList<Player> playerList)
-        {
-            foreach (var player in playerList) {
-                player.Context.AvailableBetActions.Clear();
-                player.Context.AvailablePlayActions.Clear();
-            }
-        }
-
-        private static void UpdatePlayerContext(IList<Player> playerList, PlayStage playStage)
-        {
-            ResetPlayerActionContext(playerList);
-            var validActionDictionary = playStage
-                .GetValidPlayActions()
-                .GroupBy(a => a.Player)
-                .ToDictionary(g => g.Key, g => g.ToList());
-            foreach (var player in playerList) {
-                var hasActions = validActionDictionary.ContainsKey(player);
-                if (hasActions)
-                {
-                    player.Context.AvailablePlayActions.AddRange(validActionDictionary[player]);
-                }
-                player.Context.IsCurrentPlayer = player == playStage.CurrentPlayer;
             }
         }
     }

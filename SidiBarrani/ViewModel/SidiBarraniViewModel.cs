@@ -80,9 +80,10 @@ namespace SidiBarrani.ViewModel
                     AttachComputerPlayerInteractions(player, GameRepresentation);
                 }
             }
+            PlayerGroup.AttachCommands();
             var gameResult = await Game.ProcessGame();
             GameResult = gameResult;
-            await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
+            await PlayerGroup.RequestConfirmCommand.Execute();
             GameRepresentation = null;
             LogRepresentation = null;
             Game = null;

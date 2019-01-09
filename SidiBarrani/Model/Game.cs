@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Reactive.Linq;
 using DynamicData;
 using DynamicData.Binding;
 using ReactiveUI;
@@ -53,7 +54,7 @@ namespace SidiBarrani.Model
             {
                 GameRound = new GameRound(Rules, PlayerGroup, initialPlayer);
                 RoundResult = await GameRound.ProcessRound();
-                await Player.GetPlayerConfirm(PlayerGroup.GetPlayerList());
+                await PlayerGroup.RequestConfirmCommand.Execute();
                 GameRound = null;
                 RoundResultSourceList.Add(RoundResult);
                 initialPlayer = PlayerGroup.GetNextPlayer(initialPlayer);

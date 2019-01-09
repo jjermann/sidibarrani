@@ -1,6 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
+using DynamicData;
+using ReactiveUI;
 
 namespace SidiBarrani.Model
 {
@@ -14,6 +19,77 @@ namespace SidiBarrani.Model
         {
             Team1 = team1;
             Team2 = team2;
+        }
+
+        public ReactiveCommand<BetStage, BetAction> RequestBetCommand {get;set;}
+        public ReactiveCommand<PlayStage, PlayAction> RequestPlayCommand {get;set;}
+        public ReactiveCommand<Unit, Unit> RequestConfirmCommand {get;set;}
+
+        public void AttachCommands()
+        {
+            var playerList = GetPlayerList();
+            var betActionObservable = Observable.Merge(playerList.Select(p => p.RequestBetCommand.Execute()))
+                .FirstAsync(a => a != null);
+            var playActionObservable = Observable.Merge(playerList.Select(p => p.RequestPlayCommand.Execute()))
+                .FirstAsync(a => a != null);
+            var lastConfirmationObservable = Observable.Merge(playerList.Select(p =>p.RequestConfirmCommand.Execute()))
+                .LastAsync();
+            RequestBetCommand = ReactiveCommand.CreateFromTask<BetStage, BetAction>(betStage => Task.Run(async () =>
+            {
+                foreach (var player in playerList) {
+                    player.Context.AvailableBetActions.Clear();
+                }
+                var validActionDictionary = betStage
+                    .GetValidBetActions()
+                    .GroupBy(a => a.Player)
+                    .ToDictionary(g => g.Key, g => g.ToList());
+                foreach (var player in playerList) {
+                    var hasActions = validActionDictionary.ContainsKey(player);
+                    if (hasActions)
+                    {
+                        player.Context.AvailableBetActions.AddRange(validActionDictionary[player]);
+                    }
+                    player.Context.IsCurrentPlayer = player == betStage.CurrentPlayer;
+                }
+                var betAction = await betActionObservable;
+                foreach (var player in playerList) {
+                    player.Context.AvailableBetActions.Clear();
+                }
+                return betAction;
+            }));
+            RequestPlayCommand = ReactiveCommand.CreateFromTask<PlayStage, PlayAction>(playStage => Task.Run(async () =>
+            {
+                foreach (var player in playerList) {
+                    player.Context.AvailablePlayActions.Clear();
+                }
+                var validActionDictionary = playStage
+                    .GetValidPlayActions()
+                    .GroupBy(a => a.Player)
+                    .ToDictionary(g => g.Key, g => g.ToList());
+                foreach (var player in playerList) {
+                    var hasActions = validActionDictionary.ContainsKey(player);
+                    if (hasActions)
+                    {
+                        player.Context.AvailablePlayActions.AddRange(validActionDictionary[player]);
+                    }
+                    player.Context.IsCurrentPlayer = player == playStage.CurrentPlayer;
+                }
+                var playAction = await playActionObservable;
+                foreach (var player in playerList) {
+                    player.Context.AvailablePlayActions.Clear();
+                }
+                return playAction;
+            }));
+            RequestConfirmCommand = ReactiveCommand.CreateFromTask(() => Task.Run(async () =>
+            {
+                foreach (var player in playerList) {
+                    player.Context.CanConfirm = true;
+                }
+                await lastConfirmationObservable;
+                foreach (var player in playerList) {
+                    player.Context.CanConfirm = false;
+                }
+            }));
         }
 
         public IList<Player> GetPlayerList()
