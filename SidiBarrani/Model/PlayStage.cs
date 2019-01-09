@@ -53,6 +53,9 @@ namespace SidiBarrani.Model
             this.WhenAnyValue(x => x.CurrentStickRound.CurrentPlayer)
                 .Select(p => p)
                 .ToProperty(this, x => x.CurrentPlayer, out _currentPlayer, CurrentStickRound.CurrentPlayer);
+            this.WhenAnyValue(x => x.CurrentStickRound.CurrentPlayer)
+                .Select(p => p)
+                .ToProperty(this, x => x.CurrentPlayer, out _currentPlayer, CurrentStickRound.CurrentPlayer);
         }
 
         public PlayResult GetPlayResult()

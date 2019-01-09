@@ -22,11 +22,10 @@ namespace SidiBarrani.Model
             get { return _betStage; }
             private set { this.RaiseAndSetIfChanged(ref _betStage, value); }
         }
-        private BetAction _betAction;
+        private ObservableAsPropertyHelper<BetAction> _betAction;
         public BetAction BetAction
         {
-            get { return _betAction; }
-            private set { this.RaiseAndSetIfChanged(ref _betAction, value); }
+            get { return _betAction.Value; }
         }
         private BetResult _betResult;
         public BetResult BetResult
@@ -40,12 +39,10 @@ namespace SidiBarrani.Model
             get { return _playStage; }
             private set { this.RaiseAndSetIfChanged(ref _playStage, value); }
         }
-        // TODO: Make this readonly
-        private PlayAction _playAction;
+        private ObservableAsPropertyHelper<PlayAction> _playAction;
         public PlayAction PlayAction
         {
-            get { return _playAction; }
-            private set { this.RaiseAndSetIfChanged(ref _playAction, value); }
+            get { return _playAction.Value; }
         }
         private PlayResult _playResult;
         public PlayResult PlayResult
@@ -58,6 +55,12 @@ namespace SidiBarrani.Model
             Rules = rules;
             PlayerGroup = playerGroup;
             InitialPlayer = initialPlayer;
+            this.WhenAnyValue(x => x.BetStage.BetActionList)
+                .Select(actionList => actionList?.LastOrDefault())
+                .ToProperty(this, x => x.BetAction, out _betAction, null);
+            this.WhenAnyValue(x => x.PlayStage.CurrentStickRound.PlayActionList)
+                .Select(actionList => actionList?.LastOrDefault())
+                .ToProperty(this, x => x.PlayAction, out _playAction, null);
         }
         public async Task<RoundResult> ProcessRound()
         {
@@ -97,8 +100,8 @@ namespace SidiBarrani.Model
             var betResult = betStage.GetBetResult();
             while (betResult == null) {
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(betStage.CurrentPlayer);
-                BetAction = await PlayerGroup.RequestBetCommand.Execute(betStage);
-                betStage.AddBetActionAndProceed(BetAction);
+                var betAction = await PlayerGroup.RequestBetCommand.Execute(betStage);
+                betStage.AddBetActionAndProceed(betAction);
                 betResult = betStage.GetBetResult();
             }
             return betResult;
@@ -110,8 +113,8 @@ namespace SidiBarrani.Model
             while (playResult == null)
             {
                 var playerList = playerGroup.GetPlayerListFromInitialPlayer(playStage.CurrentPlayer);
-                PlayAction = await PlayerGroup.RequestPlayCommand.Execute(playStage);
-                var stickResult = playStage.AddPlayActionAndProceed(PlayAction);
+                var playAction = await PlayerGroup.RequestPlayCommand.Execute(playStage);
+                var stickResult = playStage.AddPlayActionAndProceed(playAction);
                 if (stickResult != null)
                 {
                     playStage.ProcessStickResult(stickResult);
