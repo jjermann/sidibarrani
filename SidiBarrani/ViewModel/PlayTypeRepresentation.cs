@@ -15,7 +15,7 @@ namespace SidiBarrani.ViewModel
             PlayType = playType;
             Size = size;
             var playTypeStr = playType.GetStringRepresentation().ToLowerInvariant();
-            ImageSource = Path.Combine(@"Images", $"{playTypeStr}.png");
+            ImageSource = Path.Combine(Constants.BaseUri, @"Images", $"{playTypeStr}.png");
         }
     }
 }

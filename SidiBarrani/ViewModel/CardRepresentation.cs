@@ -50,8 +50,8 @@ namespace SidiBarrani.ViewModel
             Card = card;
             var suitName = card.CardSuit.ToString().ToLowerInvariant();
             var rankName = card.CardRank.ToString().ToLowerInvariant();
-            CardImageSource = Path.Combine(@"Images", $"{suitName}_{rankName}.png");
-            BackImageSource = Path.Combine(@"Images", "card_back.png");
+            CardImageSource = Path.Combine(Constants.BaseUri, @"Images", $"{suitName}_{rankName}.png");
+            BackImageSource = Path.Combine(Constants.BaseUri, @"Images", "card_back.png");
 
             IsFaceUp = true;
             BorderColor = "Black";

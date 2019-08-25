@@ -1,3 +1,5 @@
+using System.IO;
+using System.Reflection;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Markup.Xaml;
@@ -10,6 +12,7 @@ namespace SidiBarrani.View
     {
         public BoardView()
         {
+            Directory.SetCurrentDirectory(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location)); 
             InitializeComponent();
             this.AttachDevTools();
         }

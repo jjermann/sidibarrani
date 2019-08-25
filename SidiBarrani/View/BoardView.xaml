@@ -51,7 +51,7 @@
                     Height = "600"
                     Padding = "10">
                 <Border.Background>
-                    <ImageBrush Source = "Images/mainBoard.jpg"
+                    <ImageBrush Source = "avares://SidiBarrani/Assets/Images/mainBoard.jpg"
                                 Stretch = "UniformToFill" />
                 </Border.Background>
                 <Grid>
@@ -145,7 +145,7 @@
             <Border Width = "1000"
                     Height = "1000">
                 <Border.Background>
-                    <ImageBrush Source = "Images/background.jpg"
+                    <ImageBrush Source = "avares://SidiBarrani/Assets/Images/background.jpg"
                                 Stretch = "UniformToFill" />
                 </Border.Background>
                 <Grid>
