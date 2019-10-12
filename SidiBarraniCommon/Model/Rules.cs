@@ -1,13 +1,19 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace SidiBarraniCommon.Model
 {
-    public class Rules
+    public class Rules : ICloneable
     {
         public int MinBet { get; set; } = 40;
         public bool AllowUpDown { get; set; } = true;
         public int EndScore { get; set; } = 200;
+
+        public object Clone()
+        {
+            return MemberwiseClone();
+        }
 
         public IList<Bet> GetValidBets()
         {

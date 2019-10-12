@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reactive.Linq;
+using ReactiveUI;
 using SidiBarraniCommon;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Cache;
@@ -9,15 +11,31 @@ using SidiBarraniCommon.Model;
 
 namespace SidiBarraniClient
 {
-    public class SidiBarraniClientImplementation : ISidiBarraniClientApi
+    public class SidiBarraniClientImplementation : ReactiveObject, ISidiBarraniClientApi
     {
         public ISidiBarraniServerApi SidiBarraniServerApi {get;set;}
         public IList<GameInfo> OpenGameList {get;set;}
-        public GameInfo GameInfo {get;set;}
+        private GameInfo _gameInfo;
+        public GameInfo GameInfo
+        {
+            get { return _gameInfo; }
+            set { this.RaiseAndSetIfChanged(ref _gameInfo, value); }
+        }
         public PlayerInfo PlayerInfo {get;set;}
         public PlayerGameInfo PlayerGameInfo {get;set;}
 
-        private ActionCache _actionCache = new ActionCache(new Rules());
+        private ObservableAsPropertyHelper<ActionCache> _actionCache;
+        private ActionCache ActionCache
+        {
+            get { return _actionCache.Value; }
+        }
+
+        public SidiBarraniClientImplementation()
+        {
+            this.WhenAnyValue(x => x.GameInfo, x => x.GameInfo.Rules, (gameInfo, r) => gameInfo?.Rules)
+                .Select(x => x != null ? new ActionCache(x) : null)
+                .ToProperty(this, x => x.ActionCache, out _actionCache, null);
+        }
 
         public bool SetPlayerGameInfo(PlayerGameInfo playerGameInfo)
         {
@@ -26,10 +44,10 @@ namespace SidiBarraniClient
             return true;
         }
 
-        public bool OpenGame(string gameName = "Game", string team1Name = "Team1", string team2Name = "Team2")
+        public bool OpenGame(Rules rules = null, string gameName = "Game", string team1Name = "Team1", string team2Name = "Team2")
         {
-            Console.WriteLine($"{this}: OpenGame({gameName}, {team1Name}, {team2Name})");
-            var gameInfo = SidiBarraniServerApi?.OpenGame(gameName, team1Name, team2Name);
+            Console.WriteLine($"{this}: OpenGame({rules}, {gameName}, {team1Name}, {team2Name})");
+            var gameInfo = SidiBarraniServerApi?.OpenGame(rules, gameName, team1Name, team2Name);
             if (gameInfo == null)
             {
                 return false;
@@ -84,7 +102,7 @@ namespace SidiBarraniClient
             Console.WriteLine($"{this}: GetValidActions()");
             var actionList = PlayerGameInfo
                 ?.ValidActionList
-                ?.Select(id => _actionCache.ConstructAction(GameInfo, PlayerInfo, id.ActionId))
+                ?.Select(id => ActionCache.ConstructAction(GameInfo, PlayerInfo, id.ActionId))
                 .ToList();
             return actionList ?? new List<ActionBase>();
         }

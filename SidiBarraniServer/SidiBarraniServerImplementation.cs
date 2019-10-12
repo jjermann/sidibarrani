@@ -22,9 +22,10 @@ namespace SidiBarraniServer
             _random = new Random();
         }
 
-        public GameInfo OpenGame(string gameName = "Game", string team1Name = "Team1", string team2Name = "Team2")
+        public GameInfo OpenGame(Rules rules = null, string gameName = "Game", string team1Name = "Team1", string team2Name = "Team2")
         {
-            Console.WriteLine($"{this}: OpenGame({gameName},{team1Name},{team2Name})");
+            rules = rules ?? new Rules();
+            Console.WriteLine($"{this}: OpenGame({rules}, {gameName}, {team1Name}, {team2Name})");
             if (gameName == null || team1Name == null || team2Name == null)
             {
                 return null;
@@ -46,6 +47,7 @@ namespace SidiBarraniServer
             {
                 GameName = gameName,
                 GameId = Guid.NewGuid().ToString(),
+                Rules = rules,
                 PlayerGroupInfo = playerGroupInfo
             };
             _gameServiceDictionary[gameInfo.GameId] = new GameService

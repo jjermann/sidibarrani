@@ -1,8 +1,6 @@
 using System;
 using System.Linq;
 using SidiBarraniCommon.Model;
-using SidiBarraniCommon.Action;
-using SidiBarraniCommon.Info;
 using SidiBarraniServer;
 using SidiBarraniClient;
 using System.Collections.Generic;
@@ -34,8 +32,12 @@ namespace SidiBaraniConsole
                 SidiBarraniServerApi = sidiBarraniServer
             };
 
-            client1.OpenGame("Game1", "TeamA1", "TeamA2");
-            client2.OpenGame("Game2", "TeamB1", "TeamB2");
+            var rules = new Rules
+            {
+                EndScore = 100
+            };
+            client1.OpenGame(rules, "Game1", "TeamA1", "TeamA2");
+            client2.OpenGame(null, "Game2", "TeamB1", "TeamB2");
             client3.RefreshOpenGames();
             client4.RefreshOpenGames();
             client1.ConnectToGame(client1.OpenGameList.First(), "Player1");

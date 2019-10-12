@@ -1,4 +1,5 @@
 ﻿using System;
+using SidiBarraniCommon.Model;
 
 namespace SidiBarraniCommon.Info
 {
@@ -6,6 +7,7 @@ namespace SidiBarraniCommon.Info
     {
         public string GameName { get; set; }
         public string GameId { get; set; }
+        public Rules Rules { get; set; }
         public PlayerGroupInfo PlayerGroupInfo {get;set;}
 
         public object Clone()
@@ -14,6 +16,7 @@ namespace SidiBarraniCommon.Info
             {
                 GameName = GameName,
                 GameId = GameId,
+                Rules = (Rules)Rules.Clone(),
                 PlayerGroupInfo = (PlayerGroupInfo)PlayerGroupInfo?.Clone()
             };
         }
