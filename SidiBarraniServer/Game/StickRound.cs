@@ -19,7 +19,11 @@ namespace SidiBarraniServer.Game
         public StickResult StickResult {get;set;}
         public CardSuit? StickSuit => PlayActionList?.FirstOrDefault()?.Card.CardSuit;
         
-        public StickRound(PlayerGroupInfo playerGroupInfo, IDictionary<string,CardPile> playerHandDictionary, PlayerInfo initialPlayer, PlayType playType)
+        public StickRound(
+            PlayerGroupInfo playerGroupInfo,
+            IDictionary<string,CardPile> playerHandDictionary,
+            PlayerInfo initialPlayer,
+            PlayType playType)
         {
             PlayerGroupInfo = playerGroupInfo;
             PlayerHandDictionary = playerHandDictionary;
@@ -29,10 +33,6 @@ namespace SidiBarraniServer.Game
 
         public IList<int> GetValidActionIdList(string playerId)
         {
-            if (StickResult != null)
-            {
-                return new List<int>();
-            }
             var validPlayActionList = GetValidPlayActions();
             return validPlayActionList
                 .Where(a => a.PlayerInfo.PlayerId == playerId)
@@ -84,6 +84,10 @@ namespace SidiBarraniServer.Game
 
         private IList<PlayAction> GetValidPlayActions()
         {
+            if (StickResult != null)
+            {
+                return new List<PlayAction>();
+            }
             var allHandPlayActionList = PlayerHandDictionary[CurrentPlayer.PlayerId].Cards
                 .Select(c => new PlayAction
                 {

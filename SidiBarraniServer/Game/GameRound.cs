@@ -21,9 +21,13 @@ namespace SidiBarraniServer.Game
         public BetResult BetResult => BetStage?.BetResult;
         public PlayResult PlayResult => PlayStage?.PlayResult;
         public RoundResult RoundResult {get;set;}
-        public ActionType GameRoundActionTypeState {get;set;}
+        public ActionType ExpectedActionType {get;set;}
 
-        public GameRound(Rules rules, PlayerGroupInfo playerGroup, PlayerInfo initialPlayer, CardPile deck)
+        public GameRound(
+            Rules rules,
+            PlayerGroupInfo playerGroup,
+            PlayerInfo initialPlayer,
+            CardPile deck)
         {
             Rules = rules;
             PlayerGroupInfo = playerGroup;
@@ -32,18 +36,13 @@ namespace SidiBarraniServer.Game
             PlayerHandDictionary = playerList
                 .ToDictionary(p => p.PlayerId, p => new CardPile(deck.Draw(9)));
             BetStage = new BetStage(Rules, PlayerGroupInfo, PlayerHandDictionary, InitialPlayer);
-            GameRoundActionTypeState = ActionType.BetAction;
+            ExpectedActionType = ActionType.BetAction;
         }
 
         public IList<int> GetValidActionIdList(string playerId)
         {
-            switch (GameRoundActionTypeState)
+            switch (ExpectedActionType)
             {
-                case ActionType.ConfirmAction:
-                    return new List<int>
-                    {
-                        ConfirmAction.GetStaticActionId()
-                    };
                 case ActionType.BetAction:
                     return BetStage.GetValidActionIdList(playerId);
                 case ActionType.PlayAction:
@@ -55,19 +54,15 @@ namespace SidiBarraniServer.Game
 
         public void ProcessAction(ActionBase action)
         {
-            //TODO: How to handle confirm actions??
             switch (action.GetActionType())
             {
-                // case ActionType.SetupAction:
-                //     ProcessSetupAction((SetupAction)action);
-                //     return;
                 case ActionType.BetAction:
                     BetStage.ProcessBetAction((BetAction)action);
                     if (BetStage.BetResult != null)
                     {
                         var playType = BetStage.BetResult.Bet.PlayType;
                         PlayStage = new PlayStage(Rules, PlayerGroupInfo, PlayerHandDictionary, InitialPlayer, playType);
-                        GameRoundActionTypeState = ActionType.PlayAction;
+                        ExpectedActionType = ActionType.PlayAction;
                     }
                     return;
                 case ActionType.PlayAction:
@@ -75,25 +70,13 @@ namespace SidiBarraniServer.Game
                     if (PlayStage.PlayResult != null)
                     {
                         RoundResult = GetRoundResult();
-                        GameRoundActionTypeState = ActionType.Invalid;
+                        ExpectedActionType = ActionType.Invalid;
                     }
                     return;
-                // case ActionType.ConfirmAction:
-                //     ProcessConfirmAction((ConfirmAction)action);
-                //     return;
                 default:
                     throw new Exception($"Invalid ActionType {action?.GetActionType()}!");
             }
         }
-
-        // private bool ProcessSetupAction(SetupAction setupAction)
-        // {
-        //     return true;
-        // }
-        // private bool ProcessConfirmAction(ConfirmAction confirmAction)
-        // {
-        //     return true;
-        // }
 
         private RoundResult GetRoundResult()
         {

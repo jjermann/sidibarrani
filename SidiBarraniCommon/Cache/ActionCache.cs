@@ -10,7 +10,6 @@ namespace SidiBarraniCommon.Cache
     public class ActionCache
     {
         private readonly Rules _rules;
-        private readonly IDictionary<int, SetupAction> _setupDictionary;
         private readonly IDictionary<int, BetAction> _betDictionary;
         private readonly IDictionary<int, PlayAction> _playDictionary;
         private readonly IDictionary<int, ConfirmAction> _confirmDictionary;
@@ -18,7 +17,6 @@ namespace SidiBarraniCommon.Cache
         public ActionCache(Rules rules)
         {
             _rules = rules;
-            _setupDictionary = GetSetupActionList().ToDictionary(a => a.GetActionId(), a => a);
             _betDictionary = GetBetActionList().ToDictionary(a => a.GetActionId(), a => a);
             _playDictionary = GetPlayActionList().ToDictionary(a => a.GetActionId(), a => a);
             _confirmDictionary = GetConfirmActionList().ToDictionary(a => a.GetActionId(), a => a);
@@ -26,13 +24,6 @@ namespace SidiBarraniCommon.Cache
 
         public ActionBase ConstructAction(GameInfo gameInfo, PlayerInfo playerInfo, int actionId)
         {
-            if (_setupDictionary.ContainsKey(actionId))
-            {
-                var setupAction = (SetupAction)_setupDictionary[actionId].Clone();
-                setupAction.GameInfo = gameInfo;
-                setupAction.PlayerInfo = playerInfo;
-                return setupAction;
-            }
             if (_betDictionary.ContainsKey(actionId))
             {
                 var betAction = (BetAction)_betDictionary[actionId].Clone();
@@ -55,17 +46,6 @@ namespace SidiBarraniCommon.Cache
                 return confirmAction;
             }
             return null;
-        }
-
-        private IList<SetupAction> GetSetupActionList()
-        {
-            return new List<SetupAction>
-            {
-                new SetupAction
-                {
-                    SetupType = SetupType.StartGame
-                }
-            };
         }
 
         private IList<BetAction> GetBetActionList()

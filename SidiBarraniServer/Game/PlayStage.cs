@@ -18,7 +18,12 @@ namespace SidiBarraniServer.Game
         public PlayResult PlayResult {get;set;}
         public StickRound CurrentStickRound => StickRoundList?.LastOrDefault();
 
-        public PlayStage(Rules rules, PlayerGroupInfo playerGroupInfo, IDictionary<string,CardPile> playerHandDictionary, PlayerInfo initialPlayer, PlayType playType)
+        public PlayStage(
+            Rules rules,
+            PlayerGroupInfo playerGroupInfo,
+            IDictionary<string,CardPile> playerHandDictionary,
+            PlayerInfo initialPlayer,
+            PlayType playType)
         {
             Rules = rules;
             PlayerGroupInfo = playerGroupInfo;
@@ -50,6 +55,7 @@ namespace SidiBarraniServer.Game
                     StickRoundList.Add(stickRound);
                 }
             }
+            return;
         }
 
         public PlayResult GetPlayResult()

@@ -18,7 +18,11 @@ namespace SidiBarraniServer.Game
         public IList<BetAction> BetActionList {get;set;} = new List<BetAction>();
         public BetResult BetResult {get;set;}
 
-        public BetStage(Rules rules, PlayerGroupInfo playerGroup, IDictionary<string,CardPile> playerHandDictionary, PlayerInfo initialPlayer)
+        public BetStage(
+            Rules rules,
+            PlayerGroupInfo playerGroup,
+            IDictionary<string,CardPile> playerHandDictionary,
+            PlayerInfo initialPlayer)
         {
             Rules = rules;
             PlayerGroup = playerGroup;
@@ -125,6 +129,10 @@ namespace SidiBarraniServer.Game
 
         private IList<BetAction> GetValidBetActions()
         {
+            if (BetResult != null)
+            {
+                return new List<BetAction>();
+            }
             var lastBetAction = GetLastNonPassBetAction();
             var betActionTeam = lastBetAction != null
                 ? PlayerGroup.GetTeamOfPlayer(lastBetAction.PlayerInfo.PlayerId)
@@ -248,10 +256,6 @@ namespace SidiBarraniServer.Game
 
         public IList<int> GetValidActionIdList(string playerId)
         {
-            if (BetResult != null)
-            {
-                return new List<int>();
-            }
             var validBetActionList = GetValidBetActions();
             return validBetActionList
                 .Where(a => a.PlayerInfo.PlayerId == playerId)

@@ -50,11 +50,7 @@ namespace SidiBarraniServer
                 Rules = rules,
                 PlayerGroupInfo = playerGroupInfo
             };
-            _gameServiceDictionary[gameInfo.GameId] = new GameService
-            {
-                GameInfo = gameInfo,
-                PlayerGroupInfo = playerGroupInfo
-            };
+            _gameServiceDictionary[gameInfo.GameId] = new GameService(gameInfo);
             return (GameInfo)gameInfo.Clone();
         }
 
@@ -62,7 +58,7 @@ namespace SidiBarraniServer
         {
             Console.WriteLine($"{this}: ListOpenGames()");
             return _gameServiceDictionary.Values
-                .Where(s => !s.IsActive)
+                .Where(s => s.GameStage == null)
                 .Select(g => (GameInfo)(g.GameInfo.Clone()))
                 .ToList();
         }
