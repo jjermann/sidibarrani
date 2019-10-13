@@ -6,6 +6,53 @@ namespace SidiBarraniCommon.Info
 {
     public static class PlayerGroupInfoExtensionMethods
     {
+        public static PlayerInfo GetNextPlayer(this PlayerGroupInfo playerGroupInfo, string previousPlayerId)
+        {
+            var playerList = playerGroupInfo.GetPlayerList();
+            var playerIdList = playerList
+                .Select(p => p.PlayerId)
+                .ToList();
+            var previousIndex = playerIdList.IndexOf(previousPlayerId);
+            var nextIndex = previousIndex == 3
+                ? 0
+                : previousIndex + 1;
+            return playerList[nextIndex];
+        }
+
+        public static TeamInfo GetOtherTeam(this PlayerGroupInfo playerGroupInfo, string teamId)
+        {
+            return teamId == playerGroupInfo.Team1.TeamId
+                ? playerGroupInfo.Team2
+                : playerGroupInfo.Team1;
+        }
+
+        public static TeamInfo GetOpposingTeamOfPlayer(this PlayerGroupInfo playerGroupInfo, string playerId)
+        {
+            var team = playerGroupInfo.GetTeamOfPlayer(playerId);
+            return playerGroupInfo.GetOtherTeam(team.TeamId);
+        }
+
+        public static TeamInfo GetTeamOfPlayer(this PlayerGroupInfo playerGroupInfo, string playerId)
+        {
+            if (playerGroupInfo.Team1.Player1?.PlayerId == playerId)
+            {
+                return playerGroupInfo.Team1;
+            }
+            if (playerGroupInfo.Team1.Player2?.PlayerId == playerId)
+            {
+                return playerGroupInfo.Team1;
+            }
+            if (playerGroupInfo.Team2.Player1?.PlayerId == playerId)
+            {
+                return playerGroupInfo.Team2;
+            }
+            if (playerGroupInfo.Team2.Player2?.PlayerId == playerId)
+            {
+                return playerGroupInfo.Team2;
+            }
+            return null;
+        }
+
         public static PlayerInfo GetPlayerInfo(this PlayerGroupInfo playerGroupInfo, string playerId)
         {
             if (playerGroupInfo.Team1.Player1?.PlayerId == playerId)

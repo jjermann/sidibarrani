@@ -4,7 +4,7 @@ namespace SidiBarraniCommon.Action
 {
     public class SetupAction : ActionBase, IEquatable<SetupAction>
     {
-        public bool Setup { get; set; }
+        public SetupType SetupType { get; set; }
 
         public bool Equals(SetupAction other)
         {
@@ -12,7 +12,7 @@ namespace SidiBarraniCommon.Action
             {
                 return false;
             }
-            return base.Equals(other) && Setup == other.Setup;
+            return base.Equals(other) && SetupType == other.SetupType;
         }
         public override bool Equals(object other)
         {
@@ -37,7 +37,7 @@ namespace SidiBarraniCommon.Action
             unchecked
             {
                 var hashCode = ActionType.SetupAction.GetHashCode();
-                hashCode = hashCode * 397 ^ Setup.GetHashCode();
+                hashCode = hashCode * 397 ^ SetupType.GetHashCode();
                 return hashCode;
             }
         }
@@ -65,10 +65,7 @@ namespace SidiBarraniCommon.Action
 
         public override string ToString()
         {
-            var setupStr = Setup
-                ? "Setup"
-                : "Didn't setup";
-            return $"{base.ToString()}: {setupStr}";
+            return $"{base.ToString()}: {SetupType}";
         }
     }
 }

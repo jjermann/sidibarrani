@@ -63,11 +63,7 @@ namespace SidiBarraniCommon.Cache
             {
                 new SetupAction
                 {
-                    Setup = true
-                },
-                new SetupAction
-                {
-                    Setup = false
+                    SetupType = SetupType.StartGame
                 }
             };
         }

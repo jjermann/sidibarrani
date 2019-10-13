@@ -4,6 +4,8 @@ using System.Linq;
 using SidiBarraniCommon;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Info;
+using SidiBarraniCommon.Model;
+using SidiBarraniCommon.Result;
 
 namespace SidiBarraniServer.Game
 {
@@ -14,6 +16,8 @@ namespace SidiBarraniServer.Game
         public IDictionary<string, ISidiBarraniClientApi> ClientApiDictionary {get;set;} = new Dictionary<string, ISidiBarraniClientApi>();
         public IList<GameRound> GameRoundList {get;set;} = new List<GameRound>();
         public GameRound CurrentGameRound => GameRoundList.LastOrDefault();
+        public PlayerInfo CurrentPlayer {get;set;}
+        public GameResult GameResult {get;set;}
         public bool IsActive {get;set;}
 
         private Random _random = new Random();
@@ -29,6 +33,15 @@ namespace SidiBarraniServer.Game
             return playerList[randomIndex];
         }
 
+        private void UpdatePlayers()
+        {
+            foreach (var player in PlayerGroupInfo.GetPlayerList())
+            {
+                var playerGameInfo = GetPlayerGameInfo(player.PlayerId);
+                ClientApiDictionary[player.PlayerId].SetPlayerGameInfo(playerGameInfo);
+            }
+        }
+
         public bool StartGame()
         {
             if (IsActive)
@@ -39,17 +52,16 @@ namespace SidiBarraniServer.Game
             {
                 return false;
             }
-            var gameRound = new GameRound();
-            var firstPlayer = GetRandomPlayer();
-            var result = gameRound.StartRound(firstPlayer);
-            if (!result)
-            {
-                return false;
-            }
+            CurrentPlayer = GetRandomPlayer();
             IsActive = true;
+
+            var deck = CardPile.CreateDeckPile();
+            var gameRound = new GameRound(GameInfo.Rules, GameInfo.PlayerGroupInfo, CurrentPlayer, deck);
             GameRoundList.Add(gameRound);
-            return result;
+            UpdatePlayers();
+            return true;
         }
+
         public bool ProcessAction(ActionBase action)
         {
             var validPlayerActions = GetValidActionIdList(action.PlayerInfo.PlayerId);
@@ -58,11 +70,18 @@ namespace SidiBarraniServer.Game
                 return false;
             }
             CurrentGameRound.ProcessAction(action);
-            foreach (var player in PlayerGroupInfo.GetPlayerList())
+            if (CurrentGameRound.RoundResult != null)
             {
-                var playerGameInfo = GetPlayerGameInfo(player.PlayerId);
-                ClientApiDictionary[player.PlayerId].SetPlayerGameInfo(playerGameInfo);
+                GameResult = GetGameResult();
+                if (GameResult == null)
+                {
+                    CurrentPlayer = PlayerGroupInfo.GetNextPlayer(CurrentPlayer.PlayerId);
+                    var deck = CardPile.CreateDeckPile();
+                    var gameRound = new GameRound(GameInfo.Rules, GameInfo.PlayerGroupInfo, CurrentPlayer, deck);
+                    GameRoundList.Add(gameRound);
+                }
             }
+            UpdatePlayers();
             return true;
         }
 
@@ -79,6 +98,47 @@ namespace SidiBarraniServer.Game
                     })
                     .ToList()
             };
+        }
+
+        private GameResult GetGameResult() {
+            var team1FinalScore = GameRoundList
+                .Where(g => g.RoundResult != null)
+                .Sum(g => g.RoundResult.Team1FinalScore);
+            var team2FinalScore = GameRoundList
+                .Where(g => g.RoundResult != null)
+                .Sum(g => g.RoundResult.Team2FinalScore);
+            // TODO: Maybe also count results from the current round to end early
+            var endScore = GameInfo.Rules.EndScore;
+            var hasEnded = team1FinalScore >= endScore || team2FinalScore >= endScore;
+            if (!hasEnded)
+            {
+                return null;
+            }
+
+            TeamInfo winner;
+            var bothOverEndScore = team1FinalScore >= endScore && team2FinalScore >= endScore;
+            if (bothOverEndScore)
+            {
+                winner = GameRoundList
+                    .Where(g => g.RoundResult != null)
+                    .Last()
+                    .RoundResult
+                    .WinningTeam;
+            }
+            else
+            {
+                winner = team1FinalScore > team2FinalScore
+                    ? PlayerGroupInfo.Team1
+                    : PlayerGroupInfo.Team2;
+            }
+            var gameResult = new GameResult
+            {
+                Winner = winner,
+                PlayerGroupInfo = PlayerGroupInfo,
+                Team1FinalScore = team1FinalScore,
+                Team2FinalScore = team2FinalScore
+            };
+            return gameResult;
         }
 
         public IList<int> GetValidActionIdList(string playerId)
