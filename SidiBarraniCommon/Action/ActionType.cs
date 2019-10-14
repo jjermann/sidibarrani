@@ -6,7 +6,6 @@ namespace SidiBarraniCommon.Action
     {
         Invalid,
         BetAction,
-        PlayAction,
-        ConfirmAction
+        PlayAction
     }
 }

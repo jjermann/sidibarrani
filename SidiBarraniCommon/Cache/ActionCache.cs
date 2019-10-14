@@ -12,14 +12,12 @@ namespace SidiBarraniCommon.Cache
         private readonly Rules _rules;
         private readonly IDictionary<int, BetAction> _betDictionary;
         private readonly IDictionary<int, PlayAction> _playDictionary;
-        private readonly IDictionary<int, ConfirmAction> _confirmDictionary;
 
         public ActionCache(Rules rules)
         {
             _rules = rules;
             _betDictionary = GetBetActionList().ToDictionary(a => a.GetActionId(), a => a);
             _playDictionary = GetPlayActionList().ToDictionary(a => a.GetActionId(), a => a);
-            _confirmDictionary = GetConfirmActionList().ToDictionary(a => a.GetActionId(), a => a);
         }
 
         public ActionBase ConstructAction(GameInfo gameInfo, PlayerInfo playerInfo, int actionId)
@@ -37,13 +35,6 @@ namespace SidiBarraniCommon.Cache
                 playAction.GameInfo = gameInfo;
                 playAction.PlayerInfo = playerInfo;
                 return playAction;
-            }
-            if (_confirmDictionary.ContainsKey(actionId))
-            {
-                var confirmAction = (ConfirmAction)_confirmDictionary[actionId]?.Clone();
-                confirmAction.GameInfo = gameInfo;
-                confirmAction.PlayerInfo = playerInfo;
-                return confirmAction;
             }
             return null;
         }
@@ -94,14 +85,6 @@ namespace SidiBarraniCommon.Cache
                 }
             }
             return playActionList;
-        }
-
-        private IList<ConfirmAction> GetConfirmActionList()
-        {
-            return new List<ConfirmAction>
-            {
-                new ConfirmAction()
-            };
         }
     }
 }

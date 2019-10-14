@@ -41,8 +41,8 @@ namespace SidiBaraniConsole
             {
                 EndScore = 100
             };
-            client1.OpenGame(rules, "Game1", "TeamA1", "TeamA2");
-            client2.OpenGame(null, "Game2", "TeamB1", "TeamB2");
+            client1.OpenGame(rules, "Game1", "TeamA", "TeamB");
+            client2.OpenGame(null, "Game2", "TeamC", "TeamD");
             client3.RefreshOpenGames();
             client4.RefreshOpenGames();
             client1.ConnectToGame(client1.OpenGameList.First(), "Player1");
@@ -54,10 +54,9 @@ namespace SidiBaraniConsole
             var clientList = new List<SidiBarraniClientImplementation> {client1, client2, client3, client4};
 
             var random = new Random();
-            var actionCount = 0;
-            while (actionCount < 10)
+            var gameResult = clientList.First().PlayerGameInfo?.GameStageInfo?.GameResult;
+            while (gameResult == null)
             {
-                var oldActionCount = actionCount;
                 foreach (var client in clientList)
                 {
                     var validActions = client.GetValidActions();
@@ -66,15 +65,11 @@ namespace SidiBaraniConsole
                         var randomAction = validActions[random.Next(validActions.Count-1)];
                         if (client.ProcessAction(randomAction))
                         {
-                            actionCount++;
                             Thread.Sleep(500);
                         }
                     }
                 }
-                if (oldActionCount == actionCount)
-                {
-                    break;
-                }
+                gameResult = clientList.First().PlayerGameInfo?.GameStageInfo?.GameResult;
             }
         }
     }
