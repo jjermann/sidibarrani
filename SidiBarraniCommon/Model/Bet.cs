@@ -2,10 +2,10 @@ using System;
 
 namespace SidiBarraniCommon.Model
 {
-    public class Bet : IComparable<Bet>, IEquatable<Bet>
+    public class Bet : IComparable<Bet>, IEquatable<Bet>, ICloneable
     {
-        public ScoreAmount BetAmount {get;}
-        public PlayType PlayType {get;}
+        public ScoreAmount BetAmount {get; private set;}
+        public PlayType PlayType {get; private set;}
 
         private Bet() { }
         public Bet(PlayType playType, int amount)
@@ -105,6 +105,15 @@ namespace SidiBarraniCommon.Model
                 str += $" {BetAmount.Amount}";
             }
             return str;
+        }
+
+        public object Clone()
+        {
+            return new Bet
+            {
+                BetAmount = (ScoreAmount)BetAmount?.Clone(),
+                PlayType = PlayType
+            };
         }
     }
 }

@@ -1,4 +1,5 @@
 using System;
+using SidiBarraniCommon.Info;
 using SidiBarraniCommon.Model;
 
 namespace SidiBarraniCommon.Action
@@ -74,6 +75,17 @@ namespace SidiBarraniCommon.Action
             }
             var str = $"{base.ToString()}: {Bet}";
             return str;
+        }
+
+        public override object Clone()
+        {
+            return new BetAction
+            {
+                GameInfo = (GameInfo)GameInfo?.Clone(),
+                PlayerInfo = (PlayerInfo)PlayerInfo?.Clone(),
+                Type = Type,
+                Bet = (Bet)Bet?.Clone()
+            };
         }
     }
 }

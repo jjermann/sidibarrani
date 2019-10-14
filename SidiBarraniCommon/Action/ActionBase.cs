@@ -64,9 +64,6 @@ namespace SidiBarraniCommon.Action
             return $"{GameInfo.GameName} ({PlayerInfo.PlayerName})";
         }
 
-        public object Clone()
-        {
-            return MemberwiseClone();
-        }
+        public abstract object Clone();
     }
 }

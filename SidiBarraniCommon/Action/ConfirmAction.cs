@@ -1,10 +1,10 @@
 using System;
+using SidiBarraniCommon.Info;
 
 namespace SidiBarraniCommon.Action
 {
     public class ConfirmAction : ActionBase, IEquatable<ConfirmAction>
     {
-
         public bool Equals(ConfirmAction other)
         {
             if (other == null)
@@ -64,6 +64,15 @@ namespace SidiBarraniCommon.Action
         public override string ToString()
         {
             return $"{base.ToString()}: Confirmed";
+        }
+
+        public override object Clone()
+        {
+            return new ConfirmAction
+            {
+                GameInfo = (GameInfo)GameInfo?.Clone(),
+                PlayerInfo = (PlayerInfo)PlayerInfo?.Clone(),
+            };
         }
     }
 }

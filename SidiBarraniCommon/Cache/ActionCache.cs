@@ -26,21 +26,21 @@ namespace SidiBarraniCommon.Cache
         {
             if (_betDictionary.ContainsKey(actionId))
             {
-                var betAction = (BetAction)_betDictionary[actionId].Clone();
+                var betAction = (BetAction)_betDictionary[actionId]?.Clone();
                 betAction.GameInfo = gameInfo;
                 betAction.PlayerInfo = playerInfo;
                 return betAction;
             }
             if (_playDictionary.ContainsKey(actionId))
             {
-                var playAction = (PlayAction)_playDictionary[actionId].Clone();
+                var playAction = (PlayAction)_playDictionary[actionId]?.Clone();
                 playAction.GameInfo = gameInfo;
                 playAction.PlayerInfo = playerInfo;
                 return playAction;
             }
             if (_confirmDictionary.ContainsKey(actionId))
             {
-                var confirmAction = (ConfirmAction)_confirmDictionary[actionId].Clone();
+                var confirmAction = (ConfirmAction)_confirmDictionary[actionId]?.Clone();
                 confirmAction.GameInfo = gameInfo;
                 confirmAction.PlayerInfo = playerInfo;
                 return confirmAction;

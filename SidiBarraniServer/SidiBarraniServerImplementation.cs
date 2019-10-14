@@ -51,7 +51,7 @@ namespace SidiBarraniServer
                 PlayerGroupInfo = playerGroupInfo
             };
             _gameServiceDictionary[gameInfo.GameId] = new GameService(gameInfo);
-            return (GameInfo)gameInfo.Clone();
+            return (GameInfo)gameInfo?.Clone();
         }
 
         public IList<GameInfo> ListOpenGames()
@@ -59,7 +59,7 @@ namespace SidiBarraniServer
             Console.WriteLine($"{this}: ListOpenGames()");
             return _gameServiceDictionary.Values
                 .Where(s => s.GameStage == null)
-                .Select(g => (GameInfo)(g.GameInfo.Clone()))
+                .Select(g => (GameInfo)(g.GameInfo?.Clone()))
                 .ToList();
         }
 
@@ -116,7 +116,7 @@ namespace SidiBarraniServer
                 teamInfo.Player2 = playerInfo;
             }
             gameService.ClientApiDictionary[playerInfo.PlayerId] = clientApi;
-            return (PlayerInfo)playerInfo.Clone();
+            return (PlayerInfo)playerInfo?.Clone();
         }
 
         public bool StartGame(string gameId)
@@ -144,8 +144,8 @@ namespace SidiBarraniServer
                 return false;
             }
             var action = _actionCache.ConstructAction(
-                (GameInfo)gameService.GameInfo.Clone(),
-                (PlayerInfo)playerInfo.Clone(),
+                (GameInfo)gameService.GameInfo?.Clone(),
+                (PlayerInfo)playerInfo?.Clone(),
                 actionInfo.ActionId);
             if (action == null)
             {

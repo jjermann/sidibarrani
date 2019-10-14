@@ -14,10 +14,12 @@ namespace SidiBarraniServer.Game
         private PlayerGroupInfo PlayerGroupInfo {get;set;}
         private Action ConfirmAction {get;}
         private PlayerInfo InitialPlayer {get;set;}
-        private IDictionary<string,CardPile> PlayerHandDictionary {get;}
 
-        private BetStage BetStage {get;set;}
-        private PlayStage PlayStage {get;set;}
+        // Core hidden information
+        public IDictionary<string,CardPile> PlayerHandDictionary {get;}
+
+        public BetStage BetStage {get;set;}
+        public PlayStage PlayStage {get;set;}
 
         public BetResult BetResult => BetStage?.BetResult;
         public PlayResult PlayResult => PlayStage?.PlayResult;

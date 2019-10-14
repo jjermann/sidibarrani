@@ -3,12 +3,23 @@ using SidiBarraniCommon.Info;
 
 namespace SidiBarraniCommon.Result
 {
-    public class RoundResult
+    public class RoundResult : ICloneable
     {
         public TeamInfo WinningTeam { get; set; }
         public PlayerGroupInfo PlayerGroup { get; set; }
         public int Team1FinalScore { get; set; }
         public int Team2FinalScore { get; set; }
+
+        public object Clone()
+        {
+            return new RoundResult
+            {
+                WinningTeam = (TeamInfo)WinningTeam?.Clone(),
+                PlayerGroup = (PlayerGroupInfo)PlayerGroup?.Clone(),
+                Team1FinalScore = Team1FinalScore,
+                Team2FinalScore = Team2FinalScore
+            };
+        }
 
         public override string ToString()
         {

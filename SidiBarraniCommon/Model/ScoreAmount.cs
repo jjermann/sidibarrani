@@ -2,7 +2,7 @@ using System;
 
 namespace SidiBarraniCommon.Model
 {
-    public class ScoreAmount : IComparable<ScoreAmount>, IEquatable<ScoreAmount>
+    public class ScoreAmount : IComparable<ScoreAmount>, IEquatable<ScoreAmount>, ICloneable
     {
         public int Amount {get; set;}
         public bool IsMatch {get;}
@@ -132,6 +132,11 @@ namespace SidiBarraniCommon.Model
                 return $"Match ({Amount})";
             }
             return $"{Amount}";
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 }

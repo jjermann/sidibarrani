@@ -4,7 +4,7 @@ using System.Linq;
 
 namespace SidiBarraniCommon.Model
 {
-    public class CardPile
+    public class CardPile : ICloneable
     {
         public IList<Card> Cards { get; set; }
 
@@ -94,6 +94,11 @@ namespace SidiBarraniCommon.Model
         public override string ToString()
         {
             return string.Join(", ", Cards.Select(c => c.ToString()).Reverse());
+        }
+
+        public object Clone()
+        {
+            return new CardPile(Cards);
         }
     }
 }

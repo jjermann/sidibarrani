@@ -1,4 +1,5 @@
 using System;
+using SidiBarraniCommon.Info;
 using SidiBarraniCommon.Model;
 
 namespace SidiBarraniCommon.Action
@@ -6,7 +7,6 @@ namespace SidiBarraniCommon.Action
     public class PlayAction : ActionBase, IEquatable<PlayAction>
     {
         public Card Card { get; set; }
-
 
         public bool Equals(PlayAction other)
         {
@@ -69,6 +69,16 @@ namespace SidiBarraniCommon.Action
         {
             var str = $"{base.ToString()}: Plays {Card}";
             return str;
+        }
+
+        public override object Clone()
+        {
+            return new PlayAction
+            {
+                GameInfo = (GameInfo)GameInfo?.Clone(),
+                PlayerInfo = (PlayerInfo)PlayerInfo?.Clone(),
+                Card = (Card)Card?.Clone()
+            };
         }
     }
 }

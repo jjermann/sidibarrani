@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using SidiBarraniCommon;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Info;
+using SidiBarraniCommon.Model;
 
 namespace SidiBarraniServer.Game
 {
@@ -94,8 +95,48 @@ namespace SidiBarraniServer.Game
                         PlayerId = playerId,
                         ActionId = id
                     })
-                    .ToList()
+                    .ToList(),
+                PlayerHand = (CardPile)GetPlayerHand(GameStage, playerId)?.Clone(),
+                GameStageInfo = (GameStageInfo)MapToGameStageInfo(GameStage)?.Clone()
             };
+        }
+
+        private CardPile GetPlayerHand(GameStage gameStage, string playerId)
+        {
+            var playerHandDictionary = GameStage?.CurrentGameRound?.PlayerHandDictionary;
+            var hand = playerHandDictionary != null && playerHandDictionary.ContainsKey(playerId)
+                ? playerHandDictionary[playerId]
+                : null;
+            return hand;
+        }
+
+        private StickRoundInfo MapToStickRoundInfo(StickRound stickRound)
+        {
+            var stickRoundInfo = new StickRoundInfo
+            {
+                PlayActionList = stickRound?.PlayActionList,
+                StickResult = stickRound?.StickResult
+            };
+            return stickRoundInfo;
+        }
+
+        private GameStageInfo MapToGameStageInfo(GameStage gameStage)
+        {
+            var gameRound = gameStage?.CurrentGameRound;
+            var gameStageInfo = new GameStageInfo
+            {
+                CurrentBetActionList = gameRound?.BetStage?.BetActionList,
+                CurrentBetResult = gameRound?.BetStage?.BetResult,
+                StickRoundInfoList = gameRound?.PlayStage?.StickRoundList
+                    ?.Select(r => MapToStickRoundInfo(r))
+                    .ToList(),
+                CurrentPlayResult = gameRound?.PlayResult,
+                RoundResultList = gameStage?.GameRoundList
+                    ?.Select(r => r.RoundResult)
+                    .ToList(),
+                GameResult = gameStage?.GameResult
+            };
+            return gameStageInfo;
         }
 
         private IList<int> GetValidActionIdList(string playerId)

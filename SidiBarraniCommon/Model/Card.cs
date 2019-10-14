@@ -3,7 +3,7 @@ using SidiBarraniCommon.Action;
 
 namespace SidiBarraniCommon.Model
 {
-    public class Card : IEquatable<Card>
+    public class Card : IEquatable<Card>, ICloneable
     {
         public CardSuit CardSuit {get;set;}
         public CardRank CardRank {get;set;}
@@ -58,6 +58,11 @@ namespace SidiBarraniCommon.Model
         {
             var str = $"{CardRank.ToString()} of {CardSuit.ToString()}";
             return str;
+        }
+
+        public object Clone()
+        {
+            return MemberwiseClone();
         }
     }
 }

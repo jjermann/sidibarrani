@@ -16,7 +16,7 @@ namespace SidiBarraniCommon.Info
             {
                 GameName = GameName,
                 GameId = GameId,
-                Rules = (Rules)Rules.Clone(),
+                Rules = (Rules)Rules?.Clone(),
                 PlayerGroupInfo = (PlayerGroupInfo)PlayerGroupInfo?.Clone()
             };
         }

@@ -13,7 +13,7 @@ namespace SidiBarraniServer.Game
         private PlayerGroupInfo PlayerGroupInfo {get;}
         private IDictionary<string,CardPile> PlayerHandDictionary {get;}
         private PlayerInfo CurrentPlayer {get;set;}
-        private PlayType PlayType { get; }
+        public PlayType PlayType { get; }
 
         public IList<PlayAction> PlayActionList {get;} = new List<PlayAction>();
         public StickResult StickResult {get;set;}
