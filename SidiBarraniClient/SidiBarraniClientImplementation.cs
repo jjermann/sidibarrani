@@ -38,6 +38,11 @@ namespace SidiBarraniClient
                 .ToProperty(this, x => x.ActionCache, out _actionCache, null);
         }
 
+        public bool RequestConfirm()
+        {
+            return true;
+        }
+
         public bool SetPlayerGameInfo(PlayerGameInfo playerGameInfo)
         {
             Log.Verbose($"{this}: SetPlayerGameInfo({playerGameInfo})");

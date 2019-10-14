@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Info;
 using SidiBarraniCommon.Model;
@@ -51,6 +52,7 @@ namespace SidiBarraniServer.Game
             CurrentStickRound.ProcessPlayAction(playAction);
             if (CurrentStickRound.StickResult != null)
             {
+                Log.Information(CurrentStickRound.StickResult.ToString());
                 ConfirmAction?.Invoke();
                 PlayResult = GetPlayResult();
                 if (PlayResult == null)

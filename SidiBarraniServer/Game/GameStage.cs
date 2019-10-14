@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using SidiBarraniCommon;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Info;
@@ -48,9 +49,11 @@ namespace SidiBarraniServer.Game
 
         public void ProcessAction(ActionBase action)
         {
+            Log.Information(action.ToString());
             CurrentGameRound.ProcessAction(action);
             if (CurrentGameRound.RoundResult != null)
             {
+                Log.Information(CurrentGameRound.RoundResult.ToString());
                 ConfirmAction?.Invoke();
                 GameResult = GetGameResult();
                 if (GameResult == null)
@@ -59,6 +62,9 @@ namespace SidiBarraniServer.Game
                     var deck = CardPile.CreateDeckPile();
                     var gameRound = new GameRound(Rules, PlayerGroupInfo, ConfirmAction, CurrentPlayer, deck);
                     GameRoundList.Add(gameRound);
+                }
+                else {
+                    Log.Information(GameResult.ToString());
                 }
             }
         }

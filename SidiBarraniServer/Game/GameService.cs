@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Serilog;
 using SidiBarraniCommon;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Info;
@@ -22,6 +23,12 @@ namespace SidiBarraniServer.Game
         public GameService(GameInfo gameInfo)
         {
             GameInfo = gameInfo;
+            ConfirmAction = () => {
+                Parallel.ForEach(ClientApiDictionary.Values, client =>
+                {
+                    client.RequestConfirm();
+                });
+            };
         }
 
         private void RunBusyAction(Action action)
@@ -46,8 +53,22 @@ namespace SidiBarraniServer.Game
 
             RunBusyAction(() => 
             {
-                GameStage = new GameStage(GameInfo.Rules, PlayerGroupInfo, ConfirmAction);
-                UpdatePlayers();
+                try {
+                    GameStage = new GameStage(GameInfo.Rules, PlayerGroupInfo, ConfirmAction);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Exception in StartGame: {e.Message}", e);
+                    throw;
+                }
+                try {
+                    UpdatePlayers();
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Exception in UpdatePlayers: {e.Message}", e);
+                    throw;
+                }
             });
             return true;
         }
@@ -62,15 +83,38 @@ namespace SidiBarraniServer.Game
             {
                 return false;
             }
-            var validPlayerActions = GetValidActionIdList(action.PlayerInfo.PlayerId);
-            if (!validPlayerActions.Contains(action.GetActionId()))
-            {
-                return false;
+
+            try {
+                var validPlayerActions = GetValidActionIdList(action.PlayerInfo.PlayerId);
+                if (!validPlayerActions.Contains(action.GetActionId()))
+                {
+                    return false;
+                }
             }
+            catch (Exception e)
+            {
+                Log.Error($"Exception in GetValidActionIdList of ProcessAction: {e.Message}", e);
+                throw;
+            }
+
             RunBusyAction(() =>
             {
-                GameStage.ProcessAction(action);
-                UpdatePlayers();
+                try {
+                    GameStage.ProcessAction(action);
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Exception in ProcessAction: {e.Message}", e);
+                    throw;
+                }
+                try {
+                    UpdatePlayers();
+                }
+                catch (Exception e)
+                {
+                    Log.Error($"Exception in UpdatePlayers: {e.Message}", e);
+                    throw;
+                }
             });
             return true;
         }

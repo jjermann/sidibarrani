@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Info;
 using SidiBarraniCommon.Model;
@@ -65,6 +66,7 @@ namespace SidiBarraniServer.Game
                     BetStage.ProcessBetAction((BetAction)action);
                     if (BetStage.BetResult != null)
                     {
+                        Log.Information(BetStage.BetResult.ToString());
                         ConfirmAction?.Invoke();
                         var playType = BetStage.BetResult.Bet.PlayType;
                         PlayStage = new PlayStage(Rules, PlayerGroupInfo, ConfirmAction, PlayerHandDictionary, InitialPlayer, playType);
@@ -75,6 +77,7 @@ namespace SidiBarraniServer.Game
                     PlayStage.ProcessPlayAction((PlayAction)action);
                     if (PlayStage.PlayResult != null)
                     {
+                        Log.Information(PlayStage.PlayResult.ToString());
                         ConfirmAction?.Invoke();
                         RoundResult = GetRoundResult();
                         ExpectedActionType = ActionType.Invalid;

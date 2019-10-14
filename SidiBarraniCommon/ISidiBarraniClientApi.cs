@@ -5,6 +5,7 @@ namespace SidiBarraniCommon
 {
     public interface ISidiBarraniClientApi
     {
+        bool RequestConfirm();
         bool SetPlayerGameInfo(PlayerGameInfo playerGameInfo);
     }
 }
