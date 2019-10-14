@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using SidiBarraniCommon;
 using SidiBarraniCommon.Cache;
 using SidiBarraniCommon.Info;
@@ -25,7 +26,7 @@ namespace SidiBarraniServer
         public GameInfo OpenGame(Rules rules = null, string gameName = "Game", string team1Name = "Team1", string team2Name = "Team2")
         {
             rules = rules ?? new Rules();
-            Console.WriteLine($"{this}: OpenGame({rules}, {gameName}, {team1Name}, {team2Name})");
+            Log.Verbose($"{this}: OpenGame({rules}, {gameName}, {team1Name}, {team2Name})");
             if (gameName == null || team1Name == null || team2Name == null)
             {
                 return null;
@@ -56,7 +57,7 @@ namespace SidiBarraniServer
 
         public IList<GameInfo> ListOpenGames()
         {
-            Console.WriteLine($"{this}: ListOpenGames()");
+            Log.Verbose($"{this}: ListOpenGames()");
             return _gameServiceDictionary.Values
                 .Where(s => s.GameStage == null)
                 .Select(g => (GameInfo)(g.GameInfo?.Clone()))
@@ -65,7 +66,7 @@ namespace SidiBarraniServer
 
         public PlayerInfo ConnectToGame(string gameId, string playerName, ISidiBarraniClientApi clientApi)
         {
-            Console.WriteLine($"{this}: ConnectToGame({gameId},{playerName},{clientApi})");
+            Log.Verbose($"{this}: ConnectToGame({gameId},{playerName},{clientApi})");
             if (!_gameServiceDictionary.ContainsKey(gameId))
             {
                 return null;
@@ -91,7 +92,7 @@ namespace SidiBarraniServer
 
         public PlayerInfo ConnectToTeam(string gameId, string teamId, string playerName, ISidiBarraniClientApi clientApi)
         {
-            Console.WriteLine($"{this}: ConnectToTeam({gameId},{teamId},{playerName},{clientApi})");
+            Log.Verbose($"{this}: ConnectToTeam({gameId},{teamId},{playerName},{clientApi})");
             if (!_gameServiceDictionary.ContainsKey(gameId))
             {
                 return null;
@@ -121,7 +122,7 @@ namespace SidiBarraniServer
 
         public bool StartGame(string gameId)
         {
-            Console.WriteLine($"{this}: StartGame({gameId})");
+            Log.Verbose($"{this}: StartGame({gameId})");
             if (!_gameServiceDictionary.ContainsKey(gameId))
             {
                 return false;
@@ -132,7 +133,7 @@ namespace SidiBarraniServer
 
         public bool ProcessAction(ActionInfo actionInfo)
         {
-            Console.WriteLine($"{this}: ProcessAction({actionInfo})");
+            Log.Verbose($"{this}: ProcessAction({actionInfo})");
             if (!_gameServiceDictionary.ContainsKey(actionInfo.GameId))
             {
                 return false;

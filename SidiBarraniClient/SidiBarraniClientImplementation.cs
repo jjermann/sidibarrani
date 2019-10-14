@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
 using ReactiveUI;
+using Serilog;
 using SidiBarraniCommon;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Cache;
@@ -39,14 +40,14 @@ namespace SidiBarraniClient
 
         public bool SetPlayerGameInfo(PlayerGameInfo playerGameInfo)
         {
-            Console.WriteLine($"{this}: SetPlayerGameInfo({playerGameInfo})");
+            Log.Verbose($"{this}: SetPlayerGameInfo({playerGameInfo})");
             PlayerGameInfo = playerGameInfo;
             return true;
         }
 
         public bool OpenGame(Rules rules = null, string gameName = "Game", string team1Name = "Team1", string team2Name = "Team2")
         {
-            Console.WriteLine($"{this}: OpenGame({rules}, {gameName}, {team1Name}, {team2Name})");
+            Log.Verbose($"{this}: OpenGame({rules}, {gameName}, {team1Name}, {team2Name})");
             var gameInfo = SidiBarraniServerApi?.OpenGame(rules, gameName, team1Name, team2Name);
             if (gameInfo == null)
             {
@@ -61,13 +62,13 @@ namespace SidiBarraniClient
 
         public void RefreshOpenGames()
         {
-            Console.WriteLine($"{this}: RefreshOpenGames()");
+            Log.Verbose($"{this}: RefreshOpenGames()");
             OpenGameList = SidiBarraniServerApi?.ListOpenGames();
         }
 
         public bool ConnectToGame(GameInfo gameInfo, string playerName)
         {
-            Console.WriteLine($"{this}: ConnectToGame({gameInfo}, {playerName})");
+            Log.Verbose($"{this}: ConnectToGame({gameInfo}, {playerName})");
             var playerInfo = SidiBarraniServerApi?.ConnectToGame(gameInfo.GameId, playerName, this);
             if (playerInfo == null)
             {
@@ -81,13 +82,13 @@ namespace SidiBarraniClient
 
         public bool StartGame()
         {
-            Console.WriteLine($"{this}: StartGame()");
+            Log.Verbose($"{this}: StartGame()");
             return SidiBarraniServerApi?.StartGame(GameInfo.GameId) ?? false;
         }
 
         public bool ProcessAction(ActionBase action)
         {
-            Console.WriteLine($"{this}: ProcessAction({action})");
+            Log.Verbose($"{this}: ProcessAction({action})");
             var actionInfo = new ActionInfo
             {
                 GameId = GameInfo?.GameId,
@@ -99,7 +100,7 @@ namespace SidiBarraniClient
 
         public IList<ActionBase> GetValidActions()
         {
-            Console.WriteLine($"{this}: GetValidActions()");
+            Log.Verbose($"{this}: GetValidActions()");
             var actionList = PlayerGameInfo
                 ?.ValidActionList
                 ?.Select(id => ActionCache.ConstructAction(GameInfo, PlayerInfo, id.ActionId))

@@ -4,6 +4,10 @@
     <ProjectReference Include="..\SidiBarraniCommon\SidiBarraniCommon.csproj" />
   </ItemGroup>
 
+  <ItemGroup>
+    <PackageReference Include="serilog" Version="*" />
+  </ItemGroup>
+
   <PropertyGroup>
     <TargetFramework>netstandard2.0</TargetFramework>
   </PropertyGroup>

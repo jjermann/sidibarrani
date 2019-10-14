@@ -5,6 +5,7 @@ using SidiBarraniServer;
 using SidiBarraniClient;
 using System.Collections.Generic;
 using System.Threading;
+using Serilog;
 
 namespace SidiBaraniConsole
 {
@@ -12,6 +13,10 @@ namespace SidiBaraniConsole
     {
         static void Main()
         {
+            Log.Logger = new LoggerConfiguration()
+                .MinimumLevel.Information()
+                .WriteTo.Console()
+                .CreateLogger();
             var sidiBarraniServer = new SidiBarraniServerImplementation();
 
             // The following lines should be replaced by actual web service calls
