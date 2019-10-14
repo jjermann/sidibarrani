@@ -12,6 +12,7 @@ namespace SidiBarraniServer.Game
     {
         public GameInfo GameInfo {get;set;}
         public PlayerGroupInfo PlayerGroupInfo => GameInfo.PlayerGroupInfo;
+        private Action ConfirmAction {get;set;}
         public IDictionary<string, ISidiBarraniClientApi> ClientApiDictionary {get;set;} = new Dictionary<string, ISidiBarraniClientApi>();
         public GameStage GameStage {get;set;}
         private bool IsBusy {get;set;}
@@ -20,6 +21,15 @@ namespace SidiBarraniServer.Game
         public GameService(GameInfo gameInfo)
         {
             GameInfo = gameInfo;
+        }
+
+        private void RunBusyAction(Action action)
+        {
+            IsBusy = true;
+            Task.Run(() => {
+                action();
+                IsBusy = false;
+            });
         }
 
         public bool StartGame()
@@ -33,13 +43,20 @@ namespace SidiBarraniServer.Game
                 return false;
             }
 
-            GameStage = new GameStage(GameInfo.Rules, PlayerGroupInfo);
-            UpdatePlayers();
+            RunBusyAction(() => 
+            {
+                GameStage = new GameStage(GameInfo.Rules, PlayerGroupInfo, ConfirmAction);
+                UpdatePlayers();
+            });
             return true;
         }
 
         public bool ProcessAction(ActionBase action)
         {
+            if (IsBusy)
+            {
+                return false;
+            }
             if (GameStage == null)
             {
                 return false;
@@ -49,11 +66,14 @@ namespace SidiBarraniServer.Game
             {
                 return false;
             }
-            GameStage.ProcessAction(action);
-            UpdatePlayers();
+            RunBusyAction(() =>
+            {
+                GameStage.ProcessAction(action);
+                UpdatePlayers();
+            });
             return true;
         }
-        
+
         private void UpdatePlayers()
         {
             foreach (var player in PlayerGroupInfo.GetPlayerList())
@@ -78,7 +98,7 @@ namespace SidiBarraniServer.Game
             };
         }
 
-        public IList<int> GetValidActionIdList(string playerId)
+        private IList<int> GetValidActionIdList(string playerId)
         {
             if (GameStage == null)
             {

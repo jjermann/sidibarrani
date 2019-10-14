@@ -13,6 +13,7 @@ namespace SidiBarraniServer.Game
     {
         private Rules Rules {get;}
         private PlayerGroupInfo PlayerGroupInfo {get;}
+        private Action ConfirmAction {get;}
 
         public IList<GameRound> GameRoundList {get;set;} = new List<GameRound>();
         public GameRound CurrentGameRound => GameRoundList.LastOrDefault();
@@ -22,13 +23,15 @@ namespace SidiBarraniServer.Game
 
         public GameStage(
             Rules rules,
-            PlayerGroupInfo playerGroupInfo)
+            PlayerGroupInfo playerGroupInfo,
+            Action confirmAction)
         {
             Rules = rules;
             PlayerGroupInfo = playerGroupInfo;
+            ConfirmAction = confirmAction;
             CurrentPlayer = GetRandomPlayer();
             var deck = CardPile.CreateDeckPile();
-            var gameRound = new GameRound(Rules, PlayerGroupInfo, CurrentPlayer, deck);
+            var gameRound = new GameRound(Rules, PlayerGroupInfo, ConfirmAction, CurrentPlayer, deck);
             GameRoundList.Add(gameRound);
         }
 
@@ -48,12 +51,13 @@ namespace SidiBarraniServer.Game
             CurrentGameRound.ProcessAction(action);
             if (CurrentGameRound.RoundResult != null)
             {
+                ConfirmAction?.Invoke();
                 GameResult = GetGameResult();
                 if (GameResult == null)
                 {
                     CurrentPlayer = PlayerGroupInfo.GetNextPlayer(CurrentPlayer.PlayerId);
                     var deck = CardPile.CreateDeckPile();
-                    var gameRound = new GameRound(Rules, PlayerGroupInfo, CurrentPlayer, deck);
+                    var gameRound = new GameRound(Rules, PlayerGroupInfo, ConfirmAction, CurrentPlayer, deck);
                     GameRoundList.Add(gameRound);
                 }
             }

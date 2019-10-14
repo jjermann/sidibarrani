@@ -45,6 +45,7 @@ namespace SidiBaraniConsole
             client3.ConnectToGame(client3.OpenGameList.First(), "Player3");
             client4.ConnectToGame(client4.OpenGameList.First(), "Player4");
             client1.StartGame();
+            Thread.Sleep(500);
             var clientList = new List<SidiBarraniClientImplementation> {client1, client2, client3, client4};
 
             var random = new Random();

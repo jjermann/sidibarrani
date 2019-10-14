@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using SidiBarraniCommon.Action;
@@ -11,6 +12,7 @@ namespace SidiBarraniServer.Game
     {
         private Rules Rules { get; }
         private PlayerGroupInfo PlayerGroupInfo { get; }
+        private Action ConfirmAction {get;}
         private IDictionary<string,CardPile> PlayerHandDictionary {get;}
         private PlayType PlayType {get;}
 
@@ -21,12 +23,14 @@ namespace SidiBarraniServer.Game
         public PlayStage(
             Rules rules,
             PlayerGroupInfo playerGroupInfo,
+            Action confirmAction,
             IDictionary<string,CardPile> playerHandDictionary,
             PlayerInfo initialPlayer,
             PlayType playType)
         {
             Rules = rules;
             PlayerGroupInfo = playerGroupInfo;
+            ConfirmAction = confirmAction;
             PlayerHandDictionary = playerHandDictionary;
             PlayType = playType;
             var stickRound = new StickRound(PlayerGroupInfo, PlayerHandDictionary, initialPlayer, PlayType);
@@ -47,6 +51,7 @@ namespace SidiBarraniServer.Game
             CurrentStickRound.ProcessPlayAction(playAction);
             if (CurrentStickRound.StickResult != null)
             {
+                ConfirmAction?.Invoke();
                 PlayResult = GetPlayResult();
                 if (PlayResult == null)
                 {

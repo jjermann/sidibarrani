@@ -12,6 +12,7 @@ namespace SidiBarraniServer.Game
     {
         private Rules Rules {get;set;}
         private PlayerGroupInfo PlayerGroupInfo {get;set;}
+        private Action ConfirmAction {get;}
         private PlayerInfo InitialPlayer {get;set;}
         private IDictionary<string,CardPile> PlayerHandDictionary {get;}
 
@@ -26,11 +27,13 @@ namespace SidiBarraniServer.Game
         public GameRound(
             Rules rules,
             PlayerGroupInfo playerGroup,
+            Action confirmAction,
             PlayerInfo initialPlayer,
             CardPile deck)
         {
             Rules = rules;
             PlayerGroupInfo = playerGroup;
+            ConfirmAction = confirmAction;
             InitialPlayer = initialPlayer;
             var playerList = PlayerGroupInfo.GetPlayerList(InitialPlayer.PlayerId);
             PlayerHandDictionary = playerList
@@ -60,8 +63,9 @@ namespace SidiBarraniServer.Game
                     BetStage.ProcessBetAction((BetAction)action);
                     if (BetStage.BetResult != null)
                     {
+                        ConfirmAction?.Invoke();
                         var playType = BetStage.BetResult.Bet.PlayType;
-                        PlayStage = new PlayStage(Rules, PlayerGroupInfo, PlayerHandDictionary, InitialPlayer, playType);
+                        PlayStage = new PlayStage(Rules, PlayerGroupInfo, ConfirmAction, PlayerHandDictionary, InitialPlayer, playType);
                         ExpectedActionType = ActionType.PlayAction;
                     }
                     return;
@@ -69,6 +73,7 @@ namespace SidiBarraniServer.Game
                     PlayStage.ProcessPlayAction((PlayAction)action);
                     if (PlayStage.PlayResult != null)
                     {
+                        ConfirmAction?.Invoke();
                         RoundResult = GetRoundResult();
                         ExpectedActionType = ActionType.Invalid;
                     }
