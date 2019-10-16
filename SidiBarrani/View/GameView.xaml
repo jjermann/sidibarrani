@@ -1,0 +1,194 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:SidiBarrani.ViewModel"
+        xmlns:view="clr-namespace:SidiBarrani.View"
+        xmlns:info="clr-namespace:SidiBarraniCommon.Info;assembly=SidiBarraniCommon"
+        Title="Sidi Barrani"
+        Width="1500"
+        Height="1000">
+
+    <Window.Resources>
+        <view:StringToBitmapConverter x:Key = "StringToBitmapConverter"/>
+        <view:DoubleToThicknessConverter x:Key = "DoubleToThicknessConverter"/>
+        <view:StringToBrushConverter x:Key = "StringToBrushConverter"/>
+    </Window.Resources>
+
+    <Window.DataTemplates>
+        <DataTemplate DataType = "{x:Type vm:ScoreAmountRepresentation}">
+            <Grid>
+                <TextBlock Text = "{Binding AmountString}"
+                           Foreground = "{Binding AmountColor, Converter={StaticResource StringToBrushConverter}}"
+                           FontSize = "30" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:CardRepresentation}">
+            <Button BorderThickness = "0"
+                    Margin = "0"
+                    Padding = "0">
+                <Border BorderBrush = "{Binding BorderColor, Converter={StaticResource StringToBrushConverter}}"
+                        BorderThickness = "{Binding BorderThickness, Converter={StaticResource DoubleToThicknessConverter}}"
+                        CornerRadius = "3"
+                        Width = "100"
+                        Height = "150">
+                    <Image Source = "{Binding ImageSource, Converter={StaticResource StringToBitmapConverter}}"
+                           Stretch = "UniformToFill" />
+                </Border>
+            </Button>
+        </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:PlayTypeRepresentation}">
+            <Border Width = "{Binding Size}"
+                    Height = "{Binding Size}">
+                <Image Source = "{Binding ImageSource, Converter={StaticResource StringToBitmapConverter}}"
+                       Stretch = "Fill" />
+            </Border>
+        </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:BetRepresentation}">
+            <StackPanel Orientation = "Horizontal">
+                <ContentControl Content = "{Binding PlayStyleRepresentation}"
+                                VerticalAlignment = "Center"
+                                Margin = "5" />
+                <ContentControl Content = "{Binding ScoreAmountRepresentation}"
+                                VerticalAlignment = "Center"
+                                Margin = "5" />
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:BetActionsRepresentation}">
+            <Border Background = "White">
+                <StackPanel IsVisible = "{Binding CanAct}"
+                            Orientation = "Vertical">
+                    <Button Content = "Pass"
+                            IsVisible = "{Binding CanPass}" />
+                    <Button Content = "Sidi"
+                            IsVisible = "{Binding CanSidi}" />
+                    <Button Content = "Barrani"
+                            IsVisible = "{Binding CanBarrani}" />
+                    <Button Content = "{Binding SelectedBetRepresentation}"
+                            IsVisible = "{Binding HasBetSelected}" />
+                    <StackPanel Orientation = "Horizontal"
+                                IsVisible = "{Binding CanBet}">
+                        <ListBox Items = "{Binding PlayTypeRepresentationList}"
+                                 SelectedItem = "{Binding SelectedPlayTypeRepresentation}" />
+                        <ListBox Items = "{Binding ScoreAmountRepresentationList}"
+                                 SelectedItem = "{Binding SelectedScoreAmountRepresentation}" />
+                    </StackPanel>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:HandRepresentation}">
+            <Grid>
+                <ItemsControl Items = "{Binding CardRepresentationList}">
+     	    		<ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"
+                                        HorizontalAlignment = "Center"
+                                        VerticalAlignment = "Center"/>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </Grid>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:BoardRepresentation}">
+            <Border BorderBrush = "Black"
+                    BorderThickness = "0"
+                    CornerRadius = "3"
+                    Width = "600"
+                    Height = "600"
+                    Padding = "10">
+                <Border.Background>
+                    <ImageBrush Source = "avares://SidiBarrani/Assets/mainBoard.jpg"
+                                Stretch = "UniformToFill" />
+                </Border.Background>
+                <Grid>
+                    <ContentControl Content = "{Binding BottomCardRepresentation}"
+                                    HorizontalAlignment = "Center"
+                                    VerticalAlignment = "Bottom" />
+                    <ContentControl Content = "{Binding RightCardRepresentation}"
+                                    HorizontalAlignment = "Right"
+                                    VerticalAlignment = "Center" />
+                    <ContentControl Content = "{Binding TopCardRepresentation}"
+                                    HorizontalAlignment = "Center"
+                                    VerticalAlignment = "Top" />
+                    <ContentControl Content = "{Binding LeftCardRepresentation}"
+                                    HorizontalAlignment = "Left"
+                                    VerticalAlignment = "Center" />
+                </Grid>
+            </Border>
+        </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:GameRepresentation}">
+            <Border Width = "1000"
+                    Height = "1000">
+                <Border.Background>
+                    <ImageBrush Source = "avares://SidiBarrani/Assets/background.jpg"
+                                Stretch = "UniformToFill" />
+                </Border.Background>
+                <Grid>
+                    <Button Content = "Proceed"
+                            Command = "{Binding ConfirmCommand}"
+                            HorizontalAlignment = "Right"
+                            VerticalAlignment = "Top"
+                            Margin = "20"
+                            IsVisible = "{Binding CanConfirm}" />
+                    <ContentControl HorizontalAlignment = "Center"
+                                    VerticalAlignment = "Center"
+                                    Content = "{Binding BoardRepresentation}" />
+                    <ContentControl Content = "{Binding RightPlayerRepresentation}"
+                                    HorizontalAlignment = "Right"
+                                    VerticalAlignment = "Center" />
+                    <ContentControl Content = "{Binding TopPlayerRepresentation}"
+                                    HorizontalAlignment = "Center"
+                                    VerticalAlignment = "Top" />
+                    <ContentControl Content = "{Binding LeftPlayerRepresentation}"
+                                    HorizontalAlignment = "Left"
+                                    VerticalAlignment = "Center" />
+                    <StackPanel Orientation = "Vertical"
+                                HorizontalAlignment = "Center"
+                                VerticalAlignment = "Bottom">
+                        <ContentControl Content = "{Binding BetActionsRepresentation}"
+                                        Margin = "20"
+                                        HorizontalAlignment = "Center"
+                                        VerticalAlignment = "Bottom" />
+                        <ContentControl Content = "{Binding HandRepresentation}"
+                                        Margin = "20"
+                                        HorizontalAlignment = "Center"
+                                        VerticalAlignment = "Bottom" />
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </DataTemplate>
+    <!--
+        <DataTemplate DataType = "{x:Type vm:BetResultRepresentation}">
+            <StackPanel Orientation = "Vertical">
+                <ContentControl Content = "{Binding BetRepresentation}" />
+                <TextBlock Text = "[Sidi]"
+                           Margin = "5"
+                           IsVisible = "{Binding IsSidi}"
+                           VerticalAlignment = "Center"
+                           HorizontalAlignment = "Center"
+                           FontSize = "20" />
+                <TextBlock Text = "[Barrani]"
+                           Margin = "5"
+                           IsVisible = "{Binding IsBarrani}"
+                           VerticalAlignment = "Center"
+                           HorizontalAlignment = "Center"
+                           FontSize = "20" />
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:LogRepresentation}">
+            <ScrollViewer HorizontalScrollBarVisibility = "Auto"
+                          Padding = "10">
+                <StackPanel Orientation = "Vertical" >
+                    <TextBlock Name = "LogOutput"
+                               Text = "{Binding LogOutput}"
+                               FontSize = "12" />
+                </StackPanel>
+            </ScrollViewer>
+        </DataTemplate>
+ -->
+    </Window.DataTemplates>
+
+    <StackPanel Orientation = "Horizontal"
+                VerticalAlignment = "Top">
+        <ContentControl Content = "{Binding GameRepresentation}" />
+        <!-- <ContentControl Content = "{Binding LogRepresentation}" /> -->
+    </StackPanel>
+</Window>

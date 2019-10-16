@@ -1,0 +1,32 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.0</TargetFramework>
+  </PropertyGroup>
+  <ItemGroup>
+      <Compile Update="**\*.xaml.cs">
+          <DependentUpon>%(Filename)</DependentUpon>
+      </Compile>
+      <EmbeddedResource Include="**\*.xaml">
+          <SubType>Designer</SubType>
+      </EmbeddedResource>
+      <AvaloniaResource Include="**\*.xaml">
+          <SubType>Designer</SubType>
+      </AvaloniaResource>
+      <Content Include="Assets\**">
+          <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      </Content>
+      <AvaloniaResource Include="Assets\**" />
+  </ItemGroup>
+  <ItemGroup>
+    <PackageReference Include="Avalonia" Version="*" />
+    <PackageReference Include="Avalonia.Desktop" Version="*" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="*" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="*" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\SidiBarraniCommon\SidiBarraniCommon.csproj" />
+    <ProjectReference Include="..\SidiBarraniClient\SidiBarraniClient.csproj" />
+    <ProjectReference Include="..\SidiBarraniServer\SidiBarraniServer.csproj" />
+  </ItemGroup>
+</Project>

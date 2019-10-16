@@ -14,16 +14,33 @@ namespace SidiBarraniClient
 {
     public class SidiBarraniClientImplementation : ReactiveObject, ISidiBarraniClientApi
     {
-        public ISidiBarraniServerApi SidiBarraniServerApi {get;set;}
-        public IList<GameInfo> OpenGameList {get;set;}
+        private ISidiBarraniServerApi SidiBarraniServerApi {get;}
+
+        private IList<GameInfo> _openGameList;
+        public IList<GameInfo> OpenGameList {
+            get { return _openGameList; }
+            set { this.RaiseAndSetIfChanged(ref _openGameList, value); }
+        }
+
         private GameInfo _gameInfo;
         public GameInfo GameInfo
         {
             get { return _gameInfo; }
             set { this.RaiseAndSetIfChanged(ref _gameInfo, value); }
         }
-        public PlayerInfo PlayerInfo {get;set;}
-        public PlayerGameInfo PlayerGameInfo {get;set;}
+
+        private PlayerInfo _playerInfo;
+        public PlayerInfo PlayerInfo
+        {
+            get { return _playerInfo; }
+            set { this.RaiseAndSetIfChanged(ref _playerInfo, value); }
+        }
+
+        private PlayerGameInfo _playerGameInfo;
+        public PlayerGameInfo PlayerGameInfo {
+            get { return _playerGameInfo; }
+            set { this.RaiseAndSetIfChanged(ref _playerGameInfo, value); }
+        }
 
         private ObservableAsPropertyHelper<ActionCache> _actionCache;
         private ActionCache ActionCache
@@ -31,8 +48,9 @@ namespace SidiBarraniClient
             get { return _actionCache.Value; }
         }
 
-        public SidiBarraniClientImplementation()
+        public SidiBarraniClientImplementation(ISidiBarraniServerApi sidiBarraniServerApi)
         {
+            SidiBarraniServerApi = sidiBarraniServerApi;
             this.WhenAnyValue(x => x.GameInfo, x => x.GameInfo.Rules, (gameInfo, r) => gameInfo?.Rules)
                 .Select(x => x != null ? new ActionCache(x) : null)
                 .ToProperty(this, x => x.ActionCache, out _actionCache, null);

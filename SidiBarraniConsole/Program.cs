@@ -20,22 +20,10 @@ namespace SidiBaraniConsole
             var sidiBarraniServer = new SidiBarraniServerImplementation();
 
             // The following lines should be replaced by actual web service calls
-            var client1 = new SidiBarraniClientImplementation
-            {
-                SidiBarraniServerApi = sidiBarraniServer
-            };
-            var client2 = new SidiBarraniClientImplementation
-            {
-                SidiBarraniServerApi = sidiBarraniServer
-            };
-            var client3 = new SidiBarraniClientImplementation
-            {
-                SidiBarraniServerApi = sidiBarraniServer
-            };
-            var client4 = new SidiBarraniClientImplementation
-            {
-                SidiBarraniServerApi = sidiBarraniServer
-            };
+            var client1 = new SidiBarraniClientImplementation(sidiBarraniServer);
+            var client2 = new SidiBarraniClientImplementation(sidiBarraniServer);
+            var client3 = new SidiBarraniClientImplementation(sidiBarraniServer);
+            var client4 = new SidiBarraniClientImplementation(sidiBarraniServer);
 
             var rules = new Rules
             {
