@@ -12,57 +12,49 @@ namespace SidiBarrani.ViewModel
         private IList<BetAction> _betActionList;
         public IList<BetAction> BetActionList
         {
-            get { return _betActionList; }
-            set { this.RaiseAndSetIfChanged(ref _betActionList, value); }
+            get => _betActionList;
+            set => this.RaiseAndSetIfChanged(ref _betActionList, value);
         }
         private ObservableAsPropertyHelper<bool> _canAct;
-        public bool CanAct {
-            get { return _canAct.Value; }
-        }
+        public bool CanAct => _canAct.Value;
+
         private ObservableAsPropertyHelper<bool> _canBet;
-        public bool CanBet {
-            get { return _canBet.Value; }
-        }
+        public bool CanBet => _canBet.Value;
+
         private ObservableAsPropertyHelper<bool> _canPass;
-        public bool CanPass {
-            get { return _canPass.Value; }
-        }
+        public bool CanPass => _canPass.Value;
+
         private ObservableAsPropertyHelper<bool> _canSidi;
-        public bool CanSidi {
-            get { return _canSidi.Value; }
-        }
+        public bool CanSidi => _canSidi.Value;
+
         private ObservableAsPropertyHelper<bool> _canBarrani;
-        public bool CanBarrani {
-            get { return _canAct.Value; }
-        }
+        public bool CanBarrani => _canAct.Value;
+
         private ObservableAsPropertyHelper<IList<PlayTypeRepresentation>> _playTypeRepresentationList;
-        public IList<PlayTypeRepresentation> PlayTypeRepresentationList {
-            get { return _playTypeRepresentationList.Value; }
-        }
+        public IList<PlayTypeRepresentation> PlayTypeRepresentationList => _playTypeRepresentationList.Value;
+
         private PlayTypeRepresentation _selectedPlayTypeRepresentation;
         public PlayTypeRepresentation SelectedPlayTypeRepresentation
         {
-            get { return _selectedPlayTypeRepresentation; }
-            set { this.RaiseAndSetIfChanged(ref _selectedPlayTypeRepresentation, value); }
+            get => _selectedPlayTypeRepresentation;
+            set => this.RaiseAndSetIfChanged(ref _selectedPlayTypeRepresentation, value);
         }
+
         private ObservableAsPropertyHelper<IList<ScoreAmountRepresentation>> _scoreAmountRepresentationList;
-        public IList<ScoreAmountRepresentation> ScoreAmountRepresentationList {
-            get { return _scoreAmountRepresentationList.Value; }
-        }
+        public IList<ScoreAmountRepresentation> ScoreAmountRepresentationList => _scoreAmountRepresentationList.Value;
+
         private ScoreAmountRepresentation _selectedScoreAmountRepresentation;
         public ScoreAmountRepresentation SelectedScoreAmountRepresentation
         {
-            get { return _selectedScoreAmountRepresentation; }
-            set { this.RaiseAndSetIfChanged(ref _selectedScoreAmountRepresentation, value); }
+            get => _selectedScoreAmountRepresentation;
+            set => this.RaiseAndSetIfChanged(ref _selectedScoreAmountRepresentation, value);
         }
+
         private ObservableAsPropertyHelper<BetRepresentation> _selectedBetRepresentation;
-        public BetRepresentation SelectedBetRepresentation {
-            get { return _selectedBetRepresentation.Value; }
-        }
+        public BetRepresentation SelectedBetRepresentation => _selectedBetRepresentation.Value;
+
         private ObservableAsPropertyHelper<bool> _hasBetSelected;
-        public bool HasBetSelected {
-            get { return _hasBetSelected.Value; }
-        }
+        public bool HasBetSelected => _hasBetSelected.Value;
 
         public BetActionsRepresentation(IList<BetAction> betActionList)
         {

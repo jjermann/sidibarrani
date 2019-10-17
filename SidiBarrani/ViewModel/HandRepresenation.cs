@@ -11,22 +11,19 @@ namespace SidiBarrani.ViewModel
         private CardPile _cardPile;
         public CardPile CardPile
         {
-            get { return _cardPile; }
-            set { this.RaiseAndSetIfChanged(ref _cardPile, value); }
+            get => _cardPile;
+            set => this.RaiseAndSetIfChanged(ref _cardPile, value);
         }
 
         private IList<PlayAction> _playActionList;
         public IList<PlayAction> PlayActionList
         {
-            get { return _playActionList; }
-            set { this.RaiseAndSetIfChanged(ref _playActionList, value); }
+            get => _playActionList;
+            set => this.RaiseAndSetIfChanged(ref _playActionList, value);
         }
 
         private ObservableAsPropertyHelper<IList<CardRepresentation>> _cardRepresentationList;
-        private IList<CardRepresentation> CardRepresentationList
-        {
-            get { return _cardRepresentationList.Value; }
-        }
+        private IList<CardRepresentation> CardRepresentationList => _cardRepresentationList.Value;
 
         public HandRepresentation(CardPile cardPile, IList<PlayAction> playActionList)
         {

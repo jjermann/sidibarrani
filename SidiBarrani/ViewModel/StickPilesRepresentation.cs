@@ -10,8 +10,8 @@ namespace SidiBarrani.ViewModel
         private IList<CardPile> _stickPileList;
         public IList<CardPile> StickPileList
         {
-            get { return _stickPileList; }
-            set { this.RaiseAndSetIfChanged(ref _stickPileList, value); }
+            get => _stickPileList;
+            set => this.RaiseAndSetIfChanged(ref _stickPileList, value);
         }
 
         public StickPilesRepresentation(IList<CardPile> stickPileList)

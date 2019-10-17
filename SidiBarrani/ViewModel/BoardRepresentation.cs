@@ -10,29 +10,21 @@ namespace SidiBarrani.ViewModel
         private GameStageInfo _gameStageInfo;
         public GameStageInfo GameStageInfo
         {
-            get { return _gameStageInfo; }
-            set { this.RaiseAndSetIfChanged(ref _gameStageInfo, value); }
+            get => _gameStageInfo;
+            set => this.RaiseAndSetIfChanged(ref _gameStageInfo, value);
         }
 
         private ObservableAsPropertyHelper<CardRepresentation> _topCardRepresentation;
-        public CardRepresentation TopCardRepresentation {
-            get { return _topCardRepresentation.Value; }
-        }
+        public CardRepresentation TopCardRepresentation => _topCardRepresentation.Value;
 
         private ObservableAsPropertyHelper<CardRepresentation> _leftCardRepresentation;
-        public CardRepresentation LeftCardRepresentation {
-            get { return _leftCardRepresentation.Value; }
-        }
+        public CardRepresentation LeftCardRepresentation => _leftCardRepresentation.Value;
 
         private ObservableAsPropertyHelper<CardRepresentation> _rightCardRepresentation;
-        public CardRepresentation RightCardRepresentation {
-            get { return _rightCardRepresentation.Value; }
-        }
+        public CardRepresentation RightCardRepresentation => _rightCardRepresentation.Value;
 
         private ObservableAsPropertyHelper<CardRepresentation> _bottomCardRepresentation;
-        public CardRepresentation BottomCardRepresentation {
-            get { return _bottomCardRepresentation.Value; }
-        }
+        public CardRepresentation BottomCardRepresentation => _bottomCardRepresentation.Value;
 
         public BoardRepresentation(GameStageInfo gameStageInfo)
         {

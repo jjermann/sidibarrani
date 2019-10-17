@@ -18,42 +18,39 @@ namespace SidiBarraniClient
 
         private IList<GameInfo> _openGameList;
         public IList<GameInfo> OpenGameList {
-            get { return _openGameList; }
-            set { this.RaiseAndSetIfChanged(ref _openGameList, value); }
+            get => _openGameList;
+            set => this.RaiseAndSetIfChanged(ref _openGameList, value);
         }
 
         private GameInfo _gameInfo;
         public GameInfo GameInfo
         {
-            get { return _gameInfo; }
-            set { this.RaiseAndSetIfChanged(ref _gameInfo, value); }
+            get => _gameInfo;
+            set => this.RaiseAndSetIfChanged(ref _gameInfo, value);
         }
 
         private PlayerInfo _playerInfo;
         public PlayerInfo PlayerInfo
         {
-            get { return _playerInfo; }
-            set { this.RaiseAndSetIfChanged(ref _playerInfo, value); }
+            get => _playerInfo;
+            set => this.RaiseAndSetIfChanged(ref _playerInfo, value);
         }
 
         private PlayerGameInfo _playerGameInfo;
         public PlayerGameInfo PlayerGameInfo {
-            get { return _playerGameInfo; }
-            set { this.RaiseAndSetIfChanged(ref _playerGameInfo, value); }
+            get => _playerGameInfo;
+            set => this.RaiseAndSetIfChanged(ref _playerGameInfo, value);
         }
 
         private ObservableAsPropertyHelper<ActionCache> _actionCache;
-        private ActionCache ActionCache
-        {
-            get { return _actionCache.Value; }
-        }
+        private ActionCache ActionCache => _actionCache.Value;
 
         public SidiBarraniClientImplementation(ISidiBarraniServerApi sidiBarraniServerApi)
         {
             SidiBarraniServerApi = sidiBarraniServerApi;
             this.WhenAnyValue(x => x.GameInfo, x => x.GameInfo.Rules, (gameInfo, r) => gameInfo?.Rules)
                 .Select(x => x != null ? new ActionCache(x) : null)
-                .ToProperty(this, x => x.ActionCache, out _actionCache, null);
+                .ToProperty(this, x => x.ActionCache, out _actionCache);
         }
 
         public bool RequestConfirm()

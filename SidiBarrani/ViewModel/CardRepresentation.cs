@@ -13,21 +13,24 @@ namespace SidiBarrani.ViewModel
         private string _imageSource;
         public string ImageSource
         {
-            get {return _imageSource;}
-            set {this.RaiseAndSetIfChanged(ref _imageSource, value);}
+            get => _imageSource;
+            set => this.RaiseAndSetIfChanged(ref _imageSource, value);
         }
+
         private string _borderColor;
         public string BorderColor
         {
-            get {return _borderColor;}
-            set {this.RaiseAndSetIfChanged(ref _borderColor, value);}
+            get => _borderColor;
+            set => this.RaiseAndSetIfChanged(ref _borderColor, value);
         }
+
         private double _borderThickness;
         public double BorderThickness
         {
-            get {return _borderThickness;}
-            set {this.RaiseAndSetIfChanged(ref _borderThickness, value);}
+            get => _borderThickness;
+            set => this.RaiseAndSetIfChanged(ref _borderThickness, value);
         }
+
         public CardRepresentation(Card card, PlayAction playAction = null)
         {
             Card = card;

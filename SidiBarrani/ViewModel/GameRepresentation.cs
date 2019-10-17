@@ -14,60 +14,36 @@ namespace SidiBarrani.ViewModel
         private PlayerGameInfo _playerGameInfo;
         public PlayerGameInfo PlayerGameInfo
         {
-            get { return _playerGameInfo; }
-            set { this.RaiseAndSetIfChanged(ref _playerGameInfo, value); }
+            get => _playerGameInfo;
+            set => this.RaiseAndSetIfChanged(ref _playerGameInfo, value);
         }
 
         private ObservableAsPropertyHelper<GameStageInfo> _gameStageInfo;
-        private GameStageInfo GameStageInfo
-        {
-            get { return _gameStageInfo.Value; }
-        }
+        private GameStageInfo GameStageInfo => _gameStageInfo.Value;
 
         private ObservableAsPropertyHelper<IList<PlayAction>> _playActionList;
-        private IList<PlayAction> PlayActionList
-        {
-            get { return _playActionList.Value; }
-        }
+        private IList<PlayAction> PlayActionList => _playActionList.Value;
 
         private ObservableAsPropertyHelper<IList<BetAction>> _betActionList;
-        private IList<BetAction> BetActionList
-        {
-            get { return _betActionList.Value; }
-        }
+        private IList<BetAction> BetActionList => _betActionList.Value;
 
         private ObservableAsPropertyHelper<HandRepresentation> _handRepresentation;
-        public HandRepresentation HandRepresentation
-        {
-            get { return _handRepresentation.Value; }
-        }
+        public HandRepresentation HandRepresentation => _handRepresentation.Value;
 
         private ObservableAsPropertyHelper<BetActionsRepresentation> _betActionsRepresentation;
-        public BetActionsRepresentation BetActionsRepresentation
-        {
-            get { return _betActionsRepresentation.Value; }
-        }
+        public BetActionsRepresentation BetActionsRepresentation => _betActionsRepresentation.Value;
 
         private ObservableAsPropertyHelper<BoardRepresentation> _boardRepresentation;
-        public BoardRepresentation BoardRepresentation
-        {
-            get { return _boardRepresentation.Value; }
-        }
+        public BoardRepresentation BoardRepresentation => _boardRepresentation.Value;
 
         private ObservableAsPropertyHelper<PlayerRepresentation> _topPlayerRepresentation;
-        public PlayerRepresentation TopPlayerRepresentation {
-            get { return _topPlayerRepresentation.Value; }
-        }
+        public PlayerRepresentation TopPlayerRepresentation => _topPlayerRepresentation.Value;
 
         private ObservableAsPropertyHelper<PlayerRepresentation> _leftPlayerRepresentation;
-        public PlayerRepresentation LeftPlayerRepresentation {
-            get { return _leftPlayerRepresentation.Value; }
-        }
+        public PlayerRepresentation LeftPlayerRepresentation => _leftPlayerRepresentation.Value;
 
         private ObservableAsPropertyHelper<PlayerRepresentation> _rightPlayerRepresentation;
-        public PlayerRepresentation RightPlayerRepresentation {
-            get { return _rightPlayerRepresentation.Value; }
-        }
+        public PlayerRepresentation RightPlayerRepresentation => _rightPlayerRepresentation.Value;
 
         public GameRepresentation(CommandFactory commandFactory, PlayerGameInfo playerGameInfo)
         {

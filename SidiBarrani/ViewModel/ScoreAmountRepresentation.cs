@@ -9,7 +9,6 @@ namespace SidiBarrani.ViewModel
         public string AmountString {get;}
         public string AmountColor {get;}
 
-        private ScoreAmountRepresentation() { }
         public ScoreAmountRepresentation(ScoreAmount scoreAmount)
         {
             ScoreAmount = scoreAmount;

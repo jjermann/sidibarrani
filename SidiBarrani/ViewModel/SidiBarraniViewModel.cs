@@ -19,22 +19,13 @@ namespace SidiBarrani.ViewModel
         private SidiBarraniClientImplementation SidiBarraniClient {get;}
 
         private ObservableAsPropertyHelper<CommandFactory> _commandFactory;
-        public CommandFactory CommandFactory
-        {
-            get { return _commandFactory.Value; }
-        }
+        public CommandFactory CommandFactory => _commandFactory.Value;
 
         private ObservableAsPropertyHelper<PlayerGameInfo> _playerGameInfo;
-        public PlayerGameInfo PlayerGameInfo
-        {
-            get { return _playerGameInfo.Value; }
-        }
+        public PlayerGameInfo PlayerGameInfo => _playerGameInfo.Value;
 
         private ObservableAsPropertyHelper<GameRepresentation> _gameRepresentation;
-        public GameRepresentation GameRepresentation
-        {
-            get { return _gameRepresentation.Value; }
-        }
+        public GameRepresentation GameRepresentation => _gameRepresentation.Value;
 
         public SidiBarraniViewModel(ISidiBarraniServerApi sidiBarraniServerApi)
         {

@@ -10,35 +10,25 @@ namespace SidiBarrani.ViewModel
     public class PlayerRepresentation : ReactiveObject
     {
         private ObservableAsPropertyHelper<IList<BetRepresentation>> _betRepresentationList;
-        public IList<BetRepresentation> BetRepresentationList {
-            get { return _betRepresentationList.Value; }
-        }
+        public IList<BetRepresentation> BetRepresentationList => _betRepresentationList.Value;
 
         private ObservableAsPropertyHelper<BetRepresentation> _betRepresentation;
-        public BetRepresentation BetRepresentation {
-            get { return _betRepresentation.Value; }
-        }
+        public BetRepresentation BetRepresentation => _betRepresentation.Value;
 
         private ObservableAsPropertyHelper<StickPilesRepresentation> _stickPilesRepresentation;
-        public StickPilesRepresentation StickPilesRepresentation {
-            get { return _stickPilesRepresentation.Value; }
-        }
+        public StickPilesRepresentation StickPilesRepresentation => _stickPilesRepresentation.Value;
 
         private ObservableAsPropertyHelper<int> _cardsInHand;
-        public int CardsInHand {
-            get { return _cardsInHand.Value; }
-        }
+        public int CardsInHand => _cardsInHand.Value;
 
         private ObservableAsPropertyHelper<bool> _isCurrentPlayer;
-        public bool IsCurrentPlayer {
-            get { return _isCurrentPlayer.Value; }
-        }
+        public bool IsCurrentPlayer => _isCurrentPlayer.Value;
 
         private string _playerName;
         public string PlayerName
         {
-            get { return _playerName; }
-            set { this.RaiseAndSetIfChanged(ref _playerName, value); }
+            get => _playerName;
+            set => this.RaiseAndSetIfChanged(ref _playerName, value);
         }
 
         public PlayerRepresentation(PlayerInfo playerInfo)
