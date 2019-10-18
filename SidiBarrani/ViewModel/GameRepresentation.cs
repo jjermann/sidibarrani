@@ -9,107 +9,46 @@ namespace SidiBarrani.ViewModel
 {
     public class GameRepresentation : ReactiveObject
     {
-        private CommandFactory _commandFactory;
-
-        private PlayerGameInfo _playerGameInfo;
-        public PlayerGameInfo PlayerGameInfo
-        {
-            get => _playerGameInfo;
-            set => this.RaiseAndSetIfChanged(ref _playerGameInfo, value);
-        }
-
-        private ObservableAsPropertyHelper<GameStageInfo> _gameStageInfo;
-        private GameStageInfo GameStageInfo => _gameStageInfo.Value;
-
-        private ObservableAsPropertyHelper<IList<PlayAction>> _playActionList;
-        private IList<PlayAction> PlayActionList => _playActionList.Value;
-
-        private ObservableAsPropertyHelper<IList<BetAction>> _betActionList;
-        private IList<BetAction> BetActionList => _betActionList.Value;
-
-        private ObservableAsPropertyHelper<HandRepresentation> _handRepresentation;
-        public HandRepresentation HandRepresentation => _handRepresentation.Value;
-
-        private ObservableAsPropertyHelper<BetActionsRepresentation> _betActionsRepresentation;
-        public BetActionsRepresentation BetActionsRepresentation => _betActionsRepresentation.Value;
-
-        private ObservableAsPropertyHelper<BoardRepresentation> _boardRepresentation;
-        public BoardRepresentation BoardRepresentation => _boardRepresentation.Value;
-
-        private ObservableAsPropertyHelper<PlayerRepresentation> _topPlayerRepresentation;
-        public PlayerRepresentation TopPlayerRepresentation => _topPlayerRepresentation.Value;
-
-        private ObservableAsPropertyHelper<PlayerRepresentation> _leftPlayerRepresentation;
-        public PlayerRepresentation LeftPlayerRepresentation => _leftPlayerRepresentation.Value;
-
-        private ObservableAsPropertyHelper<PlayerRepresentation> _rightPlayerRepresentation;
-        public PlayerRepresentation RightPlayerRepresentation => _rightPlayerRepresentation.Value;
+        private CommandFactory CommandFactory {get;}
+        private PlayerGameInfo PlayerGameInfo {get;}
+        private IList<PlayAction> PlayActionList {get;}
+        private IList<BetAction> BetActionList {get;}
+        private GameStageInfo GameStageInfo => PlayerGameInfo?.GameStageInfo;
+        public HandRepresentation HandRepresentation {get;}
+        public BetActionsRepresentation BetActionsRepresentation {get;}
+        public BoardRepresentation BoardRepresentation {get;}
+        public PlayerRepresentation TopPlayerRepresentation {get;}
+        public PlayerRepresentation LeftPlayerRepresentation {get;}
+        public PlayerRepresentation RightPlayerRepresentation {get;}
 
         public GameRepresentation(CommandFactory commandFactory, PlayerGameInfo playerGameInfo)
         {
-            _commandFactory = commandFactory;
-            this.WhenAnyValue(
-                x => x.PlayerGameInfo,
-                x => x.PlayerGameInfo.GameStageInfo,
-                (pg, gs) => pg?.GameStageInfo)
-                .ToProperty(this, x => x.GameStageInfo, out _gameStageInfo, null);
-            this.WhenAnyValue(
-                x => x.PlayerGameInfo,
-                x => x.PlayerGameInfo.ValidActionList,
-                (pg, al) =>
-                {
-                    var playActionList = pg?.ValidActionList
-                        ?.Select(a => _commandFactory.ConstructAction(a.ActionId))
-                        .Where(a => a.GetActionType() == ActionType.PlayAction)
-                        .Select(a => (PlayAction)a)
-                        .ToList();
-                    return playActionList;
-                })
-                .ToProperty(this, x => x.PlayActionList, out _playActionList, null);
-            this.WhenAnyValue(
-                x => x.PlayerGameInfo,
-                x => x.PlayerGameInfo.ValidActionList,
-                (pg, al) =>
-                {
-                    var betActionList = pg?.ValidActionList
-                        ?.Select(a => _commandFactory.ConstructAction(a.ActionId))
-                        .Where(a => a.GetActionType() == ActionType.BetAction)
-                        .Select(a => (BetAction)a)
-                        .ToList();
-                    return betActionList;
-                })
-                .ToProperty(this, x => x.BetActionList, out _betActionList, null);
-            this.WhenAnyValue(
-                x => x.PlayerGameInfo,
-                x => x.PlayerGameInfo.PlayerHand,
-                x => x.PlayActionList,
-                (pg, ph, al) => {
-                    var playerHand = pg?.PlayerHand;
-                    if (playerHand == null)
-                    {
-                        return null;
-                    }
-                    return new HandRepresentation(playerHand, al);
-                })
-                .ToProperty(this, x => x.HandRepresentation, out _handRepresentation, null);
-            this.WhenAnyValue(x => x.BetActionList)
-                .Select(x => new BetActionsRepresentation(x))
-                .ToProperty(this, x => x.BetActionsRepresentation, out _betActionsRepresentation, null);
-            this.WhenAnyValue(x => x.GameStageInfo)
-                .Select(x => x != null ? new BoardRepresentation(x) : null)
-                .ToProperty(this, x => x.BoardRepresentation, out _boardRepresentation, null);
-            var somePlayerInfo = new PlayerInfo();
-            this.WhenAnyValue(x => x.GameStageInfo)
-                .Select(x => new PlayerRepresentation(somePlayerInfo))
-                .ToProperty(this, x => x.TopPlayerRepresentation, out _topPlayerRepresentation, null);
-            this.WhenAnyValue(x => x.GameStageInfo)
-                .Select(x => new PlayerRepresentation(somePlayerInfo))
-                .ToProperty(this, x => x.LeftPlayerRepresentation, out _leftPlayerRepresentation, null);
-            this.WhenAnyValue(x => x.GameStageInfo)
-                .Select(x => new PlayerRepresentation(somePlayerInfo))
-                .ToProperty(this, x => x.RightPlayerRepresentation, out _rightPlayerRepresentation, null);
-
+            CommandFactory = commandFactory;
             PlayerGameInfo = playerGameInfo;
+            PlayActionList = PlayerGameInfo?.ValidActionList
+                ?.Select(a => CommandFactory.ConstructAction(a.ActionId))
+                .Where(a => a.GetActionType() == ActionType.PlayAction)
+                .Select(a => (PlayAction)a)
+                .ToList();
+            BetActionList = PlayerGameInfo?.ValidActionList
+                ?.Select(a => CommandFactory.ConstructAction(a.ActionId))
+                .Where(a => a.GetActionType() == ActionType.BetAction)
+                .Select(a => (BetAction)a)
+                .ToList();
+            HandRepresentation = PlayerGameInfo?.PlayerHand != null
+                ? new HandRepresentation(PlayerGameInfo?.PlayerHand, PlayActionList)
+                : null;
+            BetActionsRepresentation = BetActionList != null
+                ? new BetActionsRepresentation(BetActionList)
+                : null;
+            BoardRepresentation = GameStageInfo != null
+                ? new BoardRepresentation(GameStageInfo)
+                : null;
+            //TODO
+            var somePlayerInfo = new PlayerInfo();
+            TopPlayerRepresentation = new PlayerRepresentation(somePlayerInfo);
+            LeftPlayerRepresentation = new PlayerRepresentation(somePlayerInfo);
+            RightPlayerRepresentation = new PlayerRepresentation(somePlayerInfo);
         }
     }
 }

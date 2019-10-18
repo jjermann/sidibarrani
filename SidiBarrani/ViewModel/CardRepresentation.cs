@@ -7,29 +7,11 @@ namespace SidiBarrani.ViewModel
 {
     public class CardRepresentation : ReactiveObject
     {
-        public Card Card {get;}
-        public PlayAction PlayAction {get;}
-
-        private string _imageSource;
-        public string ImageSource
-        {
-            get => _imageSource;
-            set => this.RaiseAndSetIfChanged(ref _imageSource, value);
-        }
-
-        private string _borderColor;
-        public string BorderColor
-        {
-            get => _borderColor;
-            set => this.RaiseAndSetIfChanged(ref _borderColor, value);
-        }
-
-        private double _borderThickness;
-        public double BorderThickness
-        {
-            get => _borderThickness;
-            set => this.RaiseAndSetIfChanged(ref _borderThickness, value);
-        }
+        private Card Card {get;}
+        private PlayAction PlayAction {get;}
+        public string ImageSource {get;}
+        public string BorderColor {get;}
+        public double BorderThickness {get;}
 
         public CardRepresentation(Card card, PlayAction playAction = null)
         {

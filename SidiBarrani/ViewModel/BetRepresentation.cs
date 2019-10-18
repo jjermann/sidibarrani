@@ -8,7 +8,6 @@ namespace SidiBarrani.ViewModel
         public PlayTypeRepresentation PlayStyleRepresentation {get;}
         public ScoreAmountRepresentation ScoreAmountRepresentation {get;}
 
-        private BetRepresentation() { }
         public BetRepresentation(Bet bet)
         {
             Bet = bet;
