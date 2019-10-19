@@ -4,7 +4,7 @@
         xmlns:view="clr-namespace:SidiBarrani.View"
         xmlns:info="clr-namespace:SidiBarraniCommon.Info;assembly=SidiBarraniCommon"
         Title="Sidi Barrani"
-        Width="1500"
+        Width="1000"
         Height="1000">
 
     <Window.Resources>
@@ -14,6 +14,53 @@
     </Window.Resources>
 
     <Window.DataTemplates>
+        <DataTemplate DataType = "{x:Type vm:PlayerRepresentation}">
+            <StackPanel Orientation = "Vertical">
+                <TextBlock Text = "{Binding PlayerName}" />
+                <TextBlock Text = "{Binding CardsInHand}" />
+                <ContentControl Content = "{Binding StickPilesRepresentation}" />
+                <ListBox Items = "{Binding BetActionRepresentationList}"
+                         IsVisible = "{Binding ShowBetActionList}" />
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:StickPilesRepresentation}">
+            <Grid>
+                <TextBlock Text = "StickPile" />
+            </Grid>
+        </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:BetActionRepresentation}">
+            <StackPanel Orientation = "Horizontal">
+                <TextBlock Text = "{Binding Index}" />
+                <StackPanel Orientation = "Vertical">
+                    <TextBlock Text = "CURRENT BET"
+                               IsVisible = "{Binding IsCurrentBetAction}" />
+                    <ContentControl Content = "{Binding BetRepresentation}" />
+                    <TextBlock Text = "Pass"
+                               IsVisible = "{Binding IsPass}" />
+                    <TextBlock Text = "Sidi"
+                               IsVisible = "{Binding IsSidi}" />
+                    <TextBlock Text = "Barrani"
+                               IsVisible = "{Binding IsBarrani}" />
+                </StackPanel>
+            </StackPanel>
+        </DataTemplate>
+        <DataTemplate DataType = "{x:Type vm:BetResultRepresentation}">
+            <StackPanel Orientation = "Vertical">
+                <ContentControl Content = "{Binding BetRepresentation}" />
+                <TextBlock Text = "[Sidi]"
+                           Margin = "5"
+                           IsVisible = "{Binding IsSidi}"
+                           VerticalAlignment = "Center"
+                           HorizontalAlignment = "Center"
+                           FontSize = "20" />
+                <TextBlock Text = "[Barrani]"
+                           Margin = "5"
+                           IsVisible = "{Binding IsBarrani}"
+                           VerticalAlignment = "Center"
+                           HorizontalAlignment = "Center"
+                           FontSize = "20" />
+            </StackPanel>
+        </DataTemplate>
         <DataTemplate DataType = "{x:Type vm:ScoreAmountRepresentation}">
             <Grid>
                 <TextBlock Text = "{Binding AmountString}"
@@ -24,7 +71,9 @@
         <DataTemplate DataType = "{x:Type vm:CardRepresentation}">
             <Button BorderThickness = "0"
                     Margin = "0"
-                    Padding = "0">
+                    Padding = "0"
+                    Command = "{Binding PlayActionCommand}"
+                    IsEnabled = "{Binding IsHighlighted}" >
                 <Border BorderBrush = "{Binding BorderColor, Converter={StaticResource StringToBrushConverter}}"
                         BorderThickness = "{Binding BorderThickness, Converter={StaticResource DoubleToThicknessConverter}}"
                         CornerRadius = "3"
@@ -57,13 +106,17 @@
                 <StackPanel IsVisible = "{Binding CanAct}"
                             Orientation = "Vertical">
                     <Button Content = "Pass"
-                            IsVisible = "{Binding CanPass}" />
+                            IsVisible = "{Binding CanPass}"
+                            Command = "{Binding PassBetActionCommand}" />
                     <Button Content = "Sidi"
-                            IsVisible = "{Binding CanSidi}" />
+                            IsVisible = "{Binding CanSidi}"
+                            Command = "{Binding SidiBetActionCommand}" />
                     <Button Content = "Barrani"
-                            IsVisible = "{Binding CanBarrani}" />
+                            IsVisible = "{Binding CanBarrani}"
+                            Command = "{Binding BarraniBetActionCommand}" />
                     <Button Content = "{Binding SelectedBetRepresentation}"
-                            IsVisible = "{Binding HasBetSelected}" />
+                            IsVisible = "{Binding HasBetSelected}"
+                            Command = "{Binding BetBetActionCommand}" />
                     <StackPanel Orientation = "Horizontal"
                                 IsVisible = "{Binding CanBet}">
                         <ListBox Items = "{Binding PlayTypeRepresentationList}"
@@ -99,6 +152,9 @@
                                 Stretch = "UniformToFill" />
                 </Border.Background>
                 <Grid>
+                    <ContentControl Content = "{Binding BetResultRepresentation}"
+                                    HorizontalAlignment = "Center"
+                                    VerticalAlignment = "Center" />
                     <ContentControl Content = "{Binding BottomCardRepresentation}"
                                     HorizontalAlignment = "Center"
                                     VerticalAlignment = "Bottom" />
@@ -122,12 +178,6 @@
                                 Stretch = "UniformToFill" />
                 </Border.Background>
                 <Grid>
-                    <Button Content = "Proceed"
-                            Command = "{Binding ConfirmCommand}"
-                            HorizontalAlignment = "Right"
-                            VerticalAlignment = "Top"
-                            Margin = "20"
-                            IsVisible = "{Binding CanConfirm}" />
                     <ContentControl HorizontalAlignment = "Center"
                                     VerticalAlignment = "Center"
                                     Content = "{Binding BoardRepresentation}" />
@@ -155,40 +205,20 @@
                 </Grid>
             </Border>
         </DataTemplate>
-    <!--
-        <DataTemplate DataType = "{x:Type vm:BetResultRepresentation}">
-            <StackPanel Orientation = "Vertical">
-                <ContentControl Content = "{Binding BetRepresentation}" />
-                <TextBlock Text = "[Sidi]"
-                           Margin = "5"
-                           IsVisible = "{Binding IsSidi}"
-                           VerticalAlignment = "Center"
-                           HorizontalAlignment = "Center"
-                           FontSize = "20" />
-                <TextBlock Text = "[Barrani]"
-                           Margin = "5"
-                           IsVisible = "{Binding IsBarrani}"
-                           VerticalAlignment = "Center"
-                           HorizontalAlignment = "Center"
-                           FontSize = "20" />
-            </StackPanel>
-        </DataTemplate>
-        <DataTemplate DataType = "{x:Type vm:LogRepresentation}">
-            <ScrollViewer HorizontalScrollBarVisibility = "Auto"
-                          Padding = "10">
-                <StackPanel Orientation = "Vertical" >
-                    <TextBlock Name = "LogOutput"
-                               Text = "{Binding LogOutput}"
-                               FontSize = "12" />
-                </StackPanel>
-            </ScrollViewer>
-        </DataTemplate>
- -->
     </Window.DataTemplates>
 
     <StackPanel Orientation = "Horizontal"
                 VerticalAlignment = "Top">
-        <ContentControl Content = "{Binding GameRepresentation}" />
-        <!-- <ContentControl Content = "{Binding LogRepresentation}" /> -->
+        <Grid>
+            <ContentControl Content = "{Binding GameRepresentation}" />
+            <Button Content = "Proceed"
+                    Width = "80"
+                    Height = "40"
+                    Margin = "0 0 0 200"
+                    HorizontalAlignment = "Center"
+                    VerticalAlignment = "Center"
+                    Command = "{Binding ConfirmCommand}"
+                    IsVisible = "{Binding IsAwaitingConfirm}" />
+        </Grid>
     </StackPanel>
 </Window>

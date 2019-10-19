@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Windows.Input;
 using ReactiveUI;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Info;
+using SidiBarraniCommon.Model;
 
 namespace SidiBarrani.ViewModel
 {
@@ -13,6 +15,8 @@ namespace SidiBarrani.ViewModel
         private PlayerGameInfo PlayerGameInfo {get;}
         private IList<PlayAction> PlayActionList {get;}
         private IList<BetAction> BetActionList {get;}
+        private IDictionary<Card, ICommand> CardCommandDictionary {get;}
+        private IDictionary<BetAction, ICommand> BetActionCommandDictionary {get;}
         private GameStageInfo GameStageInfo => PlayerGameInfo?.GameStageInfo;
         public HandRepresentation HandRepresentation {get;}
         public BetActionsRepresentation BetActionsRepresentation {get;}
@@ -35,20 +39,47 @@ namespace SidiBarrani.ViewModel
                 .Where(a => a.GetActionType() == ActionType.BetAction)
                 .Select(a => (BetAction)a)
                 .ToList();
+            CardCommandDictionary = PlayActionList
+                ?.ToDictionary(a => a.Card, a => CommandFactory.ConstructCommand(a.GetActionId()) as ICommand);
+            BetActionCommandDictionary = BetActionList
+                ?.ToDictionary(a => a, a => CommandFactory.ConstructCommand(a.GetActionId()) as ICommand);
             HandRepresentation = PlayerGameInfo?.PlayerHand != null
-                ? new HandRepresentation(PlayerGameInfo?.PlayerHand, PlayActionList)
+                ? new HandRepresentation(PlayerGameInfo?.PlayerHand, CardCommandDictionary)
                 : null;
             BetActionsRepresentation = BetActionList != null
-                ? new BetActionsRepresentation(BetActionList)
+                ? new BetActionsRepresentation(BetActionList, BetActionCommandDictionary)
                 : null;
             BoardRepresentation = GameStageInfo != null
-                ? new BoardRepresentation(GameStageInfo)
+                ? new BoardRepresentation(PlayerGameInfo.GameInfo, PlayerGameInfo.PlayerInfo, GameStageInfo)
                 : null;
-            //TODO
-            var somePlayerInfo = new PlayerInfo();
-            TopPlayerRepresentation = new PlayerRepresentation(somePlayerInfo);
-            LeftPlayerRepresentation = new PlayerRepresentation(somePlayerInfo);
-            RightPlayerRepresentation = new PlayerRepresentation(somePlayerInfo);
+
+            var topPlayer = PlayerGameInfo.GameInfo.PlayerGroupInfo.GetOppositePlayer(PlayerGameInfo.PlayerInfo.PlayerId);
+            var rightPlayer = PlayerGameInfo.GameInfo.PlayerGroupInfo.GetNextPlayer(PlayerGameInfo.PlayerInfo.PlayerId);
+            var leftPlayer = PlayerGameInfo.GameInfo.PlayerGroupInfo.GetPreviousPlayer(PlayerGameInfo.PlayerInfo.PlayerId);
+
+            var previousBetActionList = PlayerGameInfo?.GameStageInfo?.ExpectedActionType == ActionType.BetAction
+                ? PlayerGameInfo?.GameStageInfo?.CurrentBetActionList
+                : null;
+            var betActionKeyValuePairList = (previousBetActionList != null && previousBetActionList.Any())
+                ? previousBetActionList
+                    ?.Select((a,i) => new KeyValuePair<int, BetAction>(i,a))
+                    ?.ToList()
+                : null;
+            var topBetActionDictionary = betActionKeyValuePairList
+                ?.Where(p => p.Value.PlayerInfo.PlayerId == topPlayer.PlayerId)
+                ?.ToDictionary(p => p.Key, p => p.Value);
+            var rightBetActionDictionary = betActionKeyValuePairList
+                ?.Where(p => p.Value.PlayerInfo.PlayerId == rightPlayer.PlayerId)
+                ?.ToDictionary(p => p.Key, p => p.Value);
+            var leftBetActionDictionary = betActionKeyValuePairList
+                ?.Where(p => p.Value.PlayerInfo.PlayerId == leftPlayer.PlayerId)
+                ?.ToDictionary(p => p.Key, p => p.Value);
+
+            // TODO
+            var currentPlayerId = GameStageInfo?.CurrentPlayer?.PlayerId;
+            TopPlayerRepresentation = new PlayerRepresentation(topPlayer, topBetActionDictionary, null, 0, currentPlayerId == topPlayer.PlayerId);
+            LeftPlayerRepresentation = new PlayerRepresentation(rightPlayer, rightBetActionDictionary, null, 0, currentPlayerId == leftPlayer.PlayerId);
+            RightPlayerRepresentation = new PlayerRepresentation(leftPlayer, leftBetActionDictionary, null, 0, currentPlayerId == rightPlayer.PlayerId);
         }
     }
 }

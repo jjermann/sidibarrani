@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
+using System.Threading.Tasks;
 using ReactiveUI;
 using Serilog;
 using SidiBarraniCommon;
@@ -15,6 +16,7 @@ namespace SidiBarraniClient
     public class SidiBarraniClientImplementation : ReactiveObject, ISidiBarraniClientApi
     {
         private ISidiBarraniServerApi SidiBarraniServerApi {get;}
+        private Func<Task<bool>> ConfirmFactory {get;}
 
         private IList<GameInfo> _openGameList;
         public IList<GameInfo> OpenGameList {
@@ -45,18 +47,20 @@ namespace SidiBarraniClient
         private ObservableAsPropertyHelper<ActionCache> _actionCache;
         private ActionCache ActionCache => _actionCache.Value;
 
-        public SidiBarraniClientImplementation(ISidiBarraniServerApi sidiBarraniServerApi)
+        public SidiBarraniClientImplementation(
+            ISidiBarraniServerApi sidiBarraniServerApi,
+            Func<Task<bool>> confirmFactory = null)
         {
             SidiBarraniServerApi = sidiBarraniServerApi;
+            ConfirmFactory = confirmFactory;
             this.WhenAnyValue(x => x.GameInfo, x => x.GameInfo.Rules, (gameInfo, r) => gameInfo?.Rules)
                 .Select(x => x != null ? new ActionCache(x) : null)
                 .ToProperty(this, x => x.ActionCache, out _actionCache);
         }
 
-        public bool RequestConfirm()
-        {
-            return true;
-        }
+        public bool RequestConfirm() => ConfirmFactory != null
+            ? ConfirmFactory().GetAwaiter().GetResult()
+            : true;
 
         public bool SetPlayerGameInfo(PlayerGameInfo playerGameInfo)
         {

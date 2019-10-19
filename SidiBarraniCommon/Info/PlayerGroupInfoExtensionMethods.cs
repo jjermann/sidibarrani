@@ -6,16 +6,36 @@ namespace SidiBarraniCommon.Info
 {
     public static class PlayerGroupInfoExtensionMethods
     {
-        public static PlayerInfo GetNextPlayer(this PlayerGroupInfo playerGroupInfo, string previousPlayerId)
+        public static PlayerInfo GetOppositePlayer(this PlayerGroupInfo playerGroupInfo, string playerId)
         {
             var playerList = playerGroupInfo.GetPlayerList();
             var playerIdList = playerList
                 .Select(p => p.PlayerId)
                 .ToList();
-            var previousIndex = playerIdList.IndexOf(previousPlayerId);
-            var nextIndex = previousIndex == 3
-                ? 0
-                : previousIndex + 1;
+            var previousIndex = playerIdList.IndexOf(playerId);
+            var oppositeIndex = (previousIndex + 2) % 4;
+            return playerList[oppositeIndex];
+        }
+
+        public static PlayerInfo GetNextPlayer(this PlayerGroupInfo playerGroupInfo, string playerId)
+        {
+            var playerList = playerGroupInfo.GetPlayerList();
+            var playerIdList = playerList
+                .Select(p => p.PlayerId)
+                .ToList();
+            var previousIndex = playerIdList.IndexOf(playerId);
+            var nextIndex = (previousIndex + 1) % 4;
+            return playerList[nextIndex];
+        }
+
+        public static PlayerInfo GetPreviousPlayer(this PlayerGroupInfo playerGroupInfo, string playerId)
+        {
+            var playerList = playerGroupInfo.GetPlayerList();
+            var playerIdList = playerList
+                .Select(p => p.PlayerId)
+                .ToList();
+            var previousIndex = playerIdList.IndexOf(playerId);
+            var nextIndex = (previousIndex + 3) % 4;
             return playerList[nextIndex];
         }
 
@@ -115,7 +135,9 @@ namespace SidiBarraniCommon.Info
             var playerIndex = playerList.FindIndex(p => p.PlayerId == firstPlayerId);
             if (playerIndex < 0)
             {
-                throw new Exception($"Non-existing PlayerId={firstPlayerId}!");
+                var msg = $"Non-existing PlayerId={firstPlayerId}!";
+                // Log.Error(msg);
+                throw new Exception(msg);
             }
             for (var i=0; i<playerIndex; i++)
             {

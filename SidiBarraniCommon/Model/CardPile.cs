@@ -29,7 +29,9 @@ namespace SidiBarraniCommon.Model
         {
             if (Cards.Count < n)
             {
-                throw new InvalidOperationException();
+                var msg = "No more cards to draw!";
+                // Log.Error(msg);
+                throw new InvalidOperationException(msg);
             }
             var drawnCards = Cards
                 .Skip(Math.Max(0, Cards.Count() - n))

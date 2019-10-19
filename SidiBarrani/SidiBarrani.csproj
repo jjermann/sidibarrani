@@ -28,5 +28,6 @@
     <ProjectReference Include="..\SidiBarraniCommon\SidiBarraniCommon.csproj" />
     <ProjectReference Include="..\SidiBarraniClient\SidiBarraniClient.csproj" />
     <ProjectReference Include="..\SidiBarraniServer\SidiBarraniServer.csproj" />
+    <ProjectReference Include="..\SidiBarraniAi\SidiBarraniAi.csproj" />
   </ItemGroup>
 </Project>

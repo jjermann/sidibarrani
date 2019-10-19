@@ -17,7 +17,9 @@ namespace SidiBarraniCommon.Model
         {
             if (isMatch == false && isGeneral == true)
             {
-                throw new ArgumentException();
+                var msg = "If a General is played it also counts as a match!";
+                //Log.Error(msg);
+                throw new ArgumentException(msg);
             }
             if (isGeneral)
             {

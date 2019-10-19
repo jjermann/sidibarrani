@@ -1,16 +1,14 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Reactive;
 using System.Reactive.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using ReactiveUI;
+using SidiBarraniAi;
 using SidiBarraniClient;
 using SidiBarraniCommon;
 using SidiBarraniCommon.Cache;
 using SidiBarraniCommon.Info;
 using SidiBarraniCommon.Model;
-using SidiBarraniCommon.Result;
 
 namespace SidiBarrani.ViewModel
 {
@@ -27,9 +25,53 @@ namespace SidiBarrani.ViewModel
         private ObservableAsPropertyHelper<GameRepresentation> _gameRepresentation;
         public GameRepresentation GameRepresentation => _gameRepresentation.Value;
 
+        private bool _isAwaitingConfirm;
+        public bool IsAwaitingConfirm
+        {
+            get => _isAwaitingConfirm;
+            set => this.RaiseAndSetIfChanged(ref _isAwaitingConfirm, value);
+        }
+        public ReactiveCommand<Unit, bool> ConfirmCommand {get;}
+
+        private async Task<bool> GetConfirmTask()
+        {
+            IsAwaitingConfirm = true;
+            var result = await ConfirmCommand.FirstAsync();
+            IsAwaitingConfirm = false;
+            return result;
+        }
+
         public SidiBarraniViewModel(ISidiBarraniServerApi sidiBarraniServerApi)
         {
-            SidiBarraniClient = new SidiBarraniClientImplementation(sidiBarraniServerApi);
+            ConfirmCommand = ReactiveCommand.Create<bool>(() => true);
+            SidiBarraniClient = new SidiBarraniClientImplementation(sidiBarraniServerApi, GetConfirmTask);
+
+            this.WhenAnyValue(x => x.SidiBarraniClient.PlayerGameInfo)
+                .ToProperty(this, x => x.PlayerGameInfo, out _playerGameInfo, null);
+            this.WhenAnyValue(
+                x => x.SidiBarraniClient.GameInfo,
+                x => x.SidiBarraniClient.PlayerInfo,
+                (gameInfo, playerInfo) => (gameInfo != null && playerInfo != null)
+                    ? new CommandFactory(
+                        sidiBarraniServerApi,
+                        gameInfo,
+                        playerInfo,
+                        new ActionCache(gameInfo.Rules))
+                    : null)
+                .ToProperty(this, x => x.CommandFactory, out _commandFactory, null);
+            this.WhenAnyValue(
+                x => x.CommandFactory,
+                x => x.PlayerGameInfo,
+                (f, g) => (f != null && g != null)
+                    ? new GameRepresentation(f, g)
+                    : null)
+                .ToProperty(this, x => x.GameRepresentation, out _gameRepresentation, null);
+
+            StartGame(sidiBarraniServerApi);
+        }
+
+        private void StartGame(ISidiBarraniServerApi sidiBarraniServerApi)
+        {
             var rules = new Rules
             {
                 EndScore = 100
@@ -37,63 +79,15 @@ namespace SidiBarrani.ViewModel
             SidiBarraniClient.OpenGame(rules, "Game1", "TeamA", "TeamB");
             SidiBarraniClient.ConnectToGame(SidiBarraniClient.GameInfo, "Player1");
 
-            this.WhenAnyValue(x => x.SidiBarraniClient.PlayerGameInfo)
-                .ToProperty(this, x => x.PlayerGameInfo, out _playerGameInfo, null);
-            this.WhenAnyValue(
-                x => x.SidiBarraniClient.GameInfo,
-                x => x.SidiBarraniClient.PlayerInfo,
-                (gameInfo, playerInfo) => new CommandFactory(
-                    sidiBarraniServerApi,
-                    gameInfo,
-                    playerInfo,
-                    new ActionCache(gameInfo.Rules)))
-                .ToProperty(this, x => x.CommandFactory, out _commandFactory, null);
-            this.WhenAnyValue(x => x.CommandFactory, x => x.PlayerGameInfo, (f, g) => new GameRepresentation(f, g))
-                .ToProperty(this, x => x.GameRepresentation, out _gameRepresentation, null);
-
             // Simulate game start with 3 other clients
-            var client2 = new SidiBarraniClientImplementation(sidiBarraniServerApi);
-            var client3 = new SidiBarraniClientImplementation(sidiBarraniServerApi);
-            var client4 = new SidiBarraniClientImplementation(sidiBarraniServerApi);
-            client2.RefreshOpenGames();
-            client3.RefreshOpenGames();
-            client4.RefreshOpenGames();
-            client2.ConnectToGame(client2.OpenGameList.First(), "Player2");
-            client3.ConnectToGame(client3.OpenGameList.First(), "Player3");
-            client4.ConnectToGame(client4.OpenGameList.First(), "Player4");
-
-            Task.Run(() => RunGame(SidiBarraniClient, client2, client3, client4));
-        }
-
-        private static GameResult RunGame(
-            SidiBarraniClientImplementation client1,
-            SidiBarraniClientImplementation client2,
-            SidiBarraniClientImplementation client3,
-            SidiBarraniClientImplementation client4)
-        {
-            client1.StartGame();
-            Thread.Sleep(500);
-            var clientList = new List<SidiBarraniClientImplementation> {client1, client2, client3, client4};
-
-            var random = new Random();
-            var gameResult = clientList.First().PlayerGameInfo?.GameStageInfo?.GameResult;
-            while (gameResult == null)
-            {
-                foreach (var client in clientList)
-                {
-                    var validActions = client.GetValidActions();
-                    if (validActions.Any())
-                    {
-                        var randomAction = validActions[random.Next(validActions.Count-1)];
-                        if (client.ProcessAction(randomAction))
-                        {
-                            Thread.Sleep(500);
-                        }
-                    }
-                }
-                gameResult = clientList.First().PlayerGameInfo?.GameStageInfo?.GameResult;
-            }
-            return gameResult;
+            var client2 = new SidiBarraniRandomClient(sidiBarraniServerApi,1000);
+            var client3 = new SidiBarraniRandomClient(sidiBarraniServerApi,1000);
+            var client4 = new SidiBarraniRandomClient(sidiBarraniServerApi,1000);
+            var gameId = SidiBarraniClient.GameInfo.GameId;
+            client2.ConnectToGame(gameId, "Player2");
+            client3.ConnectToGame(gameId, "Player3");
+            client4.ConnectToGame(gameId, "Player4");
+            SidiBarraniClient.StartGame();
         }
     }
 }

@@ -24,6 +24,7 @@ namespace SidiBarraniServer.Game
         {
             GameInfo = gameInfo;
             ConfirmAction = () => {
+                UpdatePlayers(calculateActions: false);
                 Parallel.ForEach(ClientApiDictionary.Values, client =>
                 {
                     client.RequestConfirm();
@@ -31,9 +32,32 @@ namespace SidiBarraniServer.Game
             };
         }
 
+        private bool CheckAndSetBusy()
+        {
+            var wasBusy = false;
+            if (!IsBusy)
+            {
+                lock(_lock)
+                {
+                    if (!IsBusy)
+                    {
+                        IsBusy = true;
+                    }
+                    else
+                    {
+                        wasBusy = true;
+                    }
+                }
+            }
+            else
+            {
+                wasBusy = true;
+            }
+            return !wasBusy;
+        }
+
         private void RunBusyAction(Action action)
         {
-            IsBusy = true;
             Task.Run(() => {
                 action();
                 IsBusy = false;
@@ -47,6 +71,10 @@ namespace SidiBarraniServer.Game
                 return false;
             }
             if (PlayerGroupInfo.GetPlayerList().Count != 4)
+            {
+                return false;
+            }
+            if (!CheckAndSetBusy())
             {
                 return false;
             }
@@ -75,11 +103,11 @@ namespace SidiBarraniServer.Game
 
         public bool ProcessAction(ActionBase action)
         {
-            if (IsBusy)
+            if (GameStage == null)
             {
                 return false;
             }
-            if (GameStage == null)
+            if (!CheckAndSetBusy())
             {
                 return false;
             }
@@ -104,7 +132,7 @@ namespace SidiBarraniServer.Game
                 }
                 catch (Exception e)
                 {
-                    Log.Error($"Exception in ProcessAction: {e.Message}", e);
+                    Log.Error($"Exception in ProcessAction: {e}", e);
                     throw;
                 }
                 try {
@@ -119,27 +147,31 @@ namespace SidiBarraniServer.Game
             return true;
         }
 
-        private void UpdatePlayers()
+        private void UpdatePlayers(bool calculateActions = true)
         {
             foreach (var player in PlayerGroupInfo.GetPlayerList())
             {
-                var playerGameInfo = GetPlayerGameInfo(player.PlayerId);
+                var playerGameInfo = GetPlayerGameInfo(player.PlayerId, calculateActions);
                 ClientApiDictionary[player.PlayerId].SetPlayerGameInfo(playerGameInfo);
             }
         }
         
-        private PlayerGameInfo GetPlayerGameInfo(string playerId)
+        private PlayerGameInfo GetPlayerGameInfo(string playerId, bool calculateActions = true)
         {
             return new PlayerGameInfo
             {
-                ValidActionList = GetValidActionIdList(playerId)
-                    .Select(id => new ActionInfo
-                    {
-                        GameId = GameInfo.GameId,
-                        PlayerId = playerId,
-                        ActionId = id
-                    })
-                    .ToList(),
+                GameInfo = (GameInfo)GameInfo.Clone(),
+                PlayerInfo = (PlayerInfo)GameInfo.PlayerGroupInfo.GetPlayerInfo(playerId).Clone(),
+                ValidActionList = calculateActions
+                    ? GetValidActionIdList(playerId)
+                        .Select(id => new ActionInfo
+                        {
+                            GameId = GameInfo.GameId,
+                            PlayerId = playerId,
+                            ActionId = id
+                        })
+                        .ToList()
+                    : new List<ActionInfo>(),
                 PlayerHand = (CardPile)GetPlayerHand(GameStage, playerId)?.Clone(),
                 GameStageInfo = (GameStageInfo)MapToGameStageInfo(GameStage)?.Clone()
             };
@@ -169,6 +201,10 @@ namespace SidiBarraniServer.Game
             var gameRound = gameStage?.CurrentGameRound;
             var gameStageInfo = new GameStageInfo
             {
+                CurrentPlayer = gameRound?.ExpectedActionType == ActionType.BetAction
+                    ? gameRound?.BetStage?.CurrentPlayer
+                    : gameRound?.PlayStage?.CurrentStickRound?.CurrentPlayer,
+                ExpectedActionType = gameRound?.ExpectedActionType,
                 CurrentBetActionList = gameRound?.BetStage?.BetActionList,
                 CurrentBetResult = gameRound?.BetStage?.BetResult,
                 StickRoundInfoList = gameRound?.PlayStage?.StickRoundList

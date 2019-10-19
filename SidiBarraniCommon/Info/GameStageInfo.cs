@@ -9,6 +9,8 @@ namespace SidiBarraniCommon.Info
 {
     public class GameStageInfo : ICloneable
     {
+        public PlayerInfo CurrentPlayer {get;set;}
+        public ActionType? ExpectedActionType {get;set;}
         public IList<BetAction> CurrentBetActionList {get;set;}
         public BetResult CurrentBetResult {get;set;}
         public IList<StickRoundInfo> StickRoundInfoList {get;set;}
@@ -27,6 +29,8 @@ namespace SidiBarraniCommon.Info
         {
             return new GameStageInfo
             {
+                CurrentPlayer = (PlayerInfo)CurrentPlayer?.Clone(),
+                ExpectedActionType = ExpectedActionType,
                 CurrentBetActionList = CurrentBetActionList
                     ?.Select(a => (BetAction)a?.Clone()).ToList(),
                 CurrentBetResult = (BetResult)CurrentBetResult?.Clone(),

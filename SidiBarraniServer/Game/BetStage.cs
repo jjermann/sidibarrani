@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Info;
 using SidiBarraniCommon.Model;
@@ -13,7 +14,7 @@ namespace SidiBarraniServer.Game
         private Rules Rules { get; }
         private PlayerGroupInfo PlayerGroup { get; }
         private IDictionary<string,CardPile> PlayerHandDictionary {get;}
-        private PlayerInfo CurrentPlayer { get; set; }
+        public PlayerInfo CurrentPlayer { get; set; }
         
         public IList<BetAction> BetActionList {get;set;} = new List<BetAction>();
         public BetResult BetResult {get;set;}
@@ -59,6 +60,12 @@ namespace SidiBarraniServer.Game
             }
             var bettingTeam = PlayerGroup.GetTeamOfPlayer(lastBetBetAction.PlayerInfo.PlayerId);
             var followedActions = GetFollowedBetActions(lastBetBetAction);
+            if (followedActions.Count(a => a.Type == BetActionType.Barrani) > 1)
+            {
+                var msg = "There can't be more than one Barrani!";
+                Log.Error(msg);
+                throw new InvalidOperationException(msg);
+            }
             var barraniBetAction = followedActions.SingleOrDefault(a => a.Type == BetActionType.Barrani);
             if (barraniBetAction != null)
             {
@@ -71,6 +78,12 @@ namespace SidiBarraniServer.Game
                     IsBarrani = true
                 };
             }
+            if (followedActions.Count(a => a.Type == BetActionType.Sidi) > 1)
+            {
+                var msg = "There can't be more than one Sidi!";
+                Log.Error(msg);
+                throw new InvalidOperationException(msg);
+            }
             var sidiBetAction = followedActions.SingleOrDefault(a => a.Type == BetActionType.Sidi);
             if (sidiBetAction != null)
             {
@@ -80,7 +93,9 @@ namespace SidiBarraniServer.Game
                     a.Type != BetActionType.Pass
                     || PlayerGroup.GetTeamOfPlayer(a.PlayerInfo.PlayerId) == PlayerGroup.GetTeamOfPlayer(sidiBetAction.PlayerInfo.PlayerId)))
                 {
-                    throw new InvalidOperationException();
+                    var msg = $"Some inconsistency regarding BetActions occured!";
+                    Log.Error(msg);
+                    throw new InvalidOperationException(msg);
                 }
                 var passingOpponents = sidiFollowedActions.Select(a => a.PlayerInfo).Distinct().ToList();
                 if (passingOpponents.Count == 2)
@@ -267,7 +282,9 @@ namespace SidiBarraniServer.Game
         {
             if (BetResult != null)
             {
-                throw new InvalidOperationException();
+                var msg = "Inconsistency: Once the Bet phase is over no BetAction can be processed!";
+                Log.Error(msg);
+                throw new InvalidOperationException(msg);
             }
             BetActionList.Add(betAction);
             BetResult = GetBetResult();

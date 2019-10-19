@@ -1,3 +1,5 @@
+using System;
+using System.Reactive;
 using ReactiveUI;
 using SidiBarraniCommon;
 using SidiBarraniCommon.Action;
@@ -8,26 +10,26 @@ namespace SidiBarrani.ViewModel
 {
     public class CommandFactory
     {
-        private ISidiBarraniServerApi _serverApi;
-        private GameInfo _gameInfo;
-        private PlayerInfo _playerInfo;
-        private ActionCache _actionCache;
+        private ISidiBarraniServerApi ServerApi {get;}
+        private GameInfo GameInfo {get;}
+        private PlayerInfo PlayerInfo {get;}
+        private ActionCache ActionCache {get;}
         
         public CommandFactory(ISidiBarraniServerApi sidiBarraniServerApi, GameInfo gameInfo, PlayerInfo playerInfo, ActionCache actionCache)
         {
-            _serverApi = sidiBarraniServerApi;
-            _gameInfo = gameInfo;
-            _playerInfo = playerInfo;
-            _actionCache = actionCache;
+            ServerApi = sidiBarraniServerApi;
+            GameInfo = gameInfo;
+            PlayerInfo = playerInfo;
+            ActionCache = actionCache;
         }
 
-        public IReactiveCommand ConstructCommand(int actionId) => ReactiveCommand.Create(() => _serverApi.ProcessAction(ConstructActionInfo(actionId)));
+        public ReactiveCommand<Unit,bool> ConstructCommand(int actionId) => ReactiveCommand.Create(() => ServerApi.ProcessAction(ConstructActionInfo(actionId)));
         public ActionInfo ConstructActionInfo(int actionId) => new ActionInfo
         {
-            GameId = _gameInfo.GameId,
-            PlayerId = _playerInfo.PlayerId,
+            GameId = GameInfo.GameId,
+            PlayerId = PlayerInfo.PlayerId,
             ActionId = actionId
         };
-        public ActionBase ConstructAction(int actionId) => _actionCache.ConstructAction(_gameInfo, _playerInfo, actionId);
+        public ActionBase ConstructAction(int actionId) => ActionCache.ConstructAction(GameInfo, PlayerInfo, actionId);
     }
 }

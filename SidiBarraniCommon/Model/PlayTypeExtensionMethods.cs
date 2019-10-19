@@ -30,7 +30,7 @@ namespace SidiBarraniCommon.Model
             {
                 return CardSuit.Spades;
             }
-            throw new ArgumentException();
+            throw new NotImplementedException();
         }
 
         public static string GetStringRepresentation(this PlayType playtype)

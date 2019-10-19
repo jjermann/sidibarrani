@@ -1,3 +1,4 @@
+using System.Windows.Input;
 using SidiBarraniCommon.Model;
 
 namespace SidiBarrani.ViewModel

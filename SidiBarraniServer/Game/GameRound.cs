@@ -84,7 +84,9 @@ namespace SidiBarraniServer.Game
                     }
                     return;
                 default:
-                    throw new Exception($"Invalid ActionType {action?.GetActionType()}!");
+                    var msg = $"Invalid ActionType {action?.GetActionType()}!";
+                    Log.Error(msg);
+                    throw new Exception(msg);
             }
         }
 

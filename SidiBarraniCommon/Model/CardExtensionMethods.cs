@@ -85,7 +85,7 @@ namespace SidiBarraniCommon.Model
                     case CardRank.Ace:
                         return 11;
                     default:
-                        throw new InvalidOperationException();
+                        throw new NotImplementedException();
                 }
             }
             else
@@ -117,7 +117,7 @@ namespace SidiBarraniCommon.Model
                             ? 11
                             : 0;
                     default:
-                        throw new InvalidOperationException();
+                        throw new NotImplementedException();
                 }
             }
         }

@@ -1,23 +1,23 @@
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Input;
 using ReactiveUI;
-using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Model;
 
 namespace SidiBarrani.ViewModel
 {
     public class HandRepresentation : ReactiveObject
     {
-        public CardPile CardPile {get;}
-        public IList<PlayAction> PlayActionList {get;}
-        public IList<CardRepresentation> CardRepresentationList {get;}
+        private CardPile CardPile {get;}
+        private IList<CardRepresentation> CardRepresentationList {get;}
+        public IDictionary<Card, ICommand> CardCommandDictionary {get;}
 
-        public HandRepresentation(CardPile cardPile, IList<PlayAction> playActionList)
+        public HandRepresentation(CardPile cardPile, IDictionary<Card, ICommand> commandDictionary)
         {
             CardPile = cardPile;
-            PlayActionList = playActionList;
+            CardCommandDictionary = commandDictionary;
             CardRepresentationList = CardPile?.Cards
-                ?.Select(c => new CardRepresentation(c, PlayActionList?.SingleOrDefault(a => a.Card == c)))
+                ?.Select(c => new CardRepresentation(c, (CardCommandDictionary?.ContainsKey(c) ?? false) ? CardCommandDictionary[c] : null))
                 .ToList();
         }
     }

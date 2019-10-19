@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using Serilog;
 using SidiBarraniCommon.Action;
 using SidiBarraniCommon.Info;
 using SidiBarraniCommon.Model;
@@ -12,7 +13,7 @@ namespace SidiBarraniServer.Game
     {
         private PlayerGroupInfo PlayerGroupInfo {get;}
         private IDictionary<string,CardPile> PlayerHandDictionary {get;}
-        private PlayerInfo CurrentPlayer {get;set;}
+        public PlayerInfo CurrentPlayer {get;set;}
         public PlayType PlayType { get; }
 
         public IList<PlayAction> PlayActionList {get;} = new List<PlayAction>();
@@ -55,7 +56,9 @@ namespace SidiBarraniServer.Game
         {
             if (!StickSuit.HasValue)
             {
-                throw new InvalidOperationException();
+                var msg = "Can't compare cards without a StickSuit!";
+                Log.Error(msg);
+                throw new InvalidOperationException(msg);
             }
             var cardComparer = new CardComparer(PlayType, StickSuit.Value);
             return cardComparer;
