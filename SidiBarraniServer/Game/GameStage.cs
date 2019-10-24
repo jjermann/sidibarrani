@@ -101,7 +101,7 @@ namespace SidiBarraniServer.Game
             }
             var gameResult = new GameResult
             {
-                Winner = winner,
+                WinningTeam = winner,
                 PlayerGroupInfo = PlayerGroupInfo,
                 Team1FinalScore = team1FinalScore,
                 Team2FinalScore = team2FinalScore

@@ -6,6 +6,52 @@ namespace SidiBarraniCommon.Info
 {
     public static class PlayerGroupInfoExtensionMethods
     {
+        public static PlayerInfo GetRelativePlayerInfo(this PlayerGroupInfo playerGroupInfo, string basePlayerId, string playerId)
+        {
+            var playerList = playerGroupInfo.GetPlayerList();
+            var playerIdList = playerList
+                .Select(p => p.PlayerId)
+                .ToList();
+            var basePlayerIndex = playerIdList.IndexOf(basePlayerId);
+            var playerIndex = playerIdList.IndexOf(playerId);
+            var relativeId = ((playerIndex - basePlayerIndex + 4) % 4).ToString();
+            var relativePlayerInfo = (PlayerInfo)playerList[playerIndex].Clone();
+            relativePlayerInfo.PlayerId = relativeId;
+            return relativePlayerInfo;
+        }
+
+        public static TeamInfo GetRelativeTeamInfo(this PlayerGroupInfo playerGroupInfo, string basePlayerId, string teamId)
+        {
+            var isCurrentTeam = playerGroupInfo.GetTeamOfPlayer(basePlayerId).TeamId == teamId;
+            var relativePlayerGroupInfo = playerGroupInfo.GetRelativePlayerGroupInfo(basePlayerId);
+            return isCurrentTeam
+                ? relativePlayerGroupInfo.Team1
+                : relativePlayerGroupInfo.Team2;
+        }
+
+        public static PlayerGroupInfo GetRelativePlayerGroupInfo(this PlayerGroupInfo playerGroupInfo, string playerId)
+        {
+            var playerList = playerGroupInfo.GetPlayerList()
+                .Select(p => playerGroupInfo.GetRelativePlayerInfo(playerId, p.PlayerId))
+                .OrderBy(p => p.PlayerId)
+                .ToList();
+            var relativeTeam1 = (TeamInfo)playerGroupInfo.GetTeamOfPlayer(playerId).Clone();
+            var relativeTeam2 = (TeamInfo)playerGroupInfo.GetOpposingTeamOfPlayer(playerId).Clone();
+            relativeTeam1.TeamId = TeamInfo.CurrentRelativeTeamId;
+            relativeTeam1.Player1 = playerList[0];
+            relativeTeam1.Player2 = playerList[2];
+            relativeTeam2.TeamId = TeamInfo.OppositeRelativeTeamId;
+            relativeTeam2.Player1 = playerList[1];
+            relativeTeam2.Player2 = playerList[3];
+
+            var relativePlayerGroupInfo = new PlayerGroupInfo
+            {
+                Team1 = relativeTeam1,
+                Team2 = relativeTeam2
+            };
+            return relativePlayerGroupInfo;
+        }
+
         public static PlayerInfo GetOppositePlayer(this PlayerGroupInfo playerGroupInfo, string playerId)
         {
             var playerList = playerGroupInfo.GetPlayerList();

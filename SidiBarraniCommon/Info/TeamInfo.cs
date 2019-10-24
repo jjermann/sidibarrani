@@ -4,6 +4,9 @@ namespace SidiBarraniCommon.Info
 {
     public class TeamInfo : ICloneable
     {
+        public const string CurrentRelativeTeamId = "0";
+        public const string OppositeRelativeTeamId = "1";
+
         public string TeamName { get; set; }
         public string TeamId {get;set;}
         public PlayerInfo Player1 {get;set;}

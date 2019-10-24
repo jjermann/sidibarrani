@@ -24,10 +24,9 @@ namespace SidiBarraniAi
 
         public bool SetPlayerGameInfo(PlayerGameInfo playerGameInfo)
         {
-            var randomActionId = playerGameInfo?.ValidActionList
+            var randomActionId = playerGameInfo?.ValidActionIdList
                 ?.OrderBy(a => Guid.NewGuid())
-                ?.FirstOrDefault()
-                ?.ActionId;
+                ?.FirstOrDefault();
             if (!randomActionId.HasValue)
             {
                 return true;

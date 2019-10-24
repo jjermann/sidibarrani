@@ -122,7 +122,7 @@ namespace SidiBarraniServer.Game
                 var roundResult = new RoundResult
                 {
                     WinningTeam = BetResult.BettingTeam,
-                    PlayerGroup = PlayerGroupInfo,
+                    PlayerGroupInfo = PlayerGroupInfo,
                     Team1FinalScore = BetResult.BettingTeam == PlayerGroupInfo.Team1
                         ? betTeamFinalScore
                         : otherTeamFinalScore,
@@ -146,7 +146,7 @@ namespace SidiBarraniServer.Game
                 var roundResult = new RoundResult
                 {
                     WinningTeam = PlayerGroupInfo.GetOtherTeam(BetResult.BettingTeam.TeamId),
-                    PlayerGroup = PlayerGroupInfo,
+                    PlayerGroupInfo = PlayerGroupInfo,
                     Team1FinalScore = BetResult.BettingTeam == PlayerGroupInfo.Team1
                         ? 0
                         : otherTeamFinalScore,

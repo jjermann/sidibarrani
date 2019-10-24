@@ -4,6 +4,11 @@ namespace SidiBarraniCommon.Info
 {
     public class PlayerInfo : IEquatable<PlayerInfo>, ICloneable
     {
+        public const string CurrentRelativePlayerId = "0";
+        public const string NextRelativePlayerId = "1";
+        public const string OppositeRelativePlayerId = "2";
+        public const string PreviousRelativePlayerId = "3";
+
         public string PlayerName { get; set; }
         public string PlayerId { get; set; }
 

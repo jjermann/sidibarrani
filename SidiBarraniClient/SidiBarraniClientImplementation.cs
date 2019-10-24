@@ -126,8 +126,8 @@ namespace SidiBarraniClient
         {
             Log.Verbose($"{this}: GetValidActions()");
             var actionList = PlayerGameInfo
-                ?.ValidActionList
-                ?.Select(id => ActionCache.ConstructAction(GameInfo, PlayerInfo, id.ActionId))
+                ?.ValidActionIdList
+                ?.Select(id => ActionCache.ConstructAction(GameInfo, PlayerInfo, id))
                 .ToList();
             return actionList ?? new List<ActionBase>();
         }

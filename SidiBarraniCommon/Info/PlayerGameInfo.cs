@@ -9,8 +9,8 @@ namespace SidiBarraniCommon.Info
     {
         public GameInfo GameInfo {get; set;}
         public PlayerInfo PlayerInfo {get;set;}
-        public IList<ActionInfo> ValidActionList { get; set; }
-        public CardPile PlayerHand {get;set;}
+        public IList<int> ValidActionIdList { get; set; }
+        public IList<Card> PlayerHand {get;set;}
         public GameStageInfo GameStageInfo {get;set;}
 
         public object Clone()
@@ -19,9 +19,8 @@ namespace SidiBarraniCommon.Info
             {
                 GameInfo = (GameInfo)GameInfo?.Clone(),
                 PlayerInfo = (PlayerInfo)PlayerInfo?.Clone(),
-                ValidActionList = ValidActionList
-                    ?.Select(a => (ActionInfo)a?.Clone())?.ToList(),
-                PlayerHand = (CardPile)PlayerHand?.Clone(),
+                ValidActionIdList = ValidActionIdList?.Select(id => id).ToList(),
+                PlayerHand = PlayerHand?.Select(h => (Card)h?.Clone()).ToList(),
                 GameStageInfo = (GameStageInfo)GameStageInfo?.Clone()
             };
         }

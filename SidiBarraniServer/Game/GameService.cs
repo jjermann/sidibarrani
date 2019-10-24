@@ -158,22 +158,25 @@ namespace SidiBarraniServer.Game
         
         private PlayerGameInfo GetPlayerGameInfo(string playerId, bool calculateActions = true)
         {
+            var relativeGameInfo = (GameInfo)GameInfo.Clone();
+            relativeGameInfo.PlayerGroupInfo = GameInfo.PlayerGroupInfo.GetRelativePlayerGroupInfo(playerId);
+            var relativePlayerInfo = relativeGameInfo.PlayerGroupInfo.Team1.Player1;
+            var validActionIdList = calculateActions
+                ? GetValidActionIdList(playerId)
+                : new List<int>();
+            var playerHand = GetPlayerHand(GameStage, playerId)?.Cards
+                ?.Select(c => (Card)c?.Clone())
+                .ToList();
+            var gameStageInfo = MapToGameStageInfo(GameStage);
+            var relativeGameStageInfo = gameStageInfo.GetRelativeGameStageInfo(GameInfo.PlayerGroupInfo, playerId);
+
             return new PlayerGameInfo
             {
-                GameInfo = (GameInfo)GameInfo.Clone(),
-                PlayerInfo = (PlayerInfo)GameInfo.PlayerGroupInfo.GetPlayerInfo(playerId).Clone(),
-                ValidActionList = calculateActions
-                    ? GetValidActionIdList(playerId)
-                        .Select(id => new ActionInfo
-                        {
-                            GameId = GameInfo.GameId,
-                            PlayerId = playerId,
-                            ActionId = id
-                        })
-                        .ToList()
-                    : new List<ActionInfo>(),
-                PlayerHand = (CardPile)GetPlayerHand(GameStage, playerId)?.Clone(),
-                GameStageInfo = (GameStageInfo)MapToGameStageInfo(GameStage)?.Clone()
+                GameInfo = relativeGameInfo,
+                PlayerInfo = relativePlayerInfo,
+                ValidActionIdList = validActionIdList,
+                PlayerHand = playerHand,
+                GameStageInfo = relativeGameStageInfo
             };
         }
 
@@ -199,11 +202,13 @@ namespace SidiBarraniServer.Game
         private GameStageInfo MapToGameStageInfo(GameStage gameStage)
         {
             var gameRound = gameStage?.CurrentGameRound;
+            var currentPlayer = gameRound?.ExpectedActionType == ActionType.BetAction
+                    ? gameRound?.BetStage?.CurrentPlayer
+                    : gameRound?.PlayStage?.CurrentStickRound?.CurrentPlayer;
+
             var gameStageInfo = new GameStageInfo
             {
-                CurrentPlayer = gameRound?.ExpectedActionType == ActionType.BetAction
-                    ? gameRound?.BetStage?.CurrentPlayer
-                    : gameRound?.PlayStage?.CurrentStickRound?.CurrentPlayer,
+                CurrentPlayer = currentPlayer,
                 ExpectedActionType = gameRound?.ExpectedActionType,
                 CurrentBetActionList = gameRound?.BetStage?.BetActionList,
                 CurrentBetResult = gameRound?.BetStage?.BetResult,

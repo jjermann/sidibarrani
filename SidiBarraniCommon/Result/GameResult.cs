@@ -6,7 +6,7 @@ namespace SidiBarraniCommon.Result
     public class GameResult : ICloneable
     {
         public PlayerGroupInfo PlayerGroupInfo { get; set; }
-        public TeamInfo Winner { get; set; }
+        public TeamInfo WinningTeam { get; set; }
         public int Team1FinalScore { get; set; }
         public int Team2FinalScore { get; set; }
 
@@ -15,7 +15,7 @@ namespace SidiBarraniCommon.Result
             return new GameResult
             {
                 PlayerGroupInfo = (PlayerGroupInfo)PlayerGroupInfo?.Clone(),
-                Winner = (TeamInfo)Winner?.Clone(),
+                WinningTeam = (TeamInfo)WinningTeam?.Clone(),
                 Team1FinalScore = Team1FinalScore,
                 Team2FinalScore = Team2FinalScore
             };
@@ -23,7 +23,7 @@ namespace SidiBarraniCommon.Result
 
         public override string ToString()
         {
-            var str = $"Game Winner: {Winner}" + Environment.NewLine
+            var str = $"Game Winner: {WinningTeam}" + Environment.NewLine
                 + $"Final score {PlayerGroupInfo.Team1}: {Team1FinalScore}" + Environment.NewLine
                 + $"Final score {PlayerGroupInfo.Team2}: {Team2FinalScore}" + Environment.NewLine;
             return str;

@@ -29,13 +29,13 @@ namespace SidiBarrani.ViewModel
         {
             CommandFactory = commandFactory;
             PlayerGameInfo = playerGameInfo;
-            PlayActionList = PlayerGameInfo?.ValidActionList
-                ?.Select(a => CommandFactory.ConstructAction(a.ActionId))
+            PlayActionList = PlayerGameInfo?.ValidActionIdList
+                ?.Select(id => CommandFactory.ConstructAction(id))
                 .Where(a => a.GetActionType() == ActionType.PlayAction)
                 .Select(a => (PlayAction)a)
                 .ToList();
-            BetActionList = PlayerGameInfo?.ValidActionList
-                ?.Select(a => CommandFactory.ConstructAction(a.ActionId))
+            BetActionList = PlayerGameInfo?.ValidActionIdList
+                ?.Select(id => CommandFactory.ConstructAction(id))
                 .Where(a => a.GetActionType() == ActionType.BetAction)
                 .Select(a => (BetAction)a)
                 .ToList();
@@ -53,6 +53,8 @@ namespace SidiBarrani.ViewModel
                 ? new BoardRepresentation(PlayerGameInfo.GameInfo, PlayerGameInfo.PlayerInfo, GameStageInfo)
                 : null;
 
+            // Remark: Since we receive relative player information we could also directly determine the player positions.
+            //         But this way the ViewModel would also work with "real" player informations.
             var topPlayer = PlayerGameInfo.GameInfo.PlayerGroupInfo.GetOppositePlayer(PlayerGameInfo.PlayerInfo.PlayerId);
             var rightPlayer = PlayerGameInfo.GameInfo.PlayerGroupInfo.GetNextPlayer(PlayerGameInfo.PlayerInfo.PlayerId);
             var leftPlayer = PlayerGameInfo.GameInfo.PlayerGroupInfo.GetPreviousPlayer(PlayerGameInfo.PlayerInfo.PlayerId);
