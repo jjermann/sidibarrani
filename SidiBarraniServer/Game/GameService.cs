@@ -158,8 +158,9 @@ namespace SidiBarraniServer.Game
         
         private PlayerGameInfo GetPlayerGameInfo(string playerId, bool calculateActions = true)
         {
+            var playerGroupInfo = GameInfo.PlayerGroupInfo;
             var relativeGameInfo = (GameInfo)GameInfo.Clone();
-            relativeGameInfo.PlayerGroupInfo = GameInfo.PlayerGroupInfo.GetRelativePlayerGroupInfo(playerId);
+            relativeGameInfo.PlayerGroupInfo = playerGroupInfo.GetRelativePlayerGroupInfo(playerId);
             var relativePlayerInfo = relativeGameInfo.PlayerGroupInfo.Team1.Player1;
             var validActionIdList = calculateActions
                 ? GetValidActionIdList(playerId)
@@ -168,7 +169,7 @@ namespace SidiBarraniServer.Game
                 ?.Select(c => (Card)c?.Clone())
                 .ToList();
             var gameStageInfo = MapToGameStageInfo(GameStage);
-            var relativeGameStageInfo = gameStageInfo.GetRelativeGameStageInfo(GameInfo.PlayerGroupInfo, playerId);
+            var relativeGameStageInfo = gameStageInfo.GetRelativeGameStageInfo(playerGroupInfo, playerId);
 
             return new PlayerGameInfo
             {

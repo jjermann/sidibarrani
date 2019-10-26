@@ -1,7 +1,6 @@
 using System.Linq;
 using ReactiveUI;
 using SidiBarraniCommon.Info;
-using SidiBarraniCommon.Model;
 
 namespace SidiBarrani.ViewModel
 {

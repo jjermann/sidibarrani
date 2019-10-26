@@ -80,8 +80,8 @@ namespace SidiBarrani.ViewModel
             // TODO
             var currentPlayerId = GameStageInfo?.CurrentPlayer?.PlayerId;
             TopPlayerRepresentation = new PlayerRepresentation(topPlayer, topBetActionDictionary, null, 0, currentPlayerId == topPlayer.PlayerId);
-            LeftPlayerRepresentation = new PlayerRepresentation(rightPlayer, rightBetActionDictionary, null, 0, currentPlayerId == leftPlayer.PlayerId);
-            RightPlayerRepresentation = new PlayerRepresentation(leftPlayer, leftBetActionDictionary, null, 0, currentPlayerId == rightPlayer.PlayerId);
+            LeftPlayerRepresentation = new PlayerRepresentation(rightPlayer, leftBetActionDictionary, null, 0, currentPlayerId == leftPlayer.PlayerId);
+            RightPlayerRepresentation = new PlayerRepresentation(leftPlayer, rightBetActionDictionary, null, 0, currentPlayerId == rightPlayer.PlayerId);
         }
     }
 }
