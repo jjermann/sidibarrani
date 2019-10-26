@@ -1,8 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SidiBarraniCommon.Model;
 
-namespace SidiBarraniCommon.Model
+namespace SidiBarraniServer.Game
 {
     public class CardPile : ICloneable
     {

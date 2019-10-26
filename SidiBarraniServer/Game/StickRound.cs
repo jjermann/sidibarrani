@@ -80,7 +80,7 @@ namespace SidiBarraniServer.Game
             var stickResult = new StickResult
             {
                 Winner = winner,
-                StickPile = new CardPile(cardList)
+                StickPile = cardList
             };
             return stickResult;
         }

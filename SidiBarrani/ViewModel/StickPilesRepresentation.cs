@@ -7,9 +7,9 @@ namespace SidiBarrani.ViewModel
 {
     public class StickPilesRepresentation : ReactiveObject
     {
-        private IList<CardPile> StickPileList {get;}
+        private IList<IList<Card>> StickPileList {get;}
 
-        public StickPilesRepresentation(IList<CardPile> stickPileList)
+        public StickPilesRepresentation(IList<IList<Card>> stickPileList)
         {
             StickPileList = stickPileList;
         }

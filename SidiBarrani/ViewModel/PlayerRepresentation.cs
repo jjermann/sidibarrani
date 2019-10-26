@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reactive.Linq;
@@ -22,7 +21,7 @@ namespace SidiBarrani.ViewModel
         public PlayerRepresentation(
             PlayerInfo playerInfo,
             IDictionary<int, BetAction> betActionDictionary,
-            IList<CardPile> stickPileList,
+            IList<IList<Card>> stickPileList,
             int cardsInHand,
             bool isCurrentPlayer)
         {

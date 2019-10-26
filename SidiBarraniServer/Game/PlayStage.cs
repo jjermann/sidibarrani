@@ -79,7 +79,7 @@ namespace SidiBarraniServer.Game
                     var wonCards = StickRoundList
                         .Select(r => r.StickResult)
                         .Where(r => r.Winner == p)
-                        .SelectMany(r => r.StickPile.Cards)
+                        .SelectMany(r => r.StickPile)
                         .ToList();
                     return wonCards;
                 });
