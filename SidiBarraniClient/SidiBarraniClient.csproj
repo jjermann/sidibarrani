@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ReactiveUI" Version="*" />
-    <PackageReference Include="serilog" Version="*" />
+    <PackageReference Include="ReactiveUI" Version="11.2.3" />
+    <PackageReference Include="serilog" Version="2.9.0" />
   </ItemGroup>
 </Project>
