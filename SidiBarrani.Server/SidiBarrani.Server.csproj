@@ -1,0 +1,20 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <TreatWarningsAsError>all</TreatWarningsAsError>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Components.WebAssembly.Server" Version="5.0.7" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SidiBarrani.Application\SidiBarrani.Application.csproj" />
+    <ProjectReference Include="..\SidiBarrani.Client\SidiBarrani.Client.csproj" />
+    <ProjectReference Include="..\SidiBarrani.Shared\SidiBarrani.Shared.csproj" />
+  </ItemGroup>
+
+</Project>

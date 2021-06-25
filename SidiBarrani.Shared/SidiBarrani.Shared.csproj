@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <TreatWarningsAsError>all</TreatWarningsAsError>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="ActionOld\**" />
+    <Compile Remove="CacheOld\**" />
+    <Compile Remove="InfoOld\**" />
+    <EmbeddedResource Remove="ActionOld\**" />
+    <EmbeddedResource Remove="CacheOld\**" />
+    <EmbeddedResource Remove="InfoOld\**" />
+    <None Remove="ActionOld\**" />
+    <None Remove="CacheOld\**" />
+    <None Remove="InfoOld\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <SupportedPlatform Include="browser" />
+  </ItemGroup>
+</Project>

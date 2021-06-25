@@ -1,0 +1,28 @@
+﻿@page "/gameSetup"
+
+@if (GameSetupList == null)
+{
+    <p>Loading...</p>
+}
+else if (!GameSetupList.Any())
+{
+    <h1>Game list</h1>
+    <p>No open game setups...</p>
+}
+else
+{
+    <section>
+        <h1>Game list</h1>
+        <div class="list-group">
+            @foreach (var gameSetup in GameSetupList)
+            {
+                <NavLink class="list-group-item list-group-item-action bg-light"
+                         href="@($"/gameSetup/{gameSetup.GameId}")">
+                    @gameSetup.GameName
+                </NavLink>
+            }
+        </div>
+    </section>
+}
+
+

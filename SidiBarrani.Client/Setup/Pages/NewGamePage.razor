@@ -1,0 +1,22 @@
+﻿@page "/gameSetup/newgame"
+
+<section> 
+    <h1>Create new game</h1>
+    <EditForm
+        Model="@NewGamePageViewModel"
+        OnValidSubmit="@CreateGameCommand">
+        <div class="form-group row">
+            <InputText
+                id="gameName"
+                class="form-control col-sm-8"
+                @bind-Value="@NewGamePageViewModel.GameName"
+                placeholder="Enter game name">
+            </InputText>
+            <button
+                type="submit"
+                class="btn btn-primary">
+                Create
+            </button>
+        </div>
+    </EditForm>
+</section>

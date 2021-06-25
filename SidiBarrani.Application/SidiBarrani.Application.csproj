@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net5.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <WarningsAsErrors>nullable</WarningsAsErrors>
+    <TreatWarningsAsError>all</TreatWarningsAsError>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="GameOld\**" />
+    <Compile Remove="Game\**" />
+    <EmbeddedResource Remove="GameOld\**" />
+    <EmbeddedResource Remove="Game\**" />
+    <None Remove="GameOld\**" />
+    <None Remove="Game\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\SidiBarrani.Shared\SidiBarrani.Shared.csproj" />
+  </ItemGroup>
+</Project>
