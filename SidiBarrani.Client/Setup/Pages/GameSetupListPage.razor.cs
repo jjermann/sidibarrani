@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
+using SidiBarrani.Client.Shared.Services;
 using SidiBarrani.Shared.Model.Setup;
 using SidiBarrani.Shared.Services;
 

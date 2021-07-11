@@ -169,7 +169,7 @@ namespace SidiBarrani.Application.Services
             //    var playerInfo = new PlayerInfo
             //    {
             //        PlayerName = playerName,
-            //        PlayerConnectionId = Guid.NewGuid().ToString()
+            //        PlayerId = Guid.NewGuid().ToString()
             //    };
             //    if (teamInfo.Player1 == null)
             //    {
@@ -179,7 +179,7 @@ namespace SidiBarrani.Application.Services
             //    {
             //        teamInfo.Player2 = playerInfo;
             //    }
-            //    gameService.ClientApiDictionary[playerInfo.PlayerConnectionId] = clientApi;
+            //    gameService.ClientApiDictionary[playerInfo.PlayerId] = clientApi;
             //    return (PlayerInfo)playerInfo?.Clone();
             //}
 
@@ -202,7 +202,7 @@ namespace SidiBarrani.Application.Services
             //        return false;
             //    }
             //    var gameService = _gameServiceDictionary[actionInfo.GameId];
-            //    var playerInfo = gameService.PlayerGroupInfo.GetPlayerInfo(actionInfo.PlayerConnectionId);
+            //    var playerInfo = gameService.PlayerGroupInfo.GetPlayerInfo(actionInfo.PlayerId);
             //    if (playerInfo == null)
             //    {
             //        return false;

@@ -1,7 +1,7 @@
 using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
-using SidiBarrani.Shared.Services;
+using SidiBarrani.Client.Shared.Services;
 
 namespace SidiBarrani.Client.Game.Pages
 {

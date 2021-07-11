@@ -2,6 +2,7 @@ using System;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
+using SidiBarrani.Client.Core;
 using SidiBarrani.Client.Setup.Services;
 using SidiBarrani.Client.Shared.Services;
 using SidiBarrani.Shared.Services;

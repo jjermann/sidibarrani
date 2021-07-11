@@ -1,0 +1,20 @@
+﻿@if (@ShowDialog)
+{
+    <div class="modal-background">
+        <div class="modal-content">
+            <div class="container-fluid">
+                <div class="row">
+                    <label for="userName">
+                        Name:
+                    </label>
+                    <input id="userName"
+                           @bind-value="@UserName"/>
+                    <button class="btn btn-secondary"
+                            @onclick="@LoginCommand">
+                        Login
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+}

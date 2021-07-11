@@ -1,29 +1,18 @@
-﻿using System;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Microsoft.AspNetCore.SignalR;
 
 namespace SidiBarrani.Server.Infrastructure
 {
     public class NotificationHub : Hub
     {
-        public override Task OnConnectedAsync()
+        public async Task JoinGroup(string groupName)
         {
-            return base.OnConnectedAsync();
+            await Groups.AddToGroupAsync(Context.ConnectionId, groupName);
         }
 
-        public override Task OnDisconnectedAsync(Exception? exception)
+        public async Task LeaveGroup(string groupName)
         {
-            return base.OnDisconnectedAsync(exception);
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, groupName);
         }
-
-        //public async Task AddToGameGroupAsync(string group)
-        //{
-        //    await Groups.AddToGameGroupAsync(Context.ConnectionId, group);
-        //}
-
-        //public async Task RemoveFromGameGroupAsync(string group)
-        //{
-        //    await Groups.RemoveFromGameGroupAsync(Context.ConnectionId, group);
-        //}
     }
 }

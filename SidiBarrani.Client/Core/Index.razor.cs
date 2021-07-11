@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Components;
 
-namespace SidiBarrani.Client
+namespace SidiBarrani.Client.Core
 {
     public partial class Index
     {

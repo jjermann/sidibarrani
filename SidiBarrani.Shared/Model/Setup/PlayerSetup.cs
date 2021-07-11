@@ -2,13 +2,13 @@
 {
     public class PlayerSetup
     {
-        public PlayerSetup(string playerConnectionId, string playerName)
+        public PlayerSetup(string playerId, string playerName)
         {
-            PlayerConnectionId = playerConnectionId;
+            PlayerId = playerId;
             PlayerName = playerName;
         }
 
-        public string PlayerConnectionId { get; }
+        public string PlayerId { get; }
         public string PlayerName { get; set; }
 
         public override string ToString() => PlayerName;

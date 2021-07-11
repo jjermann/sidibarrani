@@ -6,6 +6,9 @@
         GameStageChanged,
         GameStarted,
         GameFinished,
-        GameContextChanged
+        GameContextChanged,
+
+        JoinGroup,
+        LeaveGroup
     }
 }

@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Forms;
 using SidiBarrani.Client.Setup.ViewModel;
+using SidiBarrani.Client.Shared.Services;
 using SidiBarrani.Shared.Model.Setup;
 using SidiBarrani.Shared.Services;
 
@@ -47,7 +48,7 @@ namespace SidiBarrani.Client.Setup.Pages
             NavigationManager.NavigateTo($"/game/{GameId}/");
         }
 
-        private async Task JoinGameCommand()
+        private async Task JoinGameSetupCommand()
         {
             if (GameSetup == null)
             {
@@ -55,10 +56,7 @@ namespace SidiBarrani.Client.Setup.Pages
             }
 
             var playerConnectionId = await ClientConnectionService.GetPlayerConnectionId();
-            if (string.IsNullOrEmpty(playerConnectionId))
-            {
-                throw new InvalidOperationException();
-            }
+            await ClientConnectionService.ConnectToGameSetup(GameSetup);
             var playerSetup = new PlayerSetup(playerConnectionId, $"PlayerName {DateTime.Now.Ticks}");
             await GameSetupService.JoinGameSetupAsync(GameId, playerSetup, GameSetup.VersionId);
             StateHasChanged();

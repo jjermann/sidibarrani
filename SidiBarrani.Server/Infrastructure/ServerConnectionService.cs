@@ -29,8 +29,7 @@ namespace SidiBarrani.Server.Infrastructure
 
         public async Task SendToGameGroupAsync(ConnectionEvent connectionEvent, Guid gameId)
         {
-            await _hubContext.Clients.All.SendAsync(connectionEvent.ToString());
-            //await _hubContext.Clients.Group(gameId.ToString()).SendAsync(connectionEvent.ToString());
+            await _hubContext.Clients.Group(gameId.ToString()).SendAsync(connectionEvent.ToString());
         }
 
         public async Task SendToAllAsync(ConnectionEvent connectionEvent)
